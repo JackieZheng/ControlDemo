@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+apply plugin: 'com.neenbedankt.android-apt' //增加这一句
+
+android {
+  compileSdkVersion 25
+  buildToolsVersion "25.0.2"
+
+  defaultConfig {
+    applicationId "liubin.com.myapplication"
+    minSdkVersion 15
+    targetSdkVersion 25
+    versionCode 1
+    versionName "1.0"
+    jackOptions {
+      enabled false
+    }
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
+  }
+}
+
+dependencies {
+  compile fileTree(include: ['*.jar'], dir: 'libs')
+
+  // butterknife
+  // 状态栏修改
+
+  // support
+  compile project(':mylibrary')
+
+
+  compile 'com.r0adkll:slidableactivity:2.0.5'
+  compile 'de.hdodenhof:circleimageview:1.3.0'
+  compile 'com.jakewharton:butterknife:8.5.1'
+  compile 'com.android.support:support-v4:25.3.1'
+  testCompile 'junit:junit:4.12'
+  apt 'com.jakewharton:butterknife-compiler:8.5.1'
+}

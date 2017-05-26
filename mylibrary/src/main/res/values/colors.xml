@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#0f0f0f</color>
+    <color name="light_gray">#E5E5E5</color>
+    <color name="gray">#CCC</color>
+    <color name="list_row_selected">#78c8e6</color>
+
+    <!-- Colors for the Settings interface -->
+    <color name="accent">#ff78dcfa</color>
+    <color name="primary">#ff0087be</color>
+    <color name="primary_dark">#ff006b98</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Colors for customizing the Passcode Lock interface -->
+    <color name="passcodelock_background">@color/primary</color>
+    <color name="passcodelock_button_background_color">@android:color/transparent</color>
+    <color name="passcodelock_button_text_color">@color/black</color>
+    <color name="passcodelock_field_background_color">@color/white</color>
+    <color name="passcodelock_field_hint_text_color">#5f5f5f</color>
+    <color name="passcodelock_field_text_color">#444444</color>
+    <color name="passcodelock_prompt_text_color">@color/white</color>
+
+    <!--对话框颜色-->
+    <color name="float_transparent">#00000000</color>
+    <color name="sweet_dialog_bg_color">#FFFFFF</color>
+    <color name="button_text_color">#FFFFFF</color>
+    <color name="gray_btn_bg_color">#D0D0D0</color>
+    <color name="gray_btn_bg_pressed_color">#B6B6B6</color>
+    <color name="blue_btn_bg_color">#AEDEF4</color>
+    <color name="blue_btn_bg_pressed_color">#96BFD2</color>
+    <color name="red_btn_bg_color">#DD6B55</color>
+    <color name="red_btn_bg_pressed_color">#CD5B55</color>
+    <color name="error_stroke_color">#F27474</color>
+    <color name="success_stroke_color">#A5DC86</color>
+    <color name="trans_success_stroke_color">#33A5DC86</color>
+    <color name="warning_stroke_color">#F8BB86</color>
+    <color name="text_color">#575757</color>
+    <color name="material_blue_grey_80">#ff37474f</color>
+    <color name="material_blue_grey_90">#ff263238</color>
+    <color name="material_blue_grey_95">#ff21272b</color>
+    <color name="material_deep_teal_20">#ff80cbc4</color>
+    <color name="material_deep_teal_50">#ff009688</color>
+</resources>
