@@ -12,6 +12,7 @@
       android:text="Fragment内容区域上边界"
       />
   <TextView
+      android:id="@+id/click_me"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"

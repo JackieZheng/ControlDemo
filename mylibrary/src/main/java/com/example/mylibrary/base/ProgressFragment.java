@@ -18,6 +18,7 @@ package com.example.mylibrary.base;
 
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,7 @@ public abstract class ProgressFragment extends BaseFragment {
     CONTENT, PROGRESS, EMPTY_DATA, NETWORK_ERROR
   }
 
+  protected CommonActivity mActivity;
   protected boolean isViewCreated = false;
 
   // 当前视图类型
@@ -68,6 +70,11 @@ public abstract class ProgressFragment extends BaseFragment {
 
   private View.OnClickListener mEmptyViewClickListener;
   private View.OnClickListener mNetWorkErrorViewClickListener;
+
+  @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mActivity = (CommonActivity) getActivity();
+  }
 
   /**
    * Provide default implementation to return a simple mTempView.  Subclasses

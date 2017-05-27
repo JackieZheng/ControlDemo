@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import com.example.mylibrary.SystemBarConfig;
 import java.util.List;
@@ -22,9 +23,8 @@ import java.util.List;
 public class BaseActivity extends AppCompatActivity {
   protected SystemBarConfig mSystemBarConfig;
 
-  @Override public void onCreate(@Nullable Bundle savedInstanceState,
-      @Nullable PersistableBundle persistentState) {
-    super.onCreate(savedInstanceState, persistentState);
+  @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
     if (mSystemBarConfig == null) {
       mSystemBarConfig = new SystemBarConfig(this);
     }
@@ -43,34 +43,40 @@ public class BaseActivity extends AppCompatActivity {
   }
 
   /**
-   * 隐藏系统UI
-   * 可以在View.OnSystemUiVisibilityChangeListener监听这种改变
+   * 内容是不是显示到状态栏下层,状态栏是否透明的
    *
-   * View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY 是否在显示之后一段时间再次隐藏
+   * @return {@link Boolean}
    */
-  @TargetApi(16) private void hideSystemUI() {
-    int flag = 0;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      flag = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-          | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-          | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-          | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-          | View.SYSTEM_UI_FLAG_FULLSCREEN;
+  public boolean isWindowTransparent() {
+    Window window = getWindow();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      View decorView = window.getDecorView();
+      return (decorView.getSystemUiVisibility() & (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+          | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)) == (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+          | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      WindowManager.LayoutParams params = window.getAttributes();
+      return ((params.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+          == WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      flag = flag | View.SYSTEM_UI_FLAG_IMMERSIVE;
-    }
-    getWindow().getDecorView().setSystemUiVisibility(flag);
+    return false;
   }
 
   /**
-   * 显示系统UI
-   * 可以在View.OnSystemUiVisibilityChangeListener监听这种改变
+   * 设置内容显示到状态栏下层,并使状态栏透明
    */
-  @TargetApi(16) private void showSystemUI() {
-    getWindow().getDecorView()
-        .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+  public void setTransparentForWindow() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+      getWindow().setStatusBarColor(Color.TRANSPARENT);
+      // Activity全屏显示，但状态栏不会被隐藏覆盖，状态栏依然可见，Activity顶端布局部分会被状态遮住。
+      getWindow().getDecorView()
+          .setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility()
+              | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+              | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      // Activity全屏显示，但状态栏不会被隐藏覆盖，状态栏依然可见，Activity顶端布局部分会被状态遮住。
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    }
   }
 }

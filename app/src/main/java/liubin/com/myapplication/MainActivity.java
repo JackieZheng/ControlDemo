@@ -159,6 +159,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
               }
+              case R.id.nav_friends: {
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), FullscreenActivity.class);
+                startActivity(intent);
+                break;
+              }
             }
             menuItem.setChecked(true);
             mDrawerLayout.closeDrawers();

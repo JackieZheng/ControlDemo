@@ -48,6 +48,7 @@ public class BlankFragment extends ProgressFragment {
   @Override public void onDestroyView() {
     super.onDestroyView();
     unbinder.unbind();
+    mHandler.removeCallbacksAndMessages(null);
   }
 
   @OnClick({ R.id.click_me }) public void onViewClicked(View view) {

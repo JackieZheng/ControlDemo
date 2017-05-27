@@ -47,6 +47,8 @@ public class DrawerLayoutFragment extends ProgressFragment {
         obtainData();
       }
     });
+    mActivity.getTopBar().setVisibility(View.GONE);
+    mActivity.setTopBarOverlay(true);
   }
 
   @Override public int getFragmentLayoutResourceID() {
