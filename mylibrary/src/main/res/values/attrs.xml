@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <attr format="color" name="statusBarColor"/>
+  <!--标题栏高度-->
+  <!--<attr format="dimension" name="toolBarSize"/>-->
+</resources>

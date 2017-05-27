@@ -52,7 +52,7 @@ public abstract class ProgressFragment extends BaseFragment {
   protected boolean isViewCreated = false;
 
   // 当前视图类型
-  private ViewType mCurrentViewType = ViewType.EMPTY_DATA;
+  private ViewType mCurrentViewType = ViewType.CONTENT;
 
   private View mProgressContainer;//进度区域
   private View mContentContainer;//内容区域
@@ -119,7 +119,6 @@ public abstract class ProgressFragment extends BaseFragment {
     isViewCreated = true;
     if (mCurrentViewType != CONTENT) {
       switchView(getCurrentView(), mContentView, false);
-      //getCurrentView().setVisibility(View.VISIBLE);
     }
   }
 

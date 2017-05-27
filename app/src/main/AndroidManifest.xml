@@ -22,8 +22,6 @@
     <activity android:name=".CheeseDetailActivity"/>
     <activity android:name=".ApiTestActivity">
     </activity>
-    <activity android:name=".CommonActivity">
-    </activity>
   </application>
 
 </manifest>

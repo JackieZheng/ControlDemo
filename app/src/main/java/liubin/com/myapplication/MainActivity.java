@@ -41,6 +41,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.example.mylibrary.base.CommonActivity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,6 +140,15 @@ public class MainActivity extends AppCompatActivity {
         new NavigationView.OnNavigationItemSelectedListener() {
           @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
+              case R.id.nav_home: {//测试页面
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString(CommonActivity.FRAGMENT_CLASS_NAME, TestFragment.class.getName());
+                intent.putExtras(bundle);
+                intent.setClass(getApplicationContext(), CommonActivity.class);
+                startActivity(intent);
+                break;
+              }
               case R.id.nav_messages: {
                 Intent intent = new Intent();
                 Bundle bundle = new Bundle();

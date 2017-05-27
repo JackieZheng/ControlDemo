@@ -24,7 +24,7 @@
       android:id="@+id/click_me"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:text="点我"
+      android:text="点我显示DrawerLayout"
       />
   <!--内容区域-->
   <FrameLayout

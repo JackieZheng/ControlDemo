@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     >
   <!--内容布局-->
-  <include layout="@layout/include_list_viewpager"/>
+  <include layout="@layout/fragment_progress"/>
 
   <!--侧滑菜单布局-->
   <android.support.design.widget.NavigationView
