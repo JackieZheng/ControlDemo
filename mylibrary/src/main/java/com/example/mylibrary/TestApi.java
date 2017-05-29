@@ -5,6 +5,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface TestApi {
-  @GET("/account/accountInfo") Observable<BaseModel> getCurrentJokeData(@Query("page") int page,
+  @GET("/account/accountInfo") Observable<BaseModel> getUser(@Query("page") int page,
       @Query("pagesize") int pageSize);
 }

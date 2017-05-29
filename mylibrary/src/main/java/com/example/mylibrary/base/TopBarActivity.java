@@ -2,19 +2,16 @@ package com.example.mylibrary.base;
 
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import com.example.mylibrary.R;
 
 /**
- * 一般页面使用的Activity,此页面包含 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)]
+ * 包含 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity, 一般页面使用的Activity
  */
-public class CommonActivity extends BaseActivity {
-  public static String FRAGMENT_CLASS_NAME = "fragment_class_name";
+public class TopBarActivity extends BaseActivity {
   View mStatusBar;
   Toolbar mToolBar;
   View mToolBarShadow;
@@ -26,30 +23,15 @@ public class CommonActivity extends BaseActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(getContentResourceId());
     mContentContainer = (ViewGroup) findViewById(R.id.content);
-    if (getIntent() != null && getIntent().hasExtra(FRAGMENT_CLASS_NAME)) {
-      String stringExtra = getIntent().getStringExtra(FRAGMENT_CLASS_NAME);
-      if (TextUtils.isEmpty(stringExtra)) return;
-      if (savedInstanceState == null) {
-        Fragment fragment = this.getSupportFragmentManager().findFragmentByTag(stringExtra);
-        if (fragment == null) {
-          fragment = Fragment.instantiate(this, stringExtra, getIntent().getExtras());
-        }
-        if (fragment != null) {
-          getSupportFragmentManager().beginTransaction()
-              .replace(R.id.content, fragment, stringExtra)
-              .commit();
-        }
-      }
-    }
     setTransparentForWindow();
     setTopBarOverlay(false);
     //UiUtils.requestStatusBarLight(this, true);
   }
 
   /**
-   * Activity布局文件布局文件请参考{@link R.layout#activity_common}
+   * Activity布局文件布局文件
+   * 请参考{@link R.layout#activity_common}
    *
    * @return 布局文件ID
    */
@@ -119,7 +101,6 @@ public class CommonActivity extends BaseActivity {
     mStatusBar.requestLayout();
   }
 
-
   /**
    * 初始化 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)]
    */
@@ -127,13 +108,17 @@ public class CommonActivity extends BaseActivity {
     if (mTopBar != null) {
       return;
     }
+
     mStubTopBar = (ViewStub) findViewById(R.id.top_bar_stub);
+
     mTopBar = (ViewGroup) mStubTopBar.inflate();
     mStatusBar = mTopBar.findViewById(R.id.status_bar);
+
     mToolBarContainer = (ViewGroup) mTopBar.findViewById(R.id.tool_bar_container);
     mToolBar = (Toolbar) mToolBarContainer.findViewById(R.id.tool_bar);
     mToolBarShadow = mToolBarContainer.findViewById(R.id.tool_bar_shadow);
 
+    // 使自定义状态栏,标题栏不覆盖内容区域
     setTopBarOverlay(false);
   }
 }

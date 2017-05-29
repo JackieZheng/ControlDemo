@@ -9,9 +9,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.example.mylibrary.base.ProgressFragment;
+import com.example.mylibrary.base.TopBarActivity;
 import java.util.Random;
 
-public class BlankFragment extends ProgressFragment {
+public class BlankFragment extends ProgressFragment<TopBarActivity> {
 
   @BindView(R.id.click_me) TextView mClickMe;
   Unbinder unbinder;

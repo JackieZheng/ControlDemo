@@ -41,7 +41,7 @@ import static com.example.mylibrary.base.ProgressFragment.ViewType.PROGRESS;
  *
  * @author Evgeny Shishkin
  */
-public abstract class ProgressFragment extends BaseFragment {
+public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragment<T> {
 
   /**
    * 视图类型,内容,加载中,没有数据,网络异常
@@ -49,9 +49,6 @@ public abstract class ProgressFragment extends BaseFragment {
   enum ViewType {
     CONTENT, PROGRESS, EMPTY_DATA, NETWORK_ERROR
   }
-
-  protected CommonActivity mActivity;
-  protected boolean isViewCreated = false;
 
   // 当前视图类型
   private ViewType mCurrentViewType = ViewType.CONTENT;
@@ -70,11 +67,6 @@ public abstract class ProgressFragment extends BaseFragment {
 
   private View.OnClickListener mEmptyViewClickListener;
   private View.OnClickListener mNetWorkErrorViewClickListener;
-
-  @Override public void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    mActivity = (CommonActivity) getActivity();
-  }
 
   /**
    * Provide default implementation to return a simple mTempView.  Subclasses
@@ -123,7 +115,6 @@ public abstract class ProgressFragment extends BaseFragment {
     super.onViewCreated(view, savedInstanceState);
     ensureContent();
     setContentView(mTempView);
-    isViewCreated = true;
     if (mCurrentViewType != CONTENT) {
       switchView(getCurrentView(), mContentView, false);
     }
@@ -135,7 +126,6 @@ public abstract class ProgressFragment extends BaseFragment {
   @Override public void onDestroyView() {
     mProgressContainer = mContentContainer = mContentView = mEmptyView = mNetWorkErrorView = null;
     mProgressStub = mEmptyStub = mNetWorkErrorStub = null;
-    isViewCreated = false;
     super.onDestroyView();
   }
 

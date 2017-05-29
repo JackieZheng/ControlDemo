@@ -10,9 +10,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.example.mylibrary.base.ProgressFragment;
+import com.example.mylibrary.base.TopBarActivity;
 import java.util.Random;
 
-public class TestFragment extends ProgressFragment {
+public class TestFragment extends ProgressFragment<TopBarActivity> {
 
   @BindView(R.id.click_me) TextView mClickMe;
   Unbinder unbinder;
@@ -53,8 +54,8 @@ public class TestFragment extends ProgressFragment {
         mActivity.finish();
       }
     });
-    mActivity.getTopBar().setVisibility(View.GONE);
-    mActivity.setTopBarOverlay(true);
+    //mActivity.getTopBar().setVisibility(View.GONE);
+    //mActivity.setTopBarOverlay(true);
   }
 
   @Override public void onDestroyView() {
@@ -66,7 +67,8 @@ public class TestFragment extends ProgressFragment {
   @OnClick({ R.id.click_me }) public void onViewClicked(View view) {
     switch (view.getId()) {
       case R.id.click_me: {
-        obtainData();
+        //obtainData();
+        startActivity(this, DrawerLayoutFragment.class, null, -1);
         break;
       }
     }

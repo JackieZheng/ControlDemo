@@ -15,9 +15,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.example.mylibrary.base.ProgressFragment;
+import com.example.mylibrary.base.TopBarActivity;
 import java.util.Random;
 
-public class DrawerLayoutFragment extends ProgressFragment {
+public class DrawerLayoutFragment extends ProgressFragment<TopBarActivity> {
 
   Unbinder unbinder;
   @BindView(R.id.nav_view) NavigationView mNavView;

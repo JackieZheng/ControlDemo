@@ -1,14 +1,11 @@
 package liubin.com.myapplication;
 
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -19,6 +16,7 @@ import com.example.mylibrary.ApiClient;
 import com.example.mylibrary.BaseModel;
 import com.example.mylibrary.StatusBarUtil;
 import com.example.mylibrary.TestApi;
+import com.example.mylibrary.base.TopBarActivity;
 import com.r0adkll.slidr.Slidr;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -88,7 +86,7 @@ public class ApiTestActivity extends AppCompatActivity {
 
   private void testApi() {
     ApiClient.create(TestApi.class)
-        .getCurrentJokeData(1, 22)
+        .getUser(1, 22)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Consumer<BaseModel>() {

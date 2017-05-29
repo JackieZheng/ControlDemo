@@ -16,8 +16,10 @@
 
 package liubin.com.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.storage.StorageManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -37,11 +39,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import com.example.mylibrary.base.CommonActivity;
+import com.example.mylibrary.base.BaseFragment;
+import com.example.mylibrary.base.TopBarActivity;
+import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,12 +82,18 @@ public class MainActivity extends AppCompatActivity {
 
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
-        Intent intent = new Intent();
+        /*Intent intent = new Intent();
         intent.setClass(getApplicationContext(), ApiTestActivity.class);
         startActivity(intent);
         Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
             .setAction("Action", null)
+            .show();*/
+        Snackbar.make(view, getStoragePath(MainActivity.this, true), Snackbar.LENGTH_LONG)
+            .setAction("Action", null)
             .show();
+
+        File file = new File(getStoragePath(MainActivity.this, true));
+        listFile(file);
       }
     });
 
@@ -106,6 +117,17 @@ public class MainActivity extends AppCompatActivity {
   @Override public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.sample_actions, menu);
     return true;
+  }
+
+  private void listFile(File file) {
+    if (file.isDirectory()) {
+      for (File file1 : file.listFiles()) {
+        Log.e("file", file1.getAbsolutePath());
+        listFile(file1);
+      }
+    } else {
+      Log.e("file", file.getAbsolutePath());
+    }
   }
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -141,22 +163,11 @@ public class MainActivity extends AppCompatActivity {
           @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
               case R.id.nav_home: {//测试页面
-                Intent intent = new Intent();
-                Bundle bundle = new Bundle();
-                bundle.putString(CommonActivity.FRAGMENT_CLASS_NAME, TestFragment.class.getName());
-                intent.putExtras(bundle);
-                intent.setClass(getApplicationContext(), CommonActivity.class);
-                startActivity(intent);
+                BaseFragment.startActivity(MainActivity.this, TestFragment.class, null, -1);
                 break;
               }
               case R.id.nav_messages: {
-                Intent intent = new Intent();
-                Bundle bundle = new Bundle();
-                bundle.putString(CommonActivity.FRAGMENT_CLASS_NAME,
-                    DrawerLayoutFragment.class.getName());
-                intent.putExtras(bundle);
-                intent.setClass(getApplicationContext(), CommonActivity.class);
-                startActivity(intent);
+                BaseFragment.startActivity(MainActivity.this, DrawerLayoutFragment.class, null, -1);
                 break;
               }
               case R.id.nav_friends: {
@@ -200,5 +211,36 @@ public class MainActivity extends AppCompatActivity {
     @Override public CharSequence getPageTitle(int position) {
       return mFragmentTitles.get(position);
     }
+  }
+
+  private static String getStoragePath(Context mContext, boolean is_removale) {
+    StorageManager mStorageManager =
+        (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
+    Class<?> storageVolumeClazz = null;
+    try {
+      storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+      Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+      Method getPath = storageVolumeClazz.getMethod("getPath");
+      Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+      Object result = getVolumeList.invoke(mStorageManager);
+      final int length = Array.getLength(result);
+      for (int i = 0; i < length; i++) {
+        Object storageVolumeElement = Array.get(result, i);
+        String path = (String) getPath.invoke(storageVolumeElement);
+        boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
+        if (is_removale == removable) {
+          return path;
+        }
+      }
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }

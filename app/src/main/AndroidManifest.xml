@@ -19,6 +19,10 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+
+    <activity android:name="com.example.mylibrary.base.TopBarActivity"/>
+    <activity android:name="com.example.mylibrary.base.BaseActivity"/>
+
     <activity android:name=".CheeseDetailActivity"/>
     <activity android:name=".ApiTestActivity">
     </activity>

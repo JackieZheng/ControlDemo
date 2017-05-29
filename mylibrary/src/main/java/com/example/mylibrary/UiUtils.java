@@ -1,6 +1,7 @@
 package com.example.mylibrary;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -14,11 +15,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.example.mylibrary.base.CommonActivity;
+import com.example.mylibrary.base.TopBarActivity;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class UiUtils {
+  public static boolean isSwipeDragged(SwipeRefreshLayout layout) {
+    return layout != null && layout.isRefreshing();
+  }
 
   public static void renderEditText(final EditText edit, final View del) {
     del.setOnClickListener(new View.OnClickListener() {
@@ -99,19 +103,19 @@ public class UiUtils {
   }
 
   /**
-   * @param activity {@link CommonActivity}
+   * @param activity {@link TopBarActivity}
    * @param isLight true: 状态栏,白色背景, 深色文字
    */
-  public static void requestStatusBarLight(CommonActivity activity, boolean isLight) {
+  public static void requestStatusBarLight(TopBarActivity activity, boolean isLight) {
     requestStatusBarLight(activity, isLight, isLight ? 0xffcccccc : 0xffffffff);
   }
 
   /**
-   * @param activity {@link CommonActivity}
+   * @param activity {@link TopBarActivity}
    * @param isLight 6.0及以上系统生效(true: 状态栏,白色背景, 深色文字)
    * @param color 6.0以下系统生效(自定义的状态栏背景色)
    */
-  public static void requestStatusBarLight(CommonActivity activity, boolean isLight, int color) {
+  public static void requestStatusBarLight(TopBarActivity activity, boolean isLight, int color) {
     View decorView = activity.getWindow().getDecorView();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (isLight) {
@@ -127,37 +131,6 @@ public class UiUtils {
     }
   }
 
-  /**
-   * @param dialog
-   * @param statusBar
-   * @param isLight true: 白色背景, 深色文字
-   */
- /* public static void requestStatusBarLightForDialog(DialogPlus dialog, View statusBar,
-      boolean isLight) {
-    Window window = dialog.getWindow();
-    View decorView = window.getDecorView();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (isLight) {
-        decorView.setSystemUiVisibility(
-            decorView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-      } else {
-        decorView.setSystemUiVisibility(
-            decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-      }
-      processPrivateAPI(window, isLight);
-      if (isLight) {
-        statusBar.setBackgroundColor(0xffffffff);
-      } else {
-        statusBar.setBackgroundColor(0xffcccccc);
-      }
-    } else {
-      if (isLight) {
-        statusBar.setBackgroundColor(0xffcccccc);
-      } else {
-        statusBar.setBackgroundColor(0xffffffff);
-      }
-    }
-  }*/
   private static void processPrivateAPI(Window window, boolean lightStatusBar) {
     try {
       processFlyMe(window, lightStatusBar);
@@ -209,7 +182,35 @@ public class UiUtils {
     }
   }
 
-  public static boolean isSwipeDragged(SwipeRefreshLayout layout) {
-    return layout != null && layout.isRefreshing();
+  /**
+   * @param dialog
+   * @param statusBar
+   * @param isLight true: 白色背景, 深色文字
+   */
+  public static void requestStatusBarLightForDialog(Dialog dialog, View statusBar,
+      boolean isLight) {
+    Window window = dialog.getWindow();
+    View decorView = window.getDecorView();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (isLight) {
+        decorView.setSystemUiVisibility(
+            decorView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+      } else {
+        decorView.setSystemUiVisibility(
+            decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+      }
+      processPrivateAPI(window, isLight);
+      if (isLight) {
+        statusBar.setBackgroundColor(0xffffffff);
+      } else {
+        statusBar.setBackgroundColor(0xffcccccc);
+      }
+    } else {
+      if (isLight) {
+        statusBar.setBackgroundColor(0xffcccccc);
+      } else {
+        statusBar.setBackgroundColor(0xffffffff);
+      }
+    }
   }
 }
