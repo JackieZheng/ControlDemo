@@ -2,18 +2,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary"
     android:orientation="vertical"
-    tools:context="liubin.com.myapplication.BlankFragment"
+    tools:context="liubin.com.myapplication.fragments.CustomFragment"
     >
 
   <TextView
       android:id="@+id/click_me"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
       android:layout_gravity="center"
       android:gravity="center"
-      android:text="这里是Fragment内容"
+      android:text="Fragment内容"
+      android:textSize="30dp"
       />
 
 </FrameLayout>

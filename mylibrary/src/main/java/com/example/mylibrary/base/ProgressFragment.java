@@ -85,7 +85,7 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
    * behavior of ProgressFragment. In particular, this is currently the only
    * way to have the built-in indeterminant progress state be shown.
    */
-  @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
+  @Override public final View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     mTempView = inflater.inflate(getFragmentContentLayoutResourceID(), null, false);
     return inflater.inflate(getFragmentLayoutResourceID(), container, false);
@@ -327,10 +327,9 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
       throw new RuntimeException(
           "Your content must have a ViewStub whose id attribute is 'R.id.network_error_stub'");
     }
-    // TODO: 需要根据当前View类型显示某个View ???
   }
 
-  private View getEmptyView() {
+  public View getEmptyView() {
     if (mEmptyView == null) {
       mEmptyView = mEmptyStub.inflate();
       mEmptyView.setOnClickListener(mEmptyViewClickListener);

@@ -24,8 +24,6 @@
     <activity android:name="com.example.mylibrary.base.BaseActivity"/>
 
     <activity android:name=".CheeseDetailActivity"/>
-    <activity android:name=".ApiTestActivity">
-    </activity>
     <activity
         android:name=".FullscreenActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"

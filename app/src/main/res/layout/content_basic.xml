@@ -2,20 +2,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
-    tools:context="liubin.com.myapplication.TestFragment"
+    tools:context="liubin.com.myapplication.fragments.BasicFragment"
     >
 
   <TextView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
       android:text="Fragment内容区域上边界"
+      android:textSize="30sp"
       />
   <TextView
       android:id="@+id/click_me"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:text="Fragment内容区域背景色位灰色"
+      android:text="点击我调用后台Api"
+      />
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|right"
+      android:text="Fragment内容区域下边界"
+      android:textSize="30sp"
       />
 </FrameLayout>

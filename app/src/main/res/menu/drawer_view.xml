@@ -20,7 +20,18 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_dashboard"
-            android:title="Test" />
+            android:title="Basic" />
+
+        <item
+            android:id="@+id/nav_custom"
+            android:icon="@drawable/ic_dashboard"
+            android:title="Custom" />
+
+        <item
+            android:id="@+id/nav_coordinator_layout"
+            android:icon="@drawable/ic_dashboard"
+            android:title="CoordinatorLayout" />
+
         <item
             android:id="@+id/nav_messages"
             android:icon="@drawable/ic_event"

@@ -42,13 +42,15 @@ import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.example.mylibrary.base.BaseFragment;
-import com.example.mylibrary.base.TopBarActivity;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import liubin.com.myapplication.fragments.BasicFragment;
+import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
+import liubin.com.myapplication.fragments.CustomFragment;
 
 /**
  * DrawerLayout NavigationView CoordinatorLayout嵌套使用
@@ -82,9 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
-        /*Intent intent = new Intent();
-        intent.setClass(getApplicationContext(), ApiTestActivity.class);
-        startActivity(intent);
+        /*
         Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
             .setAction("Action", null)
             .show();*/
@@ -162,8 +162,17 @@ public class MainActivity extends AppCompatActivity {
         new NavigationView.OnNavigationItemSelectedListener() {
           @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
-              case R.id.nav_home: {//测试页面
-                BaseFragment.startActivity(MainActivity.this, TestFragment.class, null, -1);
+              case R.id.nav_home: {//基本使用
+                BaseFragment.startActivity(MainActivity.this, BasicFragment.class, null, -1);
+                break;
+              }
+              case R.id.nav_custom: {//自定义
+                BaseFragment.startActivity(MainActivity.this, CustomFragment.class, null, -1);
+                break;
+              }
+              case R.id.nav_coordinator_layout: {//CoordinatorLayout使用
+                BaseFragment.startActivity(MainActivity.this, CoordinatorLayoutFragment.class, null,
+                    -1);
                 break;
               }
               case R.id.nav_messages: {
@@ -187,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
   /**
    * ViewPage适配器
    */
-  private static class Adapter extends FragmentPagerAdapter {
+  public static class Adapter extends FragmentPagerAdapter {
     private final List<Fragment> mFragments = new ArrayList<>();
     private final List<String> mFragmentTitles = new ArrayList<>();
 
