@@ -16,49 +16,60 @@
 
 package liubin.com.myapplication;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.WindowManager;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-import com.example.mylibrary.StatusBarUtil;
+import com.example.mylibrary.base.BaseActivity;
 import com.r0adkll.slidr.Slidr;
 
-public class CheeseDetailActivity extends AppCompatActivity {
+public class CheeseDetailActivity extends BaseActivity {
 
   public static final String EXTRA_NAME = "cheese_name";
+  @BindView(R.id.backdrop) ImageView mImageView;
+  @BindView(R.id.toolbar) Toolbar mToolbar;
+  @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+  @BindView(R.id.appbar) AppBarLayout mAppbar;
+  @BindView(R.id.textView) TextView mTextView;
+  @BindView(R.id.main_content) CoordinatorLayout mMainContent;
 
   @Override public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     Slidr.attach(this);
-
     setContentView(R.layout.activity_detail);
-    //StatusBarUtil.setColor(this, getResources().getColor(R.color.primary), 0);
+    ButterKnife.bind(this);
 
-    StatusBarUtil.setTranslucentForCoordinatorLayout(this, 1);
-     //getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-     //getWindow().setStatusBarColor(Color.TRANSPARENT);
-    Intent intent = getIntent();
-    final String cheeseName = intent.getStringExtra(EXTRA_NAME);
+    setTransparentForWindow();
 
-    final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    mToolbar.setTitle("基本测试");
+    mToolbar.inflateMenu(R.menu.sample_actions);
+    mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+    mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        finish();
+      }
+    });
+    //setSupportActionBar(mToolbar);
+    //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    mMainContent.setFitsSystemWindows(false);
+    //设置标题文字
+    mCollapsingToolbar.setTitle(getIntent().getStringExtra(EXTRA_NAME));
+    //状态栏颜色
+    mCollapsingToolbar.setStatusBarScrimColor(getResources().getColor(R.color.primary));
+    //折叠后标题文字颜色
+    mCollapsingToolbar.setCollapsedTitleTextColor(getResources().getColor(R.color.white));
+    //扩张时候的title颜色
+    mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.primary));
 
-    CollapsingToolbarLayout collapsingToolbar =
-        (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-    collapsingToolbar.setTitle(cheeseName);
-    loadBackdrop();
-  }
-
-  private void loadBackdrop() {
-    final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
-    Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(imageView);
+    Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(mImageView);
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {

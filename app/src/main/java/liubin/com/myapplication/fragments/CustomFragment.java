@@ -58,6 +58,7 @@ public class CustomFragment extends ProgressFragment<TopBarActivity> {
       }
     });
 
+    // 修改Activity中的标题栏
     if (mActivity instanceof TopBarActivity) {
       Toolbar toolBar = ((TopBarActivity) mActivity).getToolBar();
       toolBar.setTitle("自定义内容");
@@ -97,6 +98,7 @@ public class CustomFragment extends ProgressFragment<TopBarActivity> {
           showContent();//显示内容
         } else if (i == 1) {
           showEmpty();//没有数据
+          setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network);
           getEmptyView().findViewById(R.id.click).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
               Toast.makeText(getContext(), "点击了", Toast.LENGTH_LONG).show();

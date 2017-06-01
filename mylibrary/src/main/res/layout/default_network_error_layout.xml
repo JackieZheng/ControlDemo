@@ -5,12 +5,16 @@
     android:id="@+id/network_error_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:showIn="@layout/fragment_progress"
     >
+  <!--tools:showIn="@layout/fragment_progress"-->
   <TextView
+      android:id="@+id/network_error_text"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
+      android:drawablePadding="16dp"
+      android:drawableTop="@drawable/ic_conn_no_network"
+      android:gravity="center"
       android:text="网络异常"
       />
 </FrameLayout>

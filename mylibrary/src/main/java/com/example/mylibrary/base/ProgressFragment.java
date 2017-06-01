@@ -17,9 +17,11 @@
 package com.example.mylibrary.base;
 
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -335,6 +337,22 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
       mEmptyView.setOnClickListener(mEmptyViewClickListener);
     }
     return mEmptyView;
+  }
+
+  /**
+   * 设置空数据视图
+   *
+   * @param message 消息名称
+   * @param icon 图标
+   */
+  public void setEmptyMessage(String message, @DrawableRes int icon) {
+    if (!isViewCreated) return;
+    TextView textView = (TextView) getEmptyView().findViewById(R.id.data_empty_text);
+    if (textView == null) {
+      throw new RuntimeException("空数据视图必须包含id为R.id.data_empty_text的TextView");
+    }
+    textView.setText(message);
+    textView.setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);
   }
 
   private View getProgressContainer() {

@@ -67,6 +67,7 @@ public class BasicFragment extends ProgressFragment<TopBarActivity> {
       }
     });
 
+    // 修改Activity中的标题栏
     if (mActivity instanceof TopBarActivity) {
       Toolbar toolBar = ((TopBarActivity) mActivity).getToolBar();
       toolBar.setTitle("基本测试");
@@ -106,6 +107,7 @@ public class BasicFragment extends ProgressFragment<TopBarActivity> {
           showContent();//显示内容
         } else if (i == 1) {
           showEmpty();//没有数据
+          setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network);
         } else {
           showNetWorkError();//网络异常
         }
@@ -132,6 +134,7 @@ public class BasicFragment extends ProgressFragment<TopBarActivity> {
         }, new Consumer<Throwable>() {
           @Override public void accept(Throwable throwable) throws Exception {//onError
             showEmpty();
+            setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network);
             Toast.makeText(getContext(), "出错了", Toast.LENGTH_LONG).show();
           }
         }, new Action() {

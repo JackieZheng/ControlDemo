@@ -2,7 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@android:id/empty"
+    android:id="@+id/data_empty"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
@@ -21,17 +21,13 @@
         android:text="点我啊"
         />
     <TextView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@android:id/empty"
+        android:id="@+id/data_empty_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:drawablePadding="16dp"
-        android:drawableTop="@drawable/ic_done"
+        android:drawableTop="@drawable/ic_conn_no_network"
         android:gravity="center"
         android:text="自定义没有数据视图"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:showIn="@layout/fragment_progress"
         />
   </LinearLayout>
 </FrameLayout>

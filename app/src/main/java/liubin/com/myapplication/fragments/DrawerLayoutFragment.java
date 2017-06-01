@@ -1,4 +1,4 @@
-package liubin.com.myapplication;
+package liubin.com.myapplication.fragments;
 
 import android.graphics.Color;
 import android.os.Build;
@@ -15,7 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.example.mylibrary.base.BaseActivity;
 import com.example.mylibrary.base.BaseFragment;
-import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
+import liubin.com.myapplication.R;
 
 public class DrawerLayoutFragment extends BaseFragment<BaseActivity> {
 

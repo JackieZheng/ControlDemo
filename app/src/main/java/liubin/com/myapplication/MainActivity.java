@@ -16,12 +16,9 @@
 
 package liubin.com.myapplication;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.storage.StorageManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -35,7 +32,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -43,18 +39,14 @@ import android.view.MenuItem;
 import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.example.mylibrary.StatusBarUtil;
 import com.example.mylibrary.base.BaseActivity;
 import com.example.mylibrary.base.BaseFragment;
-import java.io.File;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import liubin.com.myapplication.fragments.BasicFragment;
 import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
 import liubin.com.myapplication.fragments.CustomFragment;
+import liubin.com.myapplication.fragments.DrawerLayoutFragment;
 
 /**
  * DrawerLayout NavigationView CoordinatorLayout嵌套使用
