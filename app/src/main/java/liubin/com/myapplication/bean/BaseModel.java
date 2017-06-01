@@ -1,4 +1,4 @@
-package com.example.mylibrary;
+package liubin.com.myapplication.bean;
 
 public class BaseModel {
   private int code;

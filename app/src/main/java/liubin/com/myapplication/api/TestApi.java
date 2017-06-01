@@ -1,6 +1,7 @@
-package com.example.mylibrary;
+package liubin.com.myapplication.api;
 
 import io.reactivex.Observable;
+import liubin.com.myapplication.bean.BaseModel;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 

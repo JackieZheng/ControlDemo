@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 public abstract class BaseFragment<T extends BaseActivity> extends Fragment {
 
   /** Activity,类型由泛型参数&lt;T&gt;指定 **/
-  protected T mActivity;
+  protected BaseActivity mActivity;
 
   /**
    * 视图是否已经创建完成
@@ -29,8 +29,8 @@ public abstract class BaseFragment<T extends BaseActivity> extends Fragment {
 
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mActivity = (T) getActivity();
-    if (mActivity == null || !(mActivity instanceof BaseActivity)) {
+    mActivity = (BaseActivity) getActivity();
+    if (mActivity == null) {
       throw new IllegalArgumentException("泛型参数类型不正确");
     }
   }

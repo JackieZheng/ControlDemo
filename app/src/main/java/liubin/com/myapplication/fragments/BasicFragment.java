@@ -12,8 +12,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.example.mylibrary.ApiClient;
-import com.example.mylibrary.BaseModel;
-import com.example.mylibrary.TestApi;
+import liubin.com.myapplication.bean.BaseModel;
+import liubin.com.myapplication.api.TestApi;
 import com.example.mylibrary.base.ProgressFragment;
 import com.example.mylibrary.base.TopBarActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -67,14 +67,16 @@ public class BasicFragment extends ProgressFragment<TopBarActivity> {
       }
     });
 
-    Toolbar toolBar = mActivity.getToolBar();
-    toolBar.setTitle("基本测试");
-    toolBar.setNavigationIcon(R.drawable.ic_done);
-    toolBar.setNavigationOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        mActivity.finish();
-      }
-    });
+    if (mActivity instanceof TopBarActivity) {
+      Toolbar toolBar = ((TopBarActivity) mActivity).getToolBar();
+      toolBar.setTitle("基本测试");
+      toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+      toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          mActivity.finish();
+        }
+      });
+    }
   }
 
   @Override public void onDestroyView() {

@@ -2,10 +2,10 @@
 
 <resources>
 
-  <color name="white">#FFFFFF</color>
   <color name="black">#0f0f0f</color>
-  <color name="light_gray">#E5E5E5</color>
+  <color name="white">#FFFFFF</color>
   <color name="gray">#CCC</color>
+  <color name="light_gray">#E5E5E5</color>
 
   <!-- Colors for the Settings interface -->
   <color name="accent">#ff78dcfa</color>

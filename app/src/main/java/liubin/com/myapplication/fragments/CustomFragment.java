@@ -2,6 +2,7 @@ package liubin.com.myapplication.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,17 @@ public class CustomFragment extends ProgressFragment<TopBarActivity> {
         obtainData();
       }
     });
+
+    if (mActivity instanceof TopBarActivity) {
+      Toolbar toolBar = ((TopBarActivity) mActivity).getToolBar();
+      toolBar.setTitle("自定义内容");
+      toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+      toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          mActivity.finish();
+        }
+      });
+    }
   }
 
   @Override public void onDestroyView() {

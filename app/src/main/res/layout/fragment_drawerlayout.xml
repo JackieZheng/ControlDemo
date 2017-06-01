@@ -4,11 +4,15 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:fitsSystemWindows="true"
+    android:scrollbars="none"
     >
-  <!--内容布局-->
-  <include layout="@layout/fragment_progress"/>
+
+  <FrameLayout
+      android:id="@+id/coordinator_layout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      />
 
   <!--侧滑菜单布局-->
   <android.support.design.widget.NavigationView
@@ -17,6 +21,7 @@
       android:layout_height="match_parent"
       android:layout_gravity="start"
       android:background="@color/white"
+      android:scrollbars="none"
       app:headerLayout="@layout/nav_header"
       app:menu="@menu/drawer_view"
       />

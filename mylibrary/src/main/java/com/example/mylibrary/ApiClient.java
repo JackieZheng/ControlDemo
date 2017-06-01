@@ -26,7 +26,7 @@ public class ApiClient {
    * 创建相应的服务接口
    *
    * @param service 如Test.class
-   * @param <T> 参考{@link TestApi}
+   * @param <T> 参考  TestApi
    * @return T 的实例对象
    */
   @NonNull public static <T> T create(@NonNull Class<T> service) {

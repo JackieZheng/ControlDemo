@@ -1,88 +1,71 @@
 package liubin.com.myapplication;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.example.mylibrary.base.ProgressFragment;
-import com.example.mylibrary.base.TopBarActivity;
-import java.util.Random;
+import com.example.mylibrary.base.BaseActivity;
+import com.example.mylibrary.base.BaseFragment;
+import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
 
-public class DrawerLayoutFragment extends ProgressFragment<TopBarActivity> {
+public class DrawerLayoutFragment extends BaseFragment<BaseActivity> {
 
   Unbinder unbinder;
   @BindView(R.id.nav_view) NavigationView mNavView;
   @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-  //@BindView(R.id.click_me) TextView mClickMe;
-  private Handler mHandler;
+  @BindView(R.id.coordinator_layout) FrameLayout mCoordinatorLayout;
 
   @Override public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mHandler = new Handler();
-    obtainData();
+    getChildFragmentManager().beginTransaction()
+        .replace(R.id.coordinator_layout, new CoordinatorLayoutFragment())
+        .commit();
+    mActivity.setTransparentForWindow();
   }
 
-  @Override public void onViewCreated(View view, Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
+  @Nullable @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.fragment_drawerlayout, container, false);
     unbinder = ButterKnife.bind(this, view);
-    mDrawerLayout.setStatusBarBackgroundColor(Color.TRANSPARENT);
-    // 没有数据视图点击事件
-    setEmptyViewClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        obtainData();
-      }
-    });
-    // 网络异常视图点击事件
-    setNetWorkErrorViewClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        obtainData();
-      }
-    });
-    mActivity.getTopBar().setVisibility(View.GONE);
-    mActivity.setTopBarOverlay(true);
+
+    // 注意区分版本进行处理
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      // 这里状态栏颜色在 CoordinatorLayoutFragment 中设置
+      mCoordinatorLayout.setPadding(0, 0, 0, 0);
+    } else {
+      mCoordinatorLayout.setPadding(0, mActivity.getSystemBarConfig().getStatusBarHeight(), 0, 0);
+      // 设置(覆盖在 CoordinatorLayout 上)状态栏颜色
+      mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary));
+      // 设置状态栏颜色无效,因为会被内部的 CoordinatorLayout 重新设置
+      // mActivity.getWindow().setStatusBarColor(Color.BLUE);
+    }
+    mDrawerLayout.setFitsSystemWindows(false);
+
+    return view;
   }
 
-  @Override public int getFragmentLayoutResourceID() {
-    return R.layout.fragment_drawerlayout;
-  }
-
-  @Override public int getFragmentContentLayoutResourceID() {
-    return R.layout.include_list_viewpager;
+  @Override public void onResume() {
+    super.onResume();
+    // 这句用于覆盖 CoordinatorLayoutFragment 中设置的状态栏颜色,从而显示出
+    // mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));设置的颜色
+    // 如果不在 CoordinatorLayoutFragment 中设置状态栏颜色这句可以不需要
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+    }
   }
 
   @Override public void onDestroyView() {
     super.onDestroyView();
     unbinder.unbind();
-  }
-
-  //@OnClick(R.id.click_me) public void onViewClicked() {
-    //obtainData();
-  //}
-
-  /**
-   * 获取数据
-   */
-  private void obtainData() {
-    showProgress();//显示加载进度
-    mHandler.postDelayed(new Runnable() {
-      @Override public void run() {
-        if (isViewCreated) {
-          Random random = new Random();
-          int i = random.nextInt(100);
-          if (i % 3 == 0) {
-            showContent();//显示内容
-          } else if (i % 3 == 1) {
-            showEmpty();//没有数据
-          } else {
-            showNetWorkError();//网络异常
-          }
-        }
-      }
-    }, 1500);
   }
 }

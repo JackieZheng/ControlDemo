@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <!--自定义状态栏背景色-->
   <attr format="color" name="statusBarColor"/>
   <!--Activity背景色,不是Window的背景色-->
   <attr format="color" name="activityBackgroundColor"/>

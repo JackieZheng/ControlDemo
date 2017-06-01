@@ -18,6 +18,8 @@ package liubin.com.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.storage.StorageManager;
 import android.support.design.widget.AppBarLayout;
@@ -41,6 +43,8 @@ import android.view.MenuItem;
 import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.example.mylibrary.StatusBarUtil;
+import com.example.mylibrary.base.BaseActivity;
 import com.example.mylibrary.base.BaseFragment;
 import java.io.File;
 import java.lang.reflect.Array;
@@ -56,23 +60,37 @@ import liubin.com.myapplication.fragments.CustomFragment;
  * DrawerLayout NavigationView CoordinatorLayout嵌套使用
  * 状态栏层级从下到上 依次是 CoordinatorLayout,NavigationView,系统状态栏
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
   @BindView(R.id.toolbar) Toolbar mToolbar;
   @BindView(R.id.tabs) TabLayout mTabLayout;
   @BindView(R.id.appbar) AppBarLayout mAppbar;
   @BindView(R.id.viewpager) ViewPager mViewpager;
   @BindView(R.id.fab) FloatingActionButton mFab;
-  @BindView(R.id.main_content) CoordinatorLayout mMainContent;
+  @BindView(R.id.main_content) CoordinatorLayout mCoordinatorLayout;
   @BindView(R.id.nav_view) NavigationView mNavigationView;
   @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
+  @Override public int getContentResourceId() {
+    return R.layout.activity_main;
+  }
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
     ButterKnife.bind(this);
-
-    //StatusBarUtil.setColorForDrawerLayout(this, mDrawerLayout, Color.TRANSPARENT);
+    setTransparentForWindow();
+    // 注意区分版本进行处理
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      mCoordinatorLayout.setPadding(0, 0, 0, 0);
+      // 状态栏颜色设置
+      mCoordinatorLayout.setBackgroundColor(getResources().getColor(R.color.primary_dark));
+    } else {
+      mCoordinatorLayout.setPadding(0, this.getSystemBarConfig().getStatusBarHeight(), 0, 0);
+      // 设置(覆盖在 CoordinatorLayout 上)状态栏颜色
+      mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
+    }
+    // 这一句是关键,布局文件里面设置这个属性为true,代码里面需要设置这个属性为false
+    mDrawerLayout.setFitsSystemWindows(false);
 
     setupDrawerContent(mNavigationView);
     setSupportActionBar(mToolbar);
@@ -84,16 +102,9 @@ public class MainActivity extends AppCompatActivity {
 
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
-        /*
         Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
             .setAction("Action", null)
-            .show();*/
-        Snackbar.make(view, getStoragePath(MainActivity.this, true), Snackbar.LENGTH_LONG)
-            .setAction("Action", null)
             .show();
-
-        File file = new File(getStoragePath(MainActivity.this, true));
-        listFile(file);
       }
     });
 
@@ -117,17 +128,6 @@ public class MainActivity extends AppCompatActivity {
   @Override public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.sample_actions, menu);
     return true;
-  }
-
-  private void listFile(File file) {
-    if (file.isDirectory()) {
-      for (File file1 : file.listFiles()) {
-        Log.e("file", file1.getAbsolutePath());
-        listFile(file1);
-      }
-    } else {
-      Log.e("file", file.getAbsolutePath());
-    }
   }
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -220,36 +220,5 @@ public class MainActivity extends AppCompatActivity {
     @Override public CharSequence getPageTitle(int position) {
       return mFragmentTitles.get(position);
     }
-  }
-
-  private static String getStoragePath(Context mContext, boolean is_removale) {
-    StorageManager mStorageManager =
-        (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
-    Class<?> storageVolumeClazz = null;
-    try {
-      storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
-      Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
-      Method getPath = storageVolumeClazz.getMethod("getPath");
-      Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
-      Object result = getVolumeList.invoke(mStorageManager);
-      final int length = Array.getLength(result);
-      for (int i = 0; i < length; i++) {
-        Object storageVolumeElement = Array.get(result, i);
-        String path = (String) getPath.invoke(storageVolumeElement);
-        boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
-        if (is_removale == removable) {
-          return path;
-        }
-      }
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      e.printStackTrace();
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 }
