@@ -22,12 +22,12 @@ public class EndlessScrollListener extends OnScrollListener {
     this.mMore = more;
   }
 
-  public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+  @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
     super.onScrollStateChanged(recyclerView, newState);
     if (newState == RecyclerView.SCROLL_STATE_IDLE// 当前已经停止滚动
         && this.mMore.hasMore()// 服务端还有更多数据
         && !this.mMore.isLoading() // 当前没有在请求服务
-        && this.mMore.canLoadMore() // 能够加载更多(没有下拉刷新)
+        && !this.mMore.isRefreshing() // 能够加载更多(没有下拉刷新)
         && ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition()
         >= recyclerView.getAdapter().getItemCount() - this.visibleThreshold)// 当前已经滚动到下面只要三项未显示
     {
@@ -35,17 +35,15 @@ public class EndlessScrollListener extends OnScrollListener {
     }
   }
 
-  public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+  @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
     super.onScrolled(recyclerView, dx, dy);
   }
 
   public interface IMore {
     /**
-     * 是否能够加载更多,如{@link SwipeRefreshLayout}正在下拉刷新的时候不能加载更多
+     * {@link SwipeRefreshLayout}正在下拉刷新的时候不能加载更多
      */
-    boolean canLoadMore();
-
-    boolean canShow();
+    boolean isRefreshing();
 
     /**
      * 是否有更多数据

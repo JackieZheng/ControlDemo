@@ -17,6 +17,7 @@
 package com.example.mylibrary.base;
 
 import android.os.Bundle;
+import android.sax.EndElementListener;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -28,6 +29,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import com.example.mylibrary.EndlessScrollListener;
 import com.example.mylibrary.R;
 
 import static com.example.mylibrary.base.ProgressFragment.ViewType.CONTENT;
@@ -186,35 +188,6 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
   }
 
   /**
-   * The default content for a ProgressFragment has a TextView that can be shown when
-   * the content is empty {@link #setContentEmpty(boolean)}.
-   * If you would like to have it shown, call this method to supply the text it should use.
-   *
-   * @param resId Identification of string from a resources
-   * @see #setEmptyText(CharSequence)
-   */
-  public void setEmptyText(int resId) {
-    setEmptyText(getString(resId));
-  }
-
-  /**
-   * The default content for a ProgressFragment has a TextView that can be shown when
-   * the content is empty {@link #setContentEmpty(boolean)}.
-   * If you would like to have it shown, call this method to supply the text it should use.
-   *
-   * @param text Text for empty mTempView
-   * @see #setEmptyText(int)
-   */
-  public void setEmptyText(CharSequence text) {
-    ensureContent();
-    if (mEmptyView != null && mEmptyView instanceof TextView) {
-      ((TextView) mEmptyView).setText(text);
-    } else {
-      throw new IllegalStateException("Can't be used with a custom content mTempView");
-    }
-  }
-
-  /**
    * 显示进度
    */
   public void showProgress() {
@@ -290,6 +263,43 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
     mNetWorkErrorViewClickListener = netWorkErrorViewClickListener;
   }
 
+  public View getEmptyView() {
+    if (mEmptyView == null) {
+      mEmptyView = mEmptyStub.inflate();
+      mEmptyView.setOnClickListener(mEmptyViewClickListener);
+    }
+    return mEmptyView;
+  }
+
+  /**
+   * 设置空数据视图
+   *
+   * @param message 消息名称
+   * @param icon 图标
+   */
+  public void setEmptyMessage(String message, @DrawableRes int icon) {
+    if (!isViewCreated) return;
+    TextView textView = (TextView) getEmptyView().findViewById(R.id.data_empty_text);
+    if (textView == null) {
+      throw new RuntimeException("空数据视图必须包含id为R.id.data_empty_text的TextView");
+    }
+    textView.setText(message);
+    textView.setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);
+  }
+
+  private View getProgressContainer() {
+    if (mProgressContainer == null) mProgressContainer = mProgressStub.inflate();
+    return mProgressContainer;
+  }
+
+  private View getNetWorkErrorView() {
+    if (mNetWorkErrorView == null) {
+      mNetWorkErrorView = mNetWorkErrorStub.inflate();
+      mNetWorkErrorView.setOnClickListener(mNetWorkErrorViewClickListener);
+    }
+    return mNetWorkErrorView;
+  }
+
   /**
    * Initialization views.
    */
@@ -329,43 +339,6 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
       throw new RuntimeException(
           "Your content must have a ViewStub whose id attribute is 'R.id.network_error_stub'");
     }
-  }
-
-  public View getEmptyView() {
-    if (mEmptyView == null) {
-      mEmptyView = mEmptyStub.inflate();
-      mEmptyView.setOnClickListener(mEmptyViewClickListener);
-    }
-    return mEmptyView;
-  }
-
-  /**
-   * 设置空数据视图
-   *
-   * @param message 消息名称
-   * @param icon 图标
-   */
-  public void setEmptyMessage(String message, @DrawableRes int icon) {
-    if (!isViewCreated) return;
-    TextView textView = (TextView) getEmptyView().findViewById(R.id.data_empty_text);
-    if (textView == null) {
-      throw new RuntimeException("空数据视图必须包含id为R.id.data_empty_text的TextView");
-    }
-    textView.setText(message);
-    textView.setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);
-  }
-
-  private View getProgressContainer() {
-    if (mProgressContainer == null) mProgressContainer = mProgressStub.inflate();
-    return mProgressContainer;
-  }
-
-  private View getNetWorkErrorView() {
-    if (mNetWorkErrorView == null) {
-      mNetWorkErrorView = mNetWorkErrorStub.inflate();
-      mNetWorkErrorView.setOnClickListener(mNetWorkErrorViewClickListener);
-    }
-    return mNetWorkErrorView;
   }
 
   /**

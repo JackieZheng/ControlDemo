@@ -37,12 +37,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.example.mylibrary.base.ActivityUtils;
 import com.example.mylibrary.base.BaseActivity;
 import com.example.mylibrary.base.BaseFragment;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSerializer;
+import com.google.gson.internal.bind.TypeAdapters;
 import java.util.ArrayList;
 import java.util.List;
+import liubin.com.myapplication.bean.User;
 import liubin.com.myapplication.fragments.BasicFragment;
 import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
 import liubin.com.myapplication.fragments.CustomFragment;
@@ -94,9 +101,16 @@ public class MainActivity extends BaseActivity {
 
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
-        Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+
+        User user = new User();
+        user.setAge(12);
+        user.setName("asdf");
+        String s = new Gson().toJson(user);
+        user = getGson().fromJson(s, user.getClass());
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+        /*Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
             .setAction("Action", null)
-            .show();
+            .show();*/
       }
     });
 
@@ -155,20 +169,21 @@ public class MainActivity extends BaseActivity {
           @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
               case R.id.nav_home: {//基本使用
-                BaseFragment.startActivity(MainActivity.this, BasicFragment.class, null, -1);
+                ActivityUtils.startActivity(MainActivity.this, BasicFragment.class, null, -1);
                 break;
               }
               case R.id.nav_custom: {//自定义
-                BaseFragment.startActivity(MainActivity.this, CustomFragment.class, null, -1);
+                ActivityUtils.startActivity(MainActivity.this, CustomFragment.class, null, -1);
                 break;
               }
               case R.id.nav_coordinator_layout: {//CoordinatorLayout使用
-                BaseFragment.startActivity(MainActivity.this, CoordinatorLayoutFragment.class, null,
-                    -1);
+                ActivityUtils.startActivity(MainActivity.this, CoordinatorLayoutFragment.class,
+                    null, -1);
                 break;
               }
               case R.id.nav_messages: {
-                BaseFragment.startActivity(MainActivity.this, DrawerLayoutFragment.class, null, -1);
+                ActivityUtils.startActivity(MainActivity.this, DrawerLayoutFragment.class, null,
+                    -1);
                 break;
               }
               case R.id.nav_friends: {
@@ -212,5 +227,20 @@ public class MainActivity extends BaseActivity {
     @Override public CharSequence getPageTitle(int position) {
       return mFragmentTitles.get(position);
     }
+  }
+
+  public static Gson getGson() {
+    return new GsonBuilder().create();
+    /*return (new GsonBuilder()).registerTypeAdapterFactory(
+        TypeAdapters.newFactory(Integer.TYPE, Integer.class, new IntegerAdapter()))
+        .registerTypeAdapterFactory(
+            TypeAdapters.newFactory(Double.TYPE, Double.class, new TeaDoubleAdapter()))
+        .registerTypeAdapterFactory(
+            TypeAdapters.newFactory(Long.TYPE, Long.class, new LongAdapter()))
+        .registerTypeAdapterFactory(
+            TypeAdapters.newFactory(Boolean.TYPE, Boolean.class, new BooleanAdapter()))
+        .registerTypeAdapterFactory(
+            TypeAdapters.newFactory(String.class, String.class, new TeaStringAdapter()))
+        .create();*/
   }
 }
