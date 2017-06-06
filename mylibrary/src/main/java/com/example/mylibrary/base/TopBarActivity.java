@@ -40,7 +40,7 @@ public class TopBarActivity extends BaseActivity {
   }
 
   /**
-   * 获取自定义状态栏,可以对状态栏,设置背景色,隐藏等操作
+   * 获取自定义状态栏(StatusBar),可以对状态栏,设置背景色,隐藏等操作
    *
    * @return {@link View}
    */
@@ -50,7 +50,7 @@ public class TopBarActivity extends BaseActivity {
   }
 
   /**
-   * 获取状态栏
+   * 获取标题栏(ToolBar)
    *
    * @return {@link Toolbar}
    */
@@ -70,7 +70,7 @@ public class TopBarActivity extends BaseActivity {
   }
 
   /**
-   * 获取标题栏容器
+   * 获取标题栏(ToolBar)容器
    *
    * @return {@link ViewGroup}
    */

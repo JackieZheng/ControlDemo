@@ -33,13 +33,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.example.mylibrary.base.BaseFragment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class CheeseListFragment extends Fragment {
-
-  private boolean isViewCreated;
+public class CheeseListFragment extends BaseFragment {
 
   @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
@@ -61,13 +60,11 @@ public class CheeseListFragment extends Fragment {
     });
     RecyclerView rv = (RecyclerView) refreshLayout.findViewById(R.id.recyclerview);
     setupRecyclerView(rv);
-    isViewCreated = true;
     return refreshLayout;
   }
 
   @Override public void onDestroyView() {
     super.onDestroyView();
-    isViewCreated = false;
   }
 
   private void setupRecyclerView(RecyclerView recyclerView) {

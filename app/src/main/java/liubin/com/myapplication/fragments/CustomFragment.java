@@ -57,18 +57,19 @@ public class CustomFragment extends ProgressFragment<TopBarActivity> {
         obtainData();
       }
     });
+  }
 
-    // 修改Activity中的标题栏
-    if (mActivity instanceof TopBarActivity) {
-      Toolbar toolBar = ((TopBarActivity) mActivity).getToolBar();
-      toolBar.setTitle("自定义内容");
-      toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-      toolBar.setNavigationOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-          mActivity.finish();
-        }
-      });
-    }
+  // 修改Activity中的标题栏
+  @Override public void initTopBar(TopBarActivity activity) {
+    super.initTopBar(activity);
+    Toolbar toolBar = activity.getToolBar();
+    toolBar.setTitle("自定义内容");
+    toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+    toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        mActivity.finish();
+      }
+    });
   }
 
   @Override public void onDestroyView() {

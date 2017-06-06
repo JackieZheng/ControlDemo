@@ -17,7 +17,7 @@
       android:id="@+id/top_bar_stub"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout="@layout/top_bar_layout"
+      android:layout="@layout/topbar_layout"
       />
 </FrameLayout>
 

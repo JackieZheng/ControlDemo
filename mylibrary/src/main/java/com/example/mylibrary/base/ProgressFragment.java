@@ -23,6 +23,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,8 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
 
   // 当前视图类型
   private ViewType mCurrentViewType = ViewType.CONTENT;
+  private String mEmptyMessage = "没有数据";
+  private int mEmptyMessageIcon = R.drawable.ic_order_empty;
 
   private View mProgressContainer;//进度区域
   private View mContentContainer;//内容区域
@@ -80,7 +83,7 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
    * content container whose id
    * is {@link  R.id#content_container R.id.content_container} and can
    * optionally
-   * have a sibling mTempView id {@link android.R.id#empty android.R.id.empty}
+   * have a sibling mTempView id {@link R.id#data_empty android.R.id.empty}
    * that is to be shown when the content is empty.
    * <p/>
    * <p>If you are overriding this method with your own custom content,
@@ -267,6 +270,7 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
     if (mEmptyView == null) {
       mEmptyView = mEmptyStub.inflate();
       mEmptyView.setOnClickListener(mEmptyViewClickListener);
+      this.setEmptyMessage(mEmptyMessage, mEmptyMessageIcon);
     }
     return mEmptyView;
   }
@@ -278,10 +282,13 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
    * @param icon 图标
    */
   public void setEmptyMessage(String message, @DrawableRes int icon) {
-    if (!isViewCreated) return;
-    TextView textView = (TextView) getEmptyView().findViewById(R.id.data_empty_text);
+    this.mEmptyMessage = message;
+    this.mEmptyMessageIcon = icon;
+    if (!isViewCreated || mEmptyView == null) return;
+    TextView textView = (TextView) mEmptyView.findViewById(R.id.data_empty_text);
     if (textView == null) {
-      throw new RuntimeException("空数据视图必须包含id为R.id.data_empty_text的TextView");
+      Log.e(TAG, TAG, new RuntimeException("空数据视图必须包含id为R.id.data_empty_text的TextView"));
+      return;
     }
     textView.setText(message);
     textView.setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);

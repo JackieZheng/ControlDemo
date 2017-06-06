@@ -2,7 +2,6 @@ package liubin.com.myapplication.fragments;
 
 import android.accounts.NetworkErrorException;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,19 +18,13 @@ import com.example.mylibrary.ApiClient;
 import com.example.mylibrary.EndlessScrollListener;
 import com.example.mylibrary.base.ProgressFragment;
 import com.example.mylibrary.base.TopBarActivity;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import liubin.com.myapplication.CheeseListFragment;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.api.CustomerApi;
 import liubin.com.myapplication.api.TestApi;
@@ -49,15 +42,17 @@ import liubin.com.myapplication.bean.BaseModel;
 public class BasicFragment extends ProgressFragment<TopBarActivity>
     implements EndlessScrollListener.IMore {
 
-  Unbinder unbinder;
+  Unbinder mUnbinder;
   @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
   @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
 
-  private boolean isLoading = false;
+  private boolean mIsLoading = false;
+  private boolean mHasMore = false;
   private final List<String> mData = new ArrayList<>();
 
   @Override public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network);
     obtainData(false);
   }
 
@@ -67,7 +62,7 @@ public class BasicFragment extends ProgressFragment<TopBarActivity>
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    unbinder = ButterKnife.bind(this, view);
+    mUnbinder = ButterKnife.bind(this, view);
 
     // 没有数据视图点击事件
     setEmptyViewClickListener(new View.OnClickListener() {
@@ -82,18 +77,6 @@ public class BasicFragment extends ProgressFragment<TopBarActivity>
       }
     });
 
-    // 修改Activity中的标题栏
-    if (mActivity instanceof TopBarActivity) {
-      Toolbar toolBar = ((TopBarActivity) mActivity).getToolBar();
-      toolBar.setTitle("基本测试");
-      toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-      toolBar.setNavigationOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-          mActivity.finish();
-        }
-      });
-    }
-
     mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
         android.R.color.holo_green_light, android.R.color.holo_orange_light,
         android.R.color.holo_red_light);
@@ -102,15 +85,27 @@ public class BasicFragment extends ProgressFragment<TopBarActivity>
         obtainData(true);
       }
     });
+
     mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    mRecyclerView.setAdapter(
-        new CheeseListFragment.SimpleStringRecyclerViewAdapter(getActivity(), mData));
+    mRecyclerView.setAdapter(new BasicAdapter(getActivity(), mData, this));
     mRecyclerView.addOnScrollListener(new EndlessScrollListener(this));
+  }
+
+  @Override public void initTopBar(TopBarActivity activity) {
+    super.initTopBar(activity);
+    Toolbar toolBar = activity.getToolBar();
+    toolBar.setTitle("基本测试");
+    toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+    toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        mActivity.finish();
+      }
+    });
   }
 
   @Override public void onDestroyView() {
     super.onDestroyView();
-    unbinder.unbind();
+    mUnbinder.unbind();
   }
 
   /**
@@ -119,28 +114,34 @@ public class BasicFragment extends ProgressFragment<TopBarActivity>
    * @param refresh 是否刷新
    */
   private void obtainData(final boolean refresh) {
-    CustomerApi.queryData(20)
-        .subscribeOn(Schedulers.io())
-        .doOnSubscribe(new Consumer<Disposable>() {
+    CustomerApi.queryData(20).doOnNext(new Consumer<List<String>>() {// io线程
+      @Override public void accept(List<String> strings) throws Exception {
+        mHasMore = strings != null && strings.size() == 20;
+        Log.e(TAG, "doOnNext");
+      }
+    }).subscribeOn(Schedulers.io())// 指定之前的subscribe在io线程执行
+        .doOnSubscribe(new Consumer<Disposable>() {//主线程
           @Override public void accept(Disposable disposable) throws Exception {
-            if (isLoading) {// 如果当前正在加载数据,那么取消本次请求
+            if (mIsLoading) {// 如果当前正在加载数据,那么取消本次请求
               disposable.dispose();
               return;
             }
-            isLoading = true;
+            mIsLoading = true;
             if (mData.size() == 0) {// 没有数据,加载数据时,切换到列表加载视图
               showProgress();
             } else {// 有数据,显示SwipeRefreshLayout的加载圈圈
-              mSwipeRefreshLayout.setRefreshing(true);
+              if (isViewCreated) {
+                mSwipeRefreshLayout.setRefreshing(true);
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+              }
             }
             mDisposables.add(disposable);
           }
-        })
-        .subscribeOn(AndroidSchedulers.mainThread())
-        .observeOn(AndroidSchedulers.mainThread())
+        }).subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
+        .observeOn(AndroidSchedulers.mainThread())//指定 后面的subscribe在io线程执行
         .subscribe(new Consumer<List<String>>() {
           @Override public void accept(List<String> datas) throws Exception {
-            isLoading = false;
+            mIsLoading = false;
             mSwipeRefreshLayout.setRefreshing(false);
             if (datas != null) {
               if (refresh) {
@@ -150,7 +151,6 @@ public class BasicFragment extends ProgressFragment<TopBarActivity>
             }
             if (mData.size() == 0) {
               showEmpty();// 没有数据
-              setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network);
               return;
             }
             showContent();
@@ -158,9 +158,12 @@ public class BasicFragment extends ProgressFragment<TopBarActivity>
           }
         }, new Consumer<Throwable>() {
           @Override public void accept(Throwable throwable) throws Exception {
-            isLoading = false;
-            mSwipeRefreshLayout.setRefreshing(false);
-            Log.e("BasicFragment", "Throwable", throwable);
+            mIsLoading = false;
+            if (isViewCreated) {
+              mRecyclerView.getAdapter().notifyDataSetChanged();
+              mSwipeRefreshLayout.setRefreshing(false);
+            }
+            Log.e(TAG, throwable.getClass().getSimpleName(), throwable);
             Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
             if (mData.size() == 0) {// 有数据只弹出异常信息
               if (throwable instanceof NetworkErrorException) {
@@ -168,7 +171,6 @@ public class BasicFragment extends ProgressFragment<TopBarActivity>
                 return;
               }
               showEmpty();// 没有数据
-              setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network);
             }
           }
         });
@@ -179,11 +181,11 @@ public class BasicFragment extends ProgressFragment<TopBarActivity>
   }
 
   @Override public boolean hasMore() {
-    return mData.size() % 20 == 0;
+    return mHasMore;
   }
 
   @Override public boolean isLoading() {
-    return isLoading;
+    return mIsLoading;
   }
 
   @Override public void loadMore() {

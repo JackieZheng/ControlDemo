@@ -33,17 +33,22 @@ public class BaseActivity extends AppCompatActivity {
     if (getIntent() != null && getIntent().hasExtra(FRAGMENT_CLASS_NAME)) {
       String stringExtra = getIntent().getStringExtra(FRAGMENT_CLASS_NAME);
       if (TextUtils.isEmpty(stringExtra)) return;
+
+      //Fragment fragment = this.getSupportFragmentManager().findFragmentByTag(stringExtra);
       if (savedInstanceState == null) {
-        Fragment fragment = this.getSupportFragmentManager().findFragmentByTag(stringExtra);
-        if (fragment == null) {
-          fragment = Fragment.instantiate(this, stringExtra, getIntent().getExtras());
-        }
+        //if (fragment == null) {
+        Fragment fragment = Fragment.instantiate(this, stringExtra, getIntent().getExtras());
+        //}
         if (fragment != null) {
           getSupportFragmentManager().beginTransaction()
               .replace(R.id.content, fragment, stringExtra)
               .commit();
         }
       }
+      //else {
+      // 如果是 show() hide()模式,那么需要重新设置,以免重叠
+      //Fragment fragment = this.getSupportFragmentManager().findFragmentByTag(stringExtra);
+      //}
     }
   }
 
