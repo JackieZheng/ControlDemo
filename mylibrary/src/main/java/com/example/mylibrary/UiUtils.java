@@ -3,7 +3,6 @@ package com.example.mylibrary;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Build;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -20,9 +19,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class UiUtils {
-  public static boolean isSwipeDragged(SwipeRefreshLayout layout) {
-    return layout != null && layout.isRefreshing();
-  }
 
   public static void renderEditText(final EditText edit, final View del) {
     del.setOnClickListener(new View.OnClickListener() {
