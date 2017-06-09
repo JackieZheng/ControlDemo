@@ -15,7 +15,7 @@
     <!--自定义标题栏高度-->
     <!--<item name="toolBarSize">@dimen/abc_action_bar_default_height_material</item>-->
     <!--Activity背景色-->
-    <item name="activityBackgroundColor">@color/gray</item>
+    <item name="activityBackgroundColor">@color/white</item>
 
     <item name="android:windowBackground">@android:color/transparent</item><!--页面背景色-->
     <item name="android:windowIsTranslucent">true</item><!--窗口半透明-->

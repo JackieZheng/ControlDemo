@@ -77,45 +77,18 @@ public class MainActivity extends BaseActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     ButterKnife.bind(this);
-    setTransparentForWindow();
-    // 注意区分版本进行处理
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      mCoordinatorLayout.setPadding(0, this.getSystemBarConfig().getStatusBarHeight(), 0, 0);
-      // 设置(覆盖在 CoordinatorLayout 上)状态栏颜色
-      mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mCoordinatorLayout.setPadding(0, 0, 0, 0);
-      // 状态栏颜色设置
-      mCoordinatorLayout.setBackgroundColor(getResources().getColor(R.color.primary_dark));
-    }
-    // 这一句是关键,布局文件里面设置这个属性为true,代码里面需要设置这个属性为false
-    mDrawerLayout.setFitsSystemWindows(false);
 
+    setupTopBar();
     setupDrawerContent(mNavigationView);
     setSupportActionBar(mToolbar);
     setupViewPager(mViewpager);
 
-    final ActionBar ab = getSupportActionBar();
-    ab.setHomeAsUpIndicator(R.drawable.ic_menu);
-    ab.setDisplayHomeAsUpEnabled(true);
+    //final ActionBar ab = getSupportActionBar();
+    //ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+    //ab.setDisplayHomeAsUpEnabled(true);
 
-    mFab.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-
-        User user = new User();
-        user.setAge(12);
-        user.setName("asdf");
-        String s = new Gson().toJson(user);
-        user = getGson().fromJson(s, user.getClass());
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
-        /*Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-            .setAction("Action", null)
-            .show();*/
-      }
-    });
-
-    mTabLayout.setupWithViewPager(mViewpager);
     mViewpager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+    mTabLayout.setupWithViewPager(mViewpager);
     mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
       @Override public void onTabSelected(TabLayout.Tab tab) {
         Log.d("asdf", "sadf");
@@ -129,6 +102,35 @@ public class MainActivity extends BaseActivity {
         Log.d("asdf", "sadf");
       }
     });
+
+    mFab.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+            .setAction("Action", null)
+            .show();
+      }
+    });
+  }
+
+  /**
+   * 初始化顶部栏
+   */
+  private void setupTopBar() {
+    mToolbar.setNavigationIcon(R.drawable.ic_menu);
+    // 状态栏透明,内容全屏
+    setTransparentForWindow();
+    // 注意区分版本进行处理
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      mCoordinatorLayout.setPadding(0, this.getSystemBarConfig().getStatusBarHeight(), 0, 0);
+      // 设置(覆盖在 CoordinatorLayout 上)状态栏颜色
+      mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      mCoordinatorLayout.setPadding(0, 0, 0, 0);
+      // 状态栏颜色设置
+      mCoordinatorLayout.setBackgroundColor(getResources().getColor(R.color.primary_dark));
+    }
+    // 这一句是关键,布局文件里面设置这个属性为true,代码里面需要设置这个属性为false
+    mDrawerLayout.setFitsSystemWindows(false);
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -181,7 +183,7 @@ public class MainActivity extends BaseActivity {
                     null, -1);
                 break;
               }
-              case R.id.nav_messages: {
+              case R.id.nav_messages: {//DrawerLayout使用
                 ActivityUtils.startActivity(MainActivity.this, DrawerLayoutFragment.class, null,
                     -1);
                 break;
@@ -227,20 +229,5 @@ public class MainActivity extends BaseActivity {
     @Override public CharSequence getPageTitle(int position) {
       return mFragmentTitles.get(position);
     }
-  }
-
-  public static Gson getGson() {
-    return new GsonBuilder().create();
-    /*return (new GsonBuilder()).registerTypeAdapterFactory(
-        TypeAdapters.newFactory(Integer.TYPE, Integer.class, new IntegerAdapter()))
-        .registerTypeAdapterFactory(
-            TypeAdapters.newFactory(Double.TYPE, Double.class, new TeaDoubleAdapter()))
-        .registerTypeAdapterFactory(
-            TypeAdapters.newFactory(Long.TYPE, Long.class, new LongAdapter()))
-        .registerTypeAdapterFactory(
-            TypeAdapters.newFactory(Boolean.TYPE, Boolean.class, new BooleanAdapter()))
-        .registerTypeAdapterFactory(
-            TypeAdapters.newFactory(String.class, String.class, new TeaStringAdapter()))
-        .create();*/
   }
 }

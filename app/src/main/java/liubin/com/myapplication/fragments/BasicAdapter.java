@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.example.mylibrary.BaseRecycleViewAdapter;
 import com.example.mylibrary.EndlessScrollListener;
 import java.util.List;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import liubin.com.myapplication.CheeseDetailActivity;
 import liubin.com.myapplication.Cheeses;
 import liubin.com.myapplication.R;
@@ -66,7 +67,7 @@ public class BasicAdapter extends BaseRecycleViewAdapter<String, RecyclerView.Vi
 
       Glide.with(holder.mImageView.getContext())
           .load(Cheeses.getRandomCheeseDrawable())
-          .fitCenter()
+          .bitmapTransform(new CropCircleTransformation(holder.mImageView.getContext()))
           .into(holder.mImageView);
     } else if (viewHolder instanceof FootViewHolder) {
       ((FootViewHolder) viewHolder).setFootView(mMore);
