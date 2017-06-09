@@ -79,14 +79,14 @@ public class MainActivity extends BaseActivity {
     ButterKnife.bind(this);
     setTransparentForWindow();
     // 注意区分版本进行处理
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      mCoordinatorLayout.setPadding(0, 0, 0, 0);
-      // 状态栏颜色设置
-      mCoordinatorLayout.setBackgroundColor(getResources().getColor(R.color.primary_dark));
-    } else {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       mCoordinatorLayout.setPadding(0, this.getSystemBarConfig().getStatusBarHeight(), 0, 0);
       // 设置(覆盖在 CoordinatorLayout 上)状态栏颜色
       mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      mCoordinatorLayout.setPadding(0, 0, 0, 0);
+      // 状态栏颜色设置
+      mCoordinatorLayout.setBackgroundColor(getResources().getColor(R.color.primary_dark));
     }
     // 这一句是关键,布局文件里面设置这个属性为true,代码里面需要设置这个属性为false
     mDrawerLayout.setFitsSystemWindows(false);

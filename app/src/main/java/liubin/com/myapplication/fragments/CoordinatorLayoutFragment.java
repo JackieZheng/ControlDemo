@@ -38,7 +38,6 @@ public class CoordinatorLayoutFragment extends BaseFragment<BaseActivity> {
 
   @Override public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mActivity.setTransparentForWindow();
   }
 
   @Nullable @Override
@@ -47,14 +46,15 @@ public class CoordinatorLayoutFragment extends BaseFragment<BaseActivity> {
     View view = inflater.inflate(R.layout.content_coordinator_layout, container, false);
     unbinder = ButterKnife.bind(this, view);
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // 通过设置背景色来修改状态栏颜色
-      mCoordinatorLayout.setBackgroundColor(getResources().getColor(R.color.primary_dark));
-    } else {
+    mActivity.setTransparentForWindow();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       // 设置状态栏颜色
       // 这句没有效果,因为会被.getWindow().setStatusBarColor(getResources().getColor(R.color.primary));覆盖
       // mCoordinatorLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.black));
-      mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.primary));
+      mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      // 通过设置背景色来修改状态栏颜色
+      mCoordinatorLayout.setBackgroundColor(getResources().getColor(R.color.primary_dark));
     }
     return view;
   }

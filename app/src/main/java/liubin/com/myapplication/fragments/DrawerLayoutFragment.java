@@ -29,7 +29,6 @@ public class DrawerLayoutFragment extends BaseFragment<BaseActivity> {
     getChildFragmentManager().beginTransaction()
         .replace(R.id.coordinator_layout, new CoordinatorLayoutFragment())
         .commit();
-    mActivity.setTransparentForWindow();
   }
 
   @Nullable @Override
@@ -38,17 +37,19 @@ public class DrawerLayoutFragment extends BaseFragment<BaseActivity> {
     View view = inflater.inflate(R.layout.fragment_drawerlayout, container, false);
     unbinder = ButterKnife.bind(this, view);
 
+    mActivity.setTransparentForWindow();
     // 注意区分版本进行处理
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // 这里状态栏颜色在 CoordinatorLayoutFragment 中设置
-      mCoordinatorLayout.setPadding(0, 0, 0, 0);
-    } else {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       mCoordinatorLayout.setPadding(0, mActivity.getSystemBarConfig().getStatusBarHeight(), 0, 0);
       // 设置(覆盖在 CoordinatorLayout 上)状态栏颜色
-      mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary));
+      mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
       // 设置状态栏颜色无效,因为会被内部的 CoordinatorLayout 重新设置
       // mActivity.getWindow().setStatusBarColor(Color.BLUE);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      // 这里状态栏颜色在 CoordinatorLayoutFragment 中设置
+      mCoordinatorLayout.setPadding(0, 0, 0, 0);
     }
+    // 这一句是关键,布局文件里面设置这个属性为true,代码里面需要设置这个属性为false
     mDrawerLayout.setFitsSystemWindows(false);
 
     return view;
