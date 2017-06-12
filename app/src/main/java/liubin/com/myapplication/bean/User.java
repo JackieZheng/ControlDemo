@@ -1,6 +1,7 @@
 package liubin.com.myapplication.bean;
 
 import com.google.gson.annotations.JsonAdapter;
+import java.util.List;
 
 public class User {
 
@@ -23,3 +24,5 @@ public class User {
     this.name = name;
   }
 }
+
+

@@ -12,7 +12,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface TestApi {
+public interface Api {
   @GET("/account/accountInfo") Observable<BaseModel> getUser(@Query("page") int page,
       @Query("pagesize") int pageSize);
 

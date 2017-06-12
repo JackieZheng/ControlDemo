@@ -16,23 +16,20 @@
 
 package liubin.com.myapplication;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -40,7 +37,6 @@ import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.mylibrary.base.BaseFragment;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -48,14 +44,25 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import liubin.com.myapplication.api.CustomerApi;
+import liubin.com.myapplication.bean.StringData;
 
-public class CheeseListFragment extends BaseFragment {
+public class CheeseListFragment extends BaseFragment
+    implements BaseQuickAdapter.RequestLoadMoreListener {
 
   @BindView(R.id.recyclerview) RecyclerView mRecyclerview;
   @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
   Unbinder unbinder;
+
+  public boolean isRefresh;
+  private StringAdapter stringAdapter;
+  private final List<String> mData = new ArrayList<>();
+
+  @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    onLoadMoreRequested();
+  }
 
   @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
@@ -69,24 +76,11 @@ public class CheeseListFragment extends BaseFragment {
         android.R.color.holo_red_light);
 
     mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
       @Override public void onRefresh() {
-        Observable.timer(4000, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())// 指定之前的subscribe在io线程执行
-            .doOnSubscribe(new Consumer<Disposable>() {
-              @Override public void accept(Disposable disposable) throws Exception {
-                mDisposables.add(disposable);
-              }
-            })//开始执行之前的准备工作
-            .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
-            .observeOn(AndroidSchedulers.mainThread())//指定 后面的subscribe在io线程执行
-            .subscribe(new Consumer<Long>() {
-              @Override public void accept(Long aLong) throws Exception {
-                if (isViewCreated) {
-                  mSwipeRefreshLayout.setRefreshing(false);
-                  mRecyclerview.getAdapter().notifyDataSetChanged();
-                }
-              }
-            });
+        isRefresh = true;
+        stringAdapter.setEnableLoadMore(false);
+        onLoadMoreRequested();
       }
     });
     setupRecyclerView(mRecyclerview);
@@ -96,15 +90,17 @@ public class CheeseListFragment extends BaseFragment {
   @Override public void onDestroyView() {
     super.onDestroyView();
     mSwipeRefreshLayout.removeAllViews();
+    stringAdapter = null;
     unbinder.unbind();
   }
 
   private void setupRecyclerView(RecyclerView recyclerView) {
+
     recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-    //recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(getActivity(),
-    //  getRandomSublist(Cheeses.sCheeseStrings, 30)));
-    recyclerView.setAdapter(
-        new StringAdapter(R.layout.list_item, getRandomSublist(Cheeses.sCheeseStrings, 30), this));
+    stringAdapter = new StringAdapter(R.layout.list_item, mData, this);
+    recyclerView.setAdapter(stringAdapter);
+    stringAdapter.setOnLoadMoreListener(this, mRecyclerview);
+    stringAdapter.setEmptyView(R.layout.custom_progress_layout);
   }
 
   private List<String> getRandomSublist(String[] array, int amount) {
@@ -114,6 +110,72 @@ public class CheeseListFragment extends BaseFragment {
       list.add(array[random.nextInt(array.length)]);
     }
     return list;
+  }
+
+  @Override public void onLoadMoreRequested() {
+    CustomerApi.queryData(20)//
+        .subscribeOn(Schedulers.io())// 指定之前的subscribe在io线程执行
+        .doOnSubscribe(new Consumer<Disposable>() {
+          @Override public void accept(Disposable disposable) throws Exception {
+            mDisposables.add(disposable);
+          }
+        })//开始执行之前的准备工作
+        .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
+        .observeOn(AndroidSchedulers.mainThread())//指定 后面的subscribe在io线程执行
+        .subscribe(new Consumer<StringData>() {
+          @Override public void accept(StringData data) throws Exception {
+            List<String> datas = data.getData();
+            if (!isViewCreated) {
+              if (datas != null && datas.size() > 0) mData.addAll(datas);
+              return;
+            }
+            if (data.getCode() != 0) {
+              isRefresh = false;
+              stringAdapter.loadMoreFail();
+              mSwipeRefreshLayout.setRefreshing(false);
+              Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
+              return;
+            }
+
+            if (isRefresh) {
+              isRefresh = false;
+              mData.clear();
+              if (datas != null && datas.size() > 0) mData.addAll(datas);
+              stringAdapter.setNewData(mData);
+              stringAdapter.setEnableLoadMore(true);
+              mSwipeRefreshLayout.setRefreshing(false);
+              if (stringAdapter.getData().size() == 0) {
+                stringAdapter.setEmptyView(R.layout.custom_empty_layout);
+              }
+              return;
+            }
+
+            if (datas != null && datas.size() > 0) mData.addAll(datas);
+            if (datas != null && datas.size() == 20) {
+              stringAdapter.addData(datas);
+              stringAdapter.setEnableLoadMore(true);
+              stringAdapter.loadMoreComplete();
+            } else {
+              stringAdapter.loadMoreEnd();
+            }
+            if (stringAdapter.getData().size() == 0) {
+              stringAdapter.setEmptyView(R.layout.custom_empty_layout);
+            }
+          }
+        }, new Consumer<Throwable>() {
+          @Override public void accept(Throwable throwable) throws Exception {
+            stringAdapter.loadMoreFail();
+            if (stringAdapter.getData().size() == 0) {
+              stringAdapter.setEmptyView(R.layout.custom_network_error_layout);
+            }
+            if (isRefresh) {
+              isRefresh = false;
+              mSwipeRefreshLayout.setRefreshing(false);
+            }
+            Log.e(TAG, throwable.getClass().getSimpleName(), throwable);
+            Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
+          }
+        });
   }
 
   public static class StringAdapter extends BaseQuickAdapter<String, BaseViewHolder> {

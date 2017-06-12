@@ -26,8 +26,9 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.List;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.api.CustomerApi;
-import liubin.com.myapplication.api.TestApi;
+import liubin.com.myapplication.api.Api;
 import liubin.com.myapplication.bean.BaseModel;
+import liubin.com.myapplication.bean.StringData;
 
 /**
  * <pre>有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity基本使用方式
@@ -38,8 +39,9 @@ import liubin.com.myapplication.bean.BaseModel;
  * 如需要修改Fragment布局内容,请重写{@link #getFragmentLayoutResourceID()}方法.
  * </pre>
  */
-public class BasicFragment extends ListFragment<TopBarActivity, String> {
+public class BasicFragment extends ListFragment<TopBarActivity, String, StringData> {
 
+  private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
   @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
   @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
@@ -55,10 +57,12 @@ public class BasicFragment extends ListFragment<TopBarActivity, String> {
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    mUnBinder = ButterKnife.bind(this, view);//注意智能在onViewCreated里面才能bind
+    mUnBinder = ButterKnife.bind(this, view);//注意ProgressFragment的子类,只能在onViewCreated里面才能bind
 
-    mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-        android.R.color.holo_green_light, android.R.color.holo_orange_light,
+    mSwipeRefreshLayout.setColorSchemeResources(//
+        android.R.color.holo_blue_bright,//
+        android.R.color.holo_green_light,//
+        android.R.color.holo_orange_light,//
         android.R.color.holo_red_light);
     mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
       @Override public void onRefresh() {
@@ -82,7 +86,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, String> {
   @Override public void initTopBar(TopBarActivity activity) {
     super.initTopBar(activity);
     Toolbar toolBar = activity.getToolBar();
-    toolBar.setTitle("基本测试");
+    toolBar.setTitle("基本使用");
     toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
     toolBar.setNavigationOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -102,33 +106,32 @@ public class BasicFragment extends ListFragment<TopBarActivity, String> {
    * @param isRefresh 是否清空原来的数据
    */
   public void obtainData(final boolean isRefresh) {
-    CustomerApi.queryData(20).doOnNext(new Consumer<List<String>>() {// io线程
-      @Override public void accept(List<String> strings) throws Exception {
-        mHasMore = strings != null && strings.size() == 20;
-        Log.e(TAG, "doOnNext");
-      }
-    }).subscribeOn(Schedulers.io())// 指定之前的subscribe在io线程执行
-        .doOnSubscribe(getDoOnSubscribe())//开始执行之前的准备工作
-        .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
-        .observeOn(AndroidSchedulers.mainThread())//指定 后面的subscribe在io线程执行
-        .subscribe(new Consumer<List<String>>() {
-          @Override public void accept(List<String> datas) throws Exception {
-            mIsError = false;
-            mIsLoading = false;
-            if (isRefresh) mData.clear();
-            mData.addAll(datas);
-
-            if (hasData()) {
-              showContent();
-            } else {
-              showEmpty();// 没有数据
-            }
-            if (isViewCreated) {
-              mSwipeRefreshLayout.setRefreshing(false);
-              mRecyclerView.getAdapter().notifyDataSetChanged();
+    CustomerApi.queryData(PAGE_SIZE)//
+        .doOnNext(new Consumer<StringData>() {
+          @Override public void accept(StringData data) throws Exception {
+            //判断是否还有更多数据
+            if (data != null && data.isSuccess()) {
+              mHasMore = data.getData() != null && data.getData().size() == PAGE_SIZE;
             }
           }
-        }, getOnError());
+        })// 服务端返回数据解析之后处理数据
+        .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
+        .doOnSubscribe(getDoOnSubscribe())//开始执行之前的准备工作
+        .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
+        .observeOn(AndroidSchedulers.mainThread())//指定这行代码之后的subscribe在io线程执行
+        .subscribe(getOnNext(isRefresh), getOnError());
+  }
+
+  @Override public void onSuccess(StringData data, boolean isRefresh) {
+    if (!data.isSuccess()) {// 服务端返回异常代码
+      Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
+      return;
+    }
+
+    if (isRefresh) mData.clear();
+    if (data.getData() != null && data.getData().size() > 0) {
+      mData.addAll(data.getData());
+    }
   }
 
   @Override protected void onStatusUpdated() {
@@ -136,12 +139,12 @@ public class BasicFragment extends ListFragment<TopBarActivity, String> {
     mRecyclerView.getAdapter().notifyDataSetChanged();
   }
 
-  @Override public boolean isRefreshing() {
-    return mSwipeRefreshLayout.isRefreshing();
-  }
+  //@Override public boolean isRefreshing() {
+  //  return mSwipeRefreshLayout.isRefreshing();
+  //}
 
   private void testApi() {
-    Disposable subscribe = ApiClient.create(TestApi.class)
+    Disposable subscribe = ApiClient.create(Api.class)
         .getUser(1, 22)
         .subscribeOn(Schedulers.io())
         .doOnSubscribe(new Consumer<Disposable>() {

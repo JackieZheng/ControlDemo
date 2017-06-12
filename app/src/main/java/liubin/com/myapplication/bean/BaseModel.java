@@ -1,20 +1,30 @@
 package liubin.com.myapplication.bean;
 
-public class BaseModel {
+import com.example.mylibrary.base.IModel;
+
+public class BaseModel implements IModel {
   private int code;
   private String error;
   private String message;
 
-  public void setError(String error) {
-    this.error = error;
+  public boolean isSuccess() {
+    return this.code == 0;
+  }
+
+  public int getCode() {
+    return this.code;
+  }
+
+  public String getMessage() {
+    return message;
   }
 
   public String getError() {
     return error;
   }
 
-  public int getCode() {
-    return this.code;
+  public void setError(String error) {
+    this.error = error;
   }
 
   public void setCode(int code) {
@@ -23,17 +33,5 @@ public class BaseModel {
 
   public void setMessage(String message) {
     this.message = message;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public boolean isSuccess() {
-    return this.code == 0;
-  }
-
-  public boolean isExpire() {
-    return this.code == 2;
   }
 }

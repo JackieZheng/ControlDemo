@@ -70,7 +70,7 @@ public class BasicAdapter extends BaseRecycleViewAdapter<String, RecyclerView.Vi
           .bitmapTransform(new CropCircleTransformation(holder.mImageView.getContext()))
           .into(holder.mImageView);
     } else if (viewHolder instanceof FootViewHolder) {
-      ((FootViewHolder) viewHolder).setFootView(mMore);
+      ((FootViewHolder) viewHolder).setupFootView(mMore);
     }
   }
 

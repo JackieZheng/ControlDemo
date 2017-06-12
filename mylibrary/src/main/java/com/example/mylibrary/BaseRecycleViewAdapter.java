@@ -146,8 +146,8 @@ public abstract class BaseRecycleViewAdapter<T, VH extends RecyclerView.ViewHold
      *
      * @param mMore {@link EndlessScrollListener.IMore}
      */
-    public void setFootView(final EndlessScrollListener.IMore mMore) {
-      if (mMore.isLoading() || mMore.isRefreshing()) {//正在加载或刷新
+    public void setupFootView(final EndlessScrollListener.IMore mMore) {
+      if (mMore.isLoading() /*|| mMore.isRefreshing()*/) {//正在加载或刷新
         mFootText.setText("加载中...");
         mFootText.setOnClickListener(null);
       } else if (mMore.hasMore()) {//有更多,但是上一次加载更多出错
