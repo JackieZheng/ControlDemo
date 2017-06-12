@@ -7,15 +7,18 @@ import android.support.v4.app.Fragment;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+/**
+ * Activity启动工具类
+ */
 public class ActivityUtils {
   /**
-   * 启动Fragment todo 提取出来放到工具类
+   * 启动Fragment
    *
    * @param fragment 当前所在Fragment
    * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
    * 泛型参数必须是{@link BaseActivity}及其子类
    * @param bundle 参数
-   * @param requestCode 请求吗
+   * @param requestCode 请求码
    */
   public static void startActivity(Fragment fragment,
       Class<? extends BaseFragment<? extends BaseActivity>> clazz, Bundle bundle, int requestCode) {
@@ -36,13 +39,13 @@ public class ActivityUtils {
   }
 
   /**
-   * 启动Fragment todo 提取出来放到工具类
+   * 启动Fragment
    *
    * @param fragment 当前所在Fragment
    * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
    * 泛型参数必须是{@link BaseActivity}及其子类
    * @param bundle 参数
-   * @param requestCode 请求吗
+   * @param requestCode 请求码
    */
   public static void startActivity(Activity fragment,
       Class<? extends BaseFragment<? extends BaseActivity>> clazz, Bundle bundle, int requestCode) {
@@ -62,7 +65,6 @@ public class ActivityUtils {
   }
 
   /**
-   * todo 提取出来放到工具类
    * 获取泛型的参数类型 eg: public class Test extends Base<????> 我们获取的是 ???? 的类型
    *
    * @param clazz 需要获取泛型类型的类的字节码

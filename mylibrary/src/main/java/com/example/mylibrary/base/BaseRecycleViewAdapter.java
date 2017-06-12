@@ -1,9 +1,10 @@
-package com.example.mylibrary;
+package com.example.mylibrary.base;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+import com.example.mylibrary.R;
 import java.util.Collection;
 import java.util.List;
 

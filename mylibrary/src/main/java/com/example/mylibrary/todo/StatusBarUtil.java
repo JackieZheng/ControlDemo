@@ -1,4 +1,4 @@
-package com.example.mylibrary;
+package com.example.mylibrary.todo;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import com.example.mylibrary.R;
 
 /**
  * Created by Jaeger on 16/2/14.

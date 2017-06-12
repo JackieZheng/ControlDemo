@@ -1,4 +1,4 @@
-package com.example.mylibrary;
+package com.example.mylibrary.todo;
 
 import android.content.Context;
 import android.database.ContentObserver;
@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;

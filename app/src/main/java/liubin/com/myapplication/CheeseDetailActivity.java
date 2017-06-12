@@ -16,6 +16,7 @@
 
 package liubin.com.myapplication;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -23,6 +24,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
@@ -49,6 +51,20 @@ public class CheeseDetailActivity extends BaseActivity {
 
     setTransparentForWindow();
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      mMainContent.setFitsSystemWindows(false);
+      mAppbar.setFitsSystemWindows(false);
+      mCollapsingToolbar.setFitsSystemWindows(false);
+      mImageView.setFitsSystemWindows(false);
+      mToolbar.setFitsSystemWindows(false);
+      ViewGroup.MarginLayoutParams layoutParams =
+          (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
+      layoutParams.setMargins(layoutParams.leftMargin,
+          layoutParams.topMargin + getSystemBarConfig().getStatusBarHeight(),
+          layoutParams.rightMargin, layoutParams.bottomMargin);
+    }
+
     mToolbar.setTitle("基本测试");
     mToolbar.inflateMenu(R.menu.sample_actions);
     mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -59,7 +75,7 @@ public class CheeseDetailActivity extends BaseActivity {
     });
     //setSupportActionBar(mToolbar);
     //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    mMainContent.setFitsSystemWindows(false);
+
     //设置标题文字
     mCollapsingToolbar.setTitle(getIntent().getStringExtra(EXTRA_NAME));
     //状态栏颜色

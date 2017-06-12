@@ -17,12 +17,9 @@
 package com.example.mylibrary.base;
 
 import android.os.Bundle;
-import android.sax.EndElementListener;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +27,6 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
-import com.example.mylibrary.EndlessScrollListener;
 import com.example.mylibrary.R;
 
 import static com.example.mylibrary.base.ProgressFragment.ViewType.CONTENT;

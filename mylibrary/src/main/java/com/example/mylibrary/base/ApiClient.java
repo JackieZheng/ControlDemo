@@ -1,6 +1,7 @@
-package com.example.mylibrary;
+package com.example.mylibrary.base;
 
 import android.support.annotation.NonNull;
+import com.example.mylibrary.BuildConfig;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
@@ -61,8 +62,9 @@ public class ApiClient {
    */
   private static OkHttpClient getHttpClient() {
     OkHttpClient.Builder builder = new OkHttpClient.Builder()//
-        .connectTimeout(10, TimeUnit.SECONDS)    //设置连接超时 10s
-        .readTimeout(10, TimeUnit.SECONDS);      //设置读取超时 10s
+        .writeTimeout(100, TimeUnit.SECONDS)//
+        .connectTimeout(10, TimeUnit.SECONDS)//设置连接超时 10s
+        .readTimeout(10, TimeUnit.SECONDS);//设置读取超时 10s
 
     if (BuildConfig.DEBUG) {// 如果为 debug 模式，则添加日志拦截器
       HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();

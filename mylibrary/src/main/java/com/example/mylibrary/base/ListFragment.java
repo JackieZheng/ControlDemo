@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import com.example.mylibrary.EndlessScrollListener;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import java.io.IOException;
@@ -47,6 +46,14 @@ public abstract class ListFragment<T extends BaseActivity, D, PD extends IModel>
    */
   protected abstract void onStatusUpdated();
 
+  /**
+   * 服务调用成功
+   *
+   * @param data 服务端返回的数据
+   * @param isRefresh 是否需要清空原来的数据
+   */
+  protected abstract void onSuccess(PD data, boolean isRefresh);
+
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     // 没有数据视图点击事件
@@ -61,6 +68,40 @@ public abstract class ListFragment<T extends BaseActivity, D, PD extends IModel>
         obtainData(false);
       }
     });
+  }
+
+  //@Override public boolean isRefreshing() {
+  //  return false;
+  //}
+
+  @Override public boolean isLoading() {
+    return mIsLoading;
+  }
+
+  @Override public boolean hasMore() {
+    return mHasMore;
+  }
+
+  @Override public void loadMore() {
+    obtainData(false);
+  }
+
+  /**
+   * 是否有数据,有数据才会显示内容视图
+   *
+   * @return {@link Boolean} 是否有数据
+   */
+  protected boolean hasData() {
+    return mData.size() > 0;
+  }
+
+  /**
+   * 是否有异常 {@link Throwable}
+   *
+   * @return {@link Boolean}
+   */
+  public boolean isError() {
+    return mIsError;
   }
 
   /**
@@ -161,47 +202,5 @@ public abstract class ListFragment<T extends BaseActivity, D, PD extends IModel>
         }
       }
     };
-  }
-
-  /**
-   * 服务调用成功
-   *
-   * @param data 服务端返回的数据
-   * @param isRefresh 是否需要清空原来的数据
-   */
-  abstract public void onSuccess(PD data, boolean isRefresh);
-
-  //@Override public boolean isRefreshing() {
-  //  return false;
-  //}
-
-  @Override public boolean hasMore() {
-    return mHasMore;
-  }
-
-  @Override public boolean isLoading() {
-    return mIsLoading;
-  }
-
-  @Override public void loadMore() {
-    obtainData(false);
-  }
-
-  /**
-   * 是否有数据
-   *
-   * @return {@link Boolean}
-   */
-  protected boolean hasData() {
-    return mData.size() > 0;
-  }
-
-  /**
-   * 是否有异常 {@link Throwable}
-   *
-   * @return {@link Boolean}
-   */
-  public boolean isError() {
-    return mIsError;
   }
 }

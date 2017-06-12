@@ -1,4 +1,4 @@
-package com.example.mylibrary;
+package com.example.mylibrary.todo;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -14,6 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.example.mylibrary.R;
 import com.example.mylibrary.base.TopBarActivity;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

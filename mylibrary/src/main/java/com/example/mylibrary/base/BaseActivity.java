@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import com.example.mylibrary.R;
-import com.example.mylibrary.SystemBarConfig;
 
 /**
  * 基础Activity,此Activity不包含  [自定义的顶部栏(状态栏+标题栏+标题栏阴影)]
@@ -68,7 +67,11 @@ public class BaseActivity extends AppCompatActivity {
    */
   public SystemBarConfig getSystemBarConfig() {
     if (mSystemBarConfig == null) {
-      mSystemBarConfig = new SystemBarConfig(this);
+      synchronized (this) {
+        if (mSystemBarConfig == null) {
+          mSystemBarConfig = new SystemBarConfig(this);
+        }
+      }
     }
     return mSystemBarConfig;
   }

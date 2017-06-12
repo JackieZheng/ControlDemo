@@ -1,4 +1,4 @@
-package com.example.mylibrary;
+package com.example.mylibrary.base;
 
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -57,18 +57,18 @@ public class EndlessScrollListener extends OnScrollListener {
     //boolean isRefreshing();
 
     /**
-     * 是否有更多数据
-     *
-     * @return 根据上一次请求返回的数据数目判断是否还有更多数据
-     */
-    boolean hasMore();
-
-    /**
      * 是否正在加载数据或{@link SwipeRefreshLayout}正在下拉刷新
      *
      * @return 请求过程中
      */
     boolean isLoading();
+
+    /**
+     * 是否有更多数据
+     *
+     * @return 根据上一次请求返回的数据数目判断是否还有更多数据
+     */
+    boolean hasMore();
 
     /**
      * 加载更多
