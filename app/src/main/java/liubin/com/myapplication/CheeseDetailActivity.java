@@ -85,7 +85,7 @@ public class CheeseDetailActivity extends BaseActivity {
     //扩张时候的title颜色
     mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.primary));
 
-    Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(mImageView);
+    Glide.with(this).load(Cheeses.getRandomCheeseDrawable(0)).centerCrop().into(mImageView);
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {

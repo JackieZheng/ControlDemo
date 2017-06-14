@@ -12,13 +12,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import timber.log.Timber;
 
 /**
  * 截屏监听管理器
@@ -80,9 +80,9 @@ public class ScreenShotListenManager {
     if (sScreenRealSize == null) {
       sScreenRealSize = getRealScreenSize();
       if (sScreenRealSize != null) {
-        Log.d(TAG, "Screen Real Size: " + sScreenRealSize.x + " * " + sScreenRealSize.y);
+        Timber.d("Screen Real Size: " + sScreenRealSize.x + " * " + sScreenRealSize.y);
       } else {
-        Log.w(TAG, "Get screen real size failed.");
+        Timber.w("Get screen real size failed.");
       }
     }
   }
@@ -143,11 +143,11 @@ public class ScreenShotListenManager {
               Build.VERSION.SDK_INT < 16 ? MEDIA_PROJECTIONS : MEDIA_PROJECTIONS_API_16, null, null,
               MediaStore.Images.ImageColumns.DATE_ADDED + " desc limit 1");
       if (cursor == null) {
-        Log.e(TAG, "Deviant logic.");
+        Timber.e("Deviant logic.");
         return;
       }
       if (!cursor.moveToFirst()) {
-        Log.d(TAG, "Cursor no data.");
+        Timber.d("Cursor no data.");
         return;
       } // 获取各列的索引
       int dataIndex = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
@@ -216,7 +216,7 @@ public class ScreenShotListenManager {
   /** 处理获取到的一行数据 */
   private void handleMediaRowData(String data, long dateTaken, int width, int height) {
     if (checkScreenShot(data, dateTaken, width, height)) {
-      Log.d(TAG, "ScreenShot: path = "
+      Timber.d("ScreenShot: path = "
           + data
           + "; size = "
           + width
@@ -228,7 +228,7 @@ public class ScreenShotListenManager {
         mListener.onShot(data);
       }
     } else { // 如果在观察区间媒体数据库有数据改变，又不符合截屏规则，则输出到 log 待分析
-      Log.w(TAG, "Media content changed, but not screenshot: path = "
+      Timber.w("Media content changed, but not screenshot: path = "
           + data
           + "; size = "
           + width

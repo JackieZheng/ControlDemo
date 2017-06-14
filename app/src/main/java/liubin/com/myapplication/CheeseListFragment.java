@@ -23,7 +23,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,13 +46,14 @@ import java.util.Random;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import liubin.com.myapplication.api.CustomerApi;
 import liubin.com.myapplication.bean.StringData;
+import timber.log.Timber;
 
 public class CheeseListFragment extends BaseFragment
     implements BaseQuickAdapter.RequestLoadMoreListener {
 
-  @BindView(R.id.recyclerview) RecyclerView mRecyclerview;
+  @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
   @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
-  Unbinder unbinder;
+  Unbinder mUnBinder;
 
   public boolean isRefresh;
   private StringAdapter stringAdapter;
@@ -67,7 +67,7 @@ public class CheeseListFragment extends BaseFragment
   @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_cheese_list, container, false);
-    unbinder = ButterKnife.bind(this, view);
+    mUnBinder = ButterKnife.bind(this, view);
 
     mSwipeRefreshLayout.setColorSchemeResources(//
         android.R.color.holo_blue_bright,//
@@ -83,7 +83,7 @@ public class CheeseListFragment extends BaseFragment
         onLoadMoreRequested();
       }
     });
-    setupRecyclerView(mRecyclerview);
+    setupRecyclerView(mRecyclerView);
     return view;
   }
 
@@ -91,7 +91,7 @@ public class CheeseListFragment extends BaseFragment
     super.onDestroyView();
     mSwipeRefreshLayout.removeAllViews();
     stringAdapter = null;
-    unbinder.unbind();
+    mUnBinder.unbind();
   }
 
   private void setupRecyclerView(RecyclerView recyclerView) {
@@ -99,7 +99,7 @@ public class CheeseListFragment extends BaseFragment
     recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
     stringAdapter = new StringAdapter(R.layout.list_item, mData, this);
     recyclerView.setAdapter(stringAdapter);
-    stringAdapter.setOnLoadMoreListener(this, mRecyclerview);
+    stringAdapter.setOnLoadMoreListener(this, mRecyclerView);
     stringAdapter.setEmptyView(R.layout.custom_progress_layout);
   }
 
@@ -125,7 +125,7 @@ public class CheeseListFragment extends BaseFragment
         .subscribe(new Consumer<StringData>() {
           @Override public void accept(StringData data) throws Exception {
             List<String> datas = data.getData();
-            if (!isViewCreated) {
+            if (!mIsViewCreated) {
               if (datas != null && datas.size() > 0) mData.addAll(datas);
               return;
             }
@@ -172,7 +172,7 @@ public class CheeseListFragment extends BaseFragment
               isRefresh = false;
               mSwipeRefreshLayout.setRefreshing(false);
             }
-            Log.e(TAG, throwable.getClass().getSimpleName(), throwable);
+            Timber.e(throwable);
             Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
           }
         });
@@ -202,8 +202,7 @@ public class CheeseListFragment extends BaseFragment
       });
       helper.setText(android.R.id.text1, item);
       ImageView imageView = helper.getView(R.id.avatar);
-      Glide.with(mFragment)
-          .load(Cheeses.getRandomCheeseDrawable())
+      Glide.with(mFragment).load(Cheeses.getRandomCheeseDrawable(helper.getOldPosition()))
           .bitmapTransform(new CropCircleTransformation(mContext))
           .into(imageView);
     }

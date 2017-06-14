@@ -1,9 +1,16 @@
-package com.example.mylibrary.base;
+package liubin.com.myapplication.fragments;
 
 import android.accounts.NetworkErrorException;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import com.example.mylibrary.base.BaseActivity;
+import com.example.mylibrary.base.EndlessScrollListener;
+import com.example.mylibrary.base.IModel;
+import com.example.mylibrary.base.ProgressFragment;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import java.io.IOException;
@@ -12,64 +19,45 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import timber.log.Timber;
 
-/**
- * 列表类型的Fragment继承此类
- *
- * @param <CONTAINER> 指定此Fragment在哪个Activity中打开,对直接嵌套在Activity中的Fragment有效
- * @param <DATA> 列表数据类型
- */
-public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL extends IModel>
-    extends ProgressFragment<CONTAINER> implements EndlessScrollListener.IMore {
+public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODEL extends IModel, P extends IListMVPPresenter>
+    extends ProgressFragment<CONTAINER>
+    implements IListMVPView<MODEL>, EndlessScrollListener.IMore {
 
-  /** 是否正在加载 */
-  protected boolean mIsLoading = false;
-  /** 服务端是否还有更多数据 */
-  protected boolean mHasMore = false;
-  /** 是否调用出错 */
-  protected boolean mIsError = false;
-  /** 列表数据 */
+  Unbinder mUnBinder;
+
+  protected P mPresenter;
+
+  private boolean mIsLoading;
+  private boolean mIsError;
+  private boolean mHasMore;
+
   protected final List<DATA> mData = new ArrayList<>();
 
-  /**
-   * 获取数据
-   *
-   * @param isRefresh 是否清空原来的数据
-   */
-  protected abstract void obtainData(boolean isRefresh);
-
-  /**
-   * 数据请求 [状态变更后] 回调此方法,仅在列表有数据时候{@link #hasData()} == true时调用
-   *
-   * 1. 开始加载{@link #mIsLoading} == true
-   * 2. 加载完成{@link #mIsLoading} == false
-   * 3. 加载失败{@link #mIsLoading} == false && {@link #isError()}  == false
-   */
-  protected abstract void onStatusUpdated();
-
-  /**
-   * 服务调用成功
-   *
-   * @param data 服务端返回的数据
-   * @param isRefresh 是否需要清空原来的数据
-   */
-  protected abstract void onSuccess(MODEL data, boolean isRefresh);
-
-  public abstract boolean checkHasMore(MODEL data);
+  @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  }
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    //注意ProgressFragment的子类,只能在onViewCreated里面才能bind
+    mUnBinder = ButterKnife.bind(this, view);
     // 没有数据视图点击事件
     setEmptyViewClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        obtainData(false);
+        loadMore();
       }
     });
     // 网络异常视图点击事件
     setNetWorkErrorViewClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        obtainData(false);
+        loadMore();
       }
     });
+  }
+
+  @Override public void onDestroyView() {
+    super.onDestroyView();
+    mUnBinder.unbind();
   }
 
   /**
@@ -87,8 +75,8 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL e
    *
    * @return {@link Consumer}
    */
-  public final Consumer<Disposable> getDoOnSubscribe() {
-    return new Consumer<Disposable>() {//主线程
+  @Override public Consumer<? super Disposable> getDoOnSubscribe() {
+    return new Consumer<Disposable>() {
       @Override public void accept(Disposable disposable) throws Exception {
         if (isLoading()) {// 如果正在加载,取消本次请求
           disposable.dispose();
@@ -117,14 +105,15 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL e
    * </pre>
    * @return {@link Consumer}
    */
-  public final Consumer<MODEL> getOnNext(final boolean isRefresh) {
+  @Override public Consumer<MODEL> getOnNext(final boolean isRefresh) {
     return new Consumer<MODEL>() {
       @Override public void accept(MODEL data) throws Exception {
         mIsError = false;
         mIsLoading = false;
         boolean hasDataBefore = hasData();
-
+        // 检查是否还有更多数据
         mHasMore = checkHasMore(data);
+
         // 服务调用成功的回调
         onSuccess(data, isRefresh);
         if (hasData()) {// 有数据显示内容
@@ -148,7 +137,7 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL e
    *
    * @return {@link Consumer}
    */
-  public final Consumer<Throwable> getOnError() {
+  @Override public Consumer<? super Throwable> getOnError() {
     return new Consumer<Throwable>() {
       @Override public void accept(Throwable throwable) throws Exception {
         Timber.e(throwable);
@@ -173,6 +162,35 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL e
     };
   }
 
+  /**
+   * 服务调用成功
+   *
+   * @param data 服务端返回的数据
+   * @param isRefresh 是否需要清空原来的数据
+   */
+  public abstract void onSuccess(MODEL data, boolean isRefresh);
+
+  /**
+   * 根据返回的数据检查是否还有更多数据
+   *
+   * @param model {@link MODEL}
+   * @return {@link Boolean} true: 有更多数据
+   */
+  public abstract boolean checkHasMore(MODEL model);
+
+  /**
+   * 数据加载 [状态变更后] 回调此方法
+   * <pre>
+   * 仅在 <B>{@link #hasData()} == true</B> 列表有数据时调用
+   *
+   * 状态:
+   * 1. 开始加载 {@link #mIsLoading} == true
+   * 2. 加载完成 {@link #mIsLoading} == false
+   * 3. 加载失败 {@link #mIsLoading} == false && {@link #isError()}  == false
+   * </pre>
+   */
+  public abstract void onStatusUpdated();
+
   @Override public boolean isLoading() {
     return mIsLoading;
   }
@@ -182,23 +200,13 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL e
   }
 
   @Override public void loadMore() {
-    obtainData(false);
+    mPresenter.loadData(20, false);
   }
 
-  /**
-   * 是否有数据,有数据才会显示内容视图
-   *
-   * @return {@link Boolean} 是否有数据
-   */
-  protected boolean hasData() {
+  public boolean hasData() {
     return mData.size() > 0;
   }
 
-  /**
-   * 是否有异常 {@link Throwable}
-   *
-   * @return {@link Boolean}
-   */
   public boolean isError() {
     return mIsError;
   }

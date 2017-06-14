@@ -1,6 +1,5 @@
 package liubin.com.myapplication.bean;
 
-import android.util.Log;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -13,6 +12,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import timber.log.Timber;
 
 /**
  * xxtea 解密 double 加密数据
@@ -33,7 +33,7 @@ public class DoubleAdapter extends TypeAdapter<Double>
   }
 
   @Override public void write(JsonWriter out, Double value) throws IOException {
-    Log.e("adsfasdf", "asdf");
+    Timber.e("DoubleAdapter#write");
   }
 
   @Override public Double read(JsonReader in) throws IOException {

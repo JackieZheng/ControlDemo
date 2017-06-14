@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.webkit.GeolocationPermissions;
@@ -15,6 +14,7 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import com.example.mylibrary.R;
 import com.example.mylibrary.base.BaseActivity;
+import timber.log.Timber;
 
 public class Html5Activity extends BaseActivity {
 
@@ -30,7 +30,7 @@ public class Html5Activity extends BaseActivity {
     Bundle bundle = getIntent().getBundleExtra("bundle");
     mUrl = bundle.getString("url");
 
-    Log.d("Url:", mUrl);
+    Timber.d("Url:" + mUrl);
 
     mLayout = (LinearLayout) findViewById(R.id.web_layout);
 

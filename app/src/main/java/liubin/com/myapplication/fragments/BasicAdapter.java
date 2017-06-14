@@ -65,8 +65,7 @@ public class BasicAdapter extends BaseRecycleViewAdapter<String, RecyclerView.Vi
         }
       });
 
-      Glide.with(holder.mImageView.getContext())
-          .load(Cheeses.getRandomCheeseDrawable())
+      Glide.with(holder.mImageView.getContext()).load(Cheeses.getRandomCheeseDrawable(position))
           .bitmapTransform(new CropCircleTransformation(holder.mImageView.getContext()))
           .into(holder.mImageView);
     } else if (viewHolder instanceof FootViewHolder) {

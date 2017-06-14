@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +27,7 @@ import android.view.ViewStub;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import com.example.mylibrary.R;
+import timber.log.Timber;
 
 import static com.example.mylibrary.base.ProgressFragment.ViewType.CONTENT;
 import static com.example.mylibrary.base.ProgressFragment.ViewType.EMPTY_DATA;
@@ -42,7 +42,8 @@ import static com.example.mylibrary.base.ProgressFragment.ViewType.PROGRESS;
  *
  * @author Evgeny Shishkin
  */
-public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragment<T> {
+public abstract class ProgressFragment<CONTAINER extends BaseActivity>
+    extends BaseFragment<CONTAINER> {
 
   /**
    * 视图类型,内容,加载中,没有数据,网络异常
@@ -191,7 +192,7 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
    */
   public void showProgress() {
     if (mCurrentViewType == PROGRESS) return;
-    if (isViewCreated) {
+    if (mIsViewCreated) {
       View hideView = getCurrentView();
       View showView = getProgressContainer();
       switchView(showView, hideView, false);
@@ -204,7 +205,7 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
    */
   public void showContent() {
     if (mCurrentViewType == CONTENT) return;
-    if (isViewCreated) {
+    if (mIsViewCreated) {
       View hideView = getCurrentView();
       View showView = mContentView;
       switchView(showView, hideView, false);
@@ -217,7 +218,7 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
    */
   public void showEmpty() {
     if (mCurrentViewType == EMPTY_DATA) return;
-    if (isViewCreated) {
+    if (mIsViewCreated) {
       View hideView = getCurrentView();
       View showView = getEmptyView();
       switchView(showView, hideView, false);
@@ -230,7 +231,7 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
    */
   public void showNetWorkError() {
     if (mCurrentViewType == NETWORK_ERROR) return;
-    if (isViewCreated) {
+    if (mIsViewCreated) {
       View hideView = getCurrentView();
       View showView = getNetWorkErrorView();
       switchView(showView, hideView, false);
@@ -280,10 +281,10 @@ public abstract class ProgressFragment<T extends BaseActivity> extends BaseFragm
   public void setEmptyMessage(String message, @DrawableRes int icon) {
     this.mEmptyMessage = message;
     this.mEmptyMessageIcon = icon;
-    if (!isViewCreated || mEmptyView == null) return;
+    if (!mIsViewCreated || mEmptyView == null) return;
     TextView textView = (TextView) mEmptyView.findViewById(R.id.data_empty_text);
     if (textView == null) {
-      Log.e(TAG, TAG, new RuntimeException("空数据视图必须包含id为R.id.data_empty_text的TextView"));
+      Timber.e(new RuntimeException("空数据视图必须包含id为R.id.data_empty_text的TextView"));
       return;
     }
     textView.setText(message);

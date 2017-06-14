@@ -10,7 +10,6 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +23,7 @@ import java.util.Random;
 import liubin.com.myapplication.CheeseListFragment;
 import liubin.com.myapplication.MainActivity;
 import liubin.com.myapplication.R;
+import timber.log.Timber;
 
 public class CoordinatorLayoutFragment extends BaseFragment<BaseActivity> {
 
@@ -89,15 +89,15 @@ public class CoordinatorLayoutFragment extends BaseFragment<BaseActivity> {
     mViewpager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
     mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
       @Override public void onTabSelected(TabLayout.Tab tab) {
-        Log.d("OnTabSelectedListener", "onTabSelected");
+        Timber.d("OnTabSelectedListener onTabSelected");
       }
 
       @Override public void onTabUnselected(TabLayout.Tab tab) {
-        Log.d("OnTabSelectedListener", "onTabUnselected");
+        Timber.d("OnTabSelectedListener onTabUnselected");
       }
 
       @Override public void onTabReselected(TabLayout.Tab tab) {
-        Log.d("OnTabSelectedListener", "onTabReselected");
+        Timber.d("OnTabSelectedListener onTabReselected");
       }
     });
   }

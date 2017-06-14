@@ -31,29 +31,22 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.example.mylibrary.base.ActivityUtils;
 import com.example.mylibrary.base.BaseActivity;
-import com.example.mylibrary.base.BaseFragment;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSerializer;
-import com.google.gson.internal.bind.TypeAdapters;
 import java.util.ArrayList;
 import java.util.List;
-import liubin.com.myapplication.bean.User;
 import liubin.com.myapplication.fragments.BasicFragment;
 import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
 import liubin.com.myapplication.fragments.CustomFragment;
 import liubin.com.myapplication.fragments.DrawerLayoutFragment;
+import liubin.com.myapplication.fragments.MVPFragment;
+import timber.log.Timber;
 
 /**
  * DrawerLayout NavigationView CoordinatorLayout嵌套使用
@@ -91,15 +84,15 @@ public class MainActivity extends BaseActivity {
     mTabLayout.setupWithViewPager(mViewpager);
     mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
       @Override public void onTabSelected(TabLayout.Tab tab) {
-        Log.d("asdf", "sadf");
+        Timber.d("onTabSelected");
       }
 
       @Override public void onTabUnselected(TabLayout.Tab tab) {
-        Log.d("asdf", "sadf");
+        Timber.d("onTabUnselected");
       }
 
       @Override public void onTabReselected(TabLayout.Tab tab) {
-        Log.d("asdf", "sadf");
+        Timber.d("onTabReselected");
       }
     });
 
@@ -188,10 +181,14 @@ public class MainActivity extends BaseActivity {
                     -1);
                 break;
               }
-              case R.id.nav_friends: {
+              case R.id.nav_friends: {//全屏的Activity
                 Intent intent = new Intent();
                 intent.setClass(getApplicationContext(), FullscreenActivity.class);
                 startActivity(intent);
+                break;
+              }
+              case R.id.nav_discussion: {//MPV模式使用
+                ActivityUtils.startActivity(MainActivity.this, MVPFragment.class, null, -1);
                 break;
               }
             }

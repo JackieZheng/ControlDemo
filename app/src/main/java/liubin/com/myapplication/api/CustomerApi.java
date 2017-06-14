@@ -1,21 +1,18 @@
 package liubin.com.myapplication.api;
 
 import android.accounts.NetworkErrorException;
-import android.util.Log;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import liubin.com.myapplication.Cheeses;
 import liubin.com.myapplication.bean.StringData;
+import timber.log.Timber;
 
 /**
  * 模拟API
@@ -40,7 +37,7 @@ public class CustomerApi {
               @Override public void subscribe(ObservableEmitter<StringData> e) throws Exception {
                 int index = id % 8;
                 StringData data = new StringData();
-                Log.e("CustomerApi", "" + index);
+                Timber.e("" + index);
                 switch (index) {
                   case 0:
                   case 2:

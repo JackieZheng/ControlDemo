@@ -105,14 +105,6 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, StringDa
    */
   public void obtainData(final boolean isRefresh) {
     CustomerApi.queryData(PAGE_SIZE)//
-        .doOnNext(new Consumer<StringData>() {
-          @Override public void accept(StringData data) throws Exception {
-            //判断是否还有更多数据
-            if (data != null && data.isSuccess()) {
-              mHasMore = data.getData() != null && data.getData().size() == PAGE_SIZE;
-            }
-          }
-        })// 服务端返回数据解析之后处理数据
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
         .doOnSubscribe(getDoOnSubscribe())//开始执行之前的准备工作
         .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
@@ -130,6 +122,14 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, StringDa
     if (data.getData() != null && data.getData().size() > 0) {
       mData.addAll(data.getData());
     }
+  }
+
+  @Override public boolean checkHasMore(StringData data) {
+    //判断是否还有更多数据
+    if (data == null || !data.isSuccess()) {
+      return true;
+    }
+    return data.getData() != null && data.getData().size() == PAGE_SIZE;
   }
 
   @Override protected void onStatusUpdated() {
