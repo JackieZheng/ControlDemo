@@ -1,12 +1,10 @@
-package liubin.com.myapplication.fragments;
+package com.example.mylibrary.base.mvp;
 
 import android.accounts.NetworkErrorException;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.example.mylibrary.base.BaseActivity;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.IModel;
@@ -19,11 +17,9 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import timber.log.Timber;
 
-public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODEL extends IModel, P extends IListMVPPresenter>
+public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODEL extends IModel, P extends IListMVPPresenter/*<MODEL>*/>
     extends ProgressFragment<CONTAINER>
     implements IListMVPView<MODEL>, EndlessScrollListener.IMore {
-
-  Unbinder mUnBinder;
 
   protected P mPresenter;
 
@@ -39,8 +35,7 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODE
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    //注意ProgressFragment的子类,只能在onViewCreated里面才能bind
-    mUnBinder = ButterKnife.bind(this, view);
+
     // 没有数据视图点击事件
     setEmptyViewClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -53,11 +48,6 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODE
         loadMore();
       }
     });
-  }
-
-  @Override public void onDestroyView() {
-    super.onDestroyView();
-    mUnBinder.unbind();
   }
 
   /**
@@ -191,16 +181,14 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODE
    */
   public abstract void onStatusUpdated();
 
+  @Override public abstract void loadMore();
+
   @Override public boolean isLoading() {
     return mIsLoading;
   }
 
   @Override public boolean hasMore() {
     return mHasMore;
-  }
-
-  @Override public void loadMore() {
-    mPresenter.loadData(20, false);
   }
 
   public boolean hasData() {

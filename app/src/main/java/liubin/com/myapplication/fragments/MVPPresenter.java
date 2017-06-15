@@ -1,5 +1,6 @@
 package liubin.com.myapplication.fragments;
 
+import com.example.mylibrary.base.mvp.IListMVPView;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -7,12 +8,12 @@ import io.reactivex.schedulers.Schedulers;
 import liubin.com.myapplication.api.CustomerApi;
 import liubin.com.myapplication.bean.StringData;
 
-public class MVPPresenter implements IListMVPPresenter<StringData> {
+public class MVPPresenter implements IMVPPersenter /*IListMVPPresenter<StringData> */ {
 
-  private IListMVPView mView;
+  private IListMVPView<StringData> mView;
   private LifecycleProvider<FragmentEvent> mProvider;
 
-  public MVPPresenter(IListMVPView mvpView, LifecycleProvider<FragmentEvent> provider) {
+  public MVPPresenter(IListMVPView<StringData> mvpView, LifecycleProvider<FragmentEvent> provider) {
     this.mView = mvpView;
     this.mProvider = provider;
   }

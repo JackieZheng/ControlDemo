@@ -9,14 +9,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.TopBarActivity;
+import com.example.mylibrary.base.mvp.ListMVPFragment;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.bean.StringData;
 
 public class MVPFragment
-    extends ListMVPFragment<TopBarActivity, String, StringData, IListMVPPresenter<StringData>> {
+    extends ListMVPFragment<TopBarActivity, String, StringData, IMVPPersenter/*<StringData>*/>
+    implements IMVPView<StringData> {
   private static final int PAGE_SIZE = 20;
+  Unbinder mUnBinder;
 
   @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
   @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
@@ -29,6 +34,9 @@ public class MVPFragment
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+
+    //注意ProgressFragment的子类,只能在onViewCreated里面才能bind
+    mUnBinder = ButterKnife.bind(this, view);
 
     mSwipeRefreshLayout.setColorSchemeResources(//
         android.R.color.holo_blue_bright,//
@@ -47,6 +55,11 @@ public class MVPFragment
 
     // 这一句可以在任何时候调用
     setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network);
+  }
+
+  @Override public void onDestroyView() {
+    super.onDestroyView();
+    mUnBinder.unbind();
   }
 
   @Override public boolean checkHasMore(StringData data) {

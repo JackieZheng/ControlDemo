@@ -12,20 +12,14 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.example.mylibrary.base.ApiClient;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.ListFragment;
 import com.example.mylibrary.base.ProgressFragment;
 import com.example.mylibrary.base.TopBarActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import liubin.com.myapplication.R;
-import liubin.com.myapplication.api.Api;
 import liubin.com.myapplication.api.CustomerApi;
-import liubin.com.myapplication.bean.BaseModel;
 import liubin.com.myapplication.bean.StringData;
 
 /**
@@ -135,39 +129,5 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, StringDa
   @Override protected void onStatusUpdated() {
     mSwipeRefreshLayout.setRefreshing(isLoading());
     mRecyclerView.getAdapter().notifyDataSetChanged();
-  }
-
-  //@Override public boolean isRefreshing() {
-  //  return mSwipeRefreshLayout.isRefreshing();
-  //}
-
-  private void testApi() {
-    Disposable subscribe = ApiClient.create(Api.class)
-        .getUser(1, 22)
-        .subscribeOn(Schedulers.io())
-        .doOnSubscribe(new Consumer<Disposable>() {
-          @Override public void accept(Disposable disposable) throws Exception {
-            showProgress();
-          }
-        })
-        .subscribeOn(AndroidSchedulers.mainThread())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<BaseModel>() {
-          @Override public void accept(BaseModel user) throws Exception {//onNext
-            Toast.makeText(getContext(), "下一步", Toast.LENGTH_LONG).show();
-          }
-        }, new Consumer<Throwable>() {
-          @Override public void accept(Throwable throwable) throws Exception {//onError
-            showEmpty();
-            setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network);
-            Toast.makeText(getContext(), "出错了", Toast.LENGTH_LONG).show();
-          }
-        }, new Action() {
-          @Override public void run() throws Exception {//onComplete
-            Toast.makeText(getContext(), "完成", Toast.LENGTH_LONG).show();
-            showContent();
-          }
-        });
-    mDisposables.add(subscribe);
   }
 }
