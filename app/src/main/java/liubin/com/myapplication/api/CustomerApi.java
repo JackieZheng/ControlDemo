@@ -1,17 +1,24 @@
 package liubin.com.myapplication.api;
 
 import android.accounts.NetworkErrorException;
+import com.example.mylibrary.base.ApiClient;
+import com.example.mylibrary.base.BaseModel;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import liubin.com.myapplication.Cheeses;
-import liubin.com.myapplication.bean.StringData;
+import liubin.com.myapplication.bean.User;
 import timber.log.Timber;
 
 /**
@@ -29,14 +36,16 @@ public class CustomerApi {
    * @param count 获取多少条数据
    * @return {@link Observable}
    */
-  public static Observable<StringData> queryData(final int count) {
+  public static Observable<BaseModel<List<String>>> queryData(final int count) {
     return Observable.timer(1500, TimeUnit.MILLISECONDS)
-        .flatMap(new Function<Long, ObservableSource<StringData>>() {
-          @Override public ObservableSource<StringData> apply(Long aLong) throws Exception {
-            return Observable.create(new ObservableOnSubscribe<StringData>() {
-              @Override public void subscribe(ObservableEmitter<StringData> e) throws Exception {
+        .flatMap(new Function<Long, ObservableSource<BaseModel<List<String>>>>() {
+          @Override public ObservableSource<BaseModel<List<String>>> apply(Long aLong)
+              throws Exception {
+            return Observable.create(new ObservableOnSubscribe<BaseModel<List<String>>>() {
+              @Override public void subscribe(ObservableEmitter<BaseModel<List<String>>> e)
+                  throws Exception {
                 int index = id % 8;
-                StringData data = new StringData();
+                BaseModel<List<String>> data = new BaseModel<List<String>>();
                 Timber.e("" + index);
                 switch (index) {
                   case 0:
@@ -92,5 +101,34 @@ public class CustomerApi {
       list.add(array[random.nextInt(array.length)]);
     }
     return list;
+  }
+
+  private void test() {
+    ApiClient.create(Api.class)//
+        .getUser(1, 20)//
+        .doOnNext(new Consumer<BaseModel<List<User>>>() {
+          @Override public void accept(@NonNull BaseModel<List<User>> listBaseModel)
+              throws Exception {
+
+          }
+        })//
+        .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
+        .doOnSubscribe(new Consumer<Disposable>() {
+          @Override public void accept(@NonNull Disposable disposable) throws Exception {
+
+          }
+        })//开始执行之前的准备工作
+        .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
+        .observeOn(AndroidSchedulers.mainThread())//指定这行代码之后的subscribe在io线程执行
+        .subscribe(new Consumer<BaseModel<List<User>>>() {
+          @Override public void accept(@NonNull BaseModel<List<User>> listBaseModel)
+              throws Exception {
+
+          }
+        }, new Consumer<Throwable>() {
+          @Override public void accept(@NonNull Throwable throwable) throws Exception {
+
+          }
+        });
   }
 }

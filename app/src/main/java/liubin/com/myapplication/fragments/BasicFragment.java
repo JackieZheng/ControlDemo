@@ -12,15 +12,16 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.example.mylibrary.base.BaseModel;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.ListFragment;
 import com.example.mylibrary.base.ProgressFragment;
 import com.example.mylibrary.base.TopBarActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import java.util.List;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.api.CustomerApi;
-import liubin.com.myapplication.bean.StringData;
 
 /**
  * <pre>有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity基本使用方式
@@ -31,7 +32,7 @@ import liubin.com.myapplication.bean.StringData;
  * 如需要修改Fragment布局内容,请重写{@link #getFragmentLayoutResourceID()}方法.
  * </pre>
  */
-public class BasicFragment extends ListFragment<TopBarActivity, String, StringData> {
+public class BasicFragment extends ListFragment<TopBarActivity, String> {
 
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
@@ -106,7 +107,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, StringDa
         .subscribe(getOnNext(isRefresh), getOnError());
   }
 
-  @Override public void onSuccess(StringData data, boolean isRefresh) {
+  @Override public void onSuccess(BaseModel<List<String>> data, boolean isRefresh) {
     if (!data.isSuccess()) {// 服务端返回异常代码
       Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
       return;
@@ -118,7 +119,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, StringDa
     }
   }
 
-  @Override public boolean checkHasMore(StringData data) {
+  @Override public boolean checkHasMore(BaseModel<List<String>> data) {
     //判断是否还有更多数据
     if (data == null || !data.isSuccess()) {
       return true;

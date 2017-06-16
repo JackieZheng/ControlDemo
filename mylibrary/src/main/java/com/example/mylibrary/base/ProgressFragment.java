@@ -40,8 +40,10 @@ import static com.example.mylibrary.base.ProgressFragment.ViewType.PROGRESS;
  * If you are waiting for the initial data, you'll can displaying during this time an indeterminate
  * progress indicator.
  *
+ * @param <CONTAINER> Fragment 对应的容器(对Activity的根布局Fragment有效,嵌套的Fragment无效)
  * @author Evgeny Shishkin
  */
+
 public abstract class ProgressFragment<CONTAINER extends BaseActivity>
     extends BaseFragment<CONTAINER> {
 

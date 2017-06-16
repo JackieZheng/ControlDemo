@@ -8,6 +8,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * @param <CONTAINER> 泛型参数类型为<b>{@link BaseActivity}</b>或其子类
+ * Fragment 对应的容器(对Activity的根布局Fragment有效,嵌套的Fragment无效)
  *
  * 这个泛型参数将指定使用哪个Activity作为Fragment的容器</br>
  * eg: {@link BaseActivity} 表示使用没有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] Activity   </br>

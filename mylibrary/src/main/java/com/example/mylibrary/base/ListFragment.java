@@ -17,8 +17,9 @@ import timber.log.Timber;
  *
  * @param <CONTAINER> 指定此Fragment在哪个Activity中打开,对直接嵌套在Activity中的Fragment有效
  * @param <DATA> 列表数据类型
+ * {@link BaseModel} 的泛型参数为 <List<DATA>>
  */
-public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL extends IModel>
+public abstract class ListFragment<CONTAINER extends BaseActivity, DATA>
     extends ProgressFragment<CONTAINER> implements EndlessScrollListener.IMore {
 
   /** 是否正在加载 */
@@ -52,9 +53,9 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL e
    * @param data 服务端返回的数据
    * @param isRefresh 是否需要清空原来的数据
    */
-  protected abstract void onSuccess(MODEL data, boolean isRefresh);
+  protected abstract void onSuccess(BaseModel<List<DATA>> data, boolean isRefresh);
 
-  public abstract boolean checkHasMore(MODEL data);
+  public abstract boolean checkHasMore(BaseModel<List<DATA>> data);
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
@@ -112,14 +113,14 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, DATA, MODEL e
    * @param isRefresh 是否需要清空原来的数据
    * <pre>
    * 1. 更新状态 {@link #mIsLoading} = false ,{@link #mIsError} = false
-   * 2. 服务调用成功后的回调 {@link #onSuccess(IModel, boolean)}
+   * 2. 服务调用成功后的回调 {@link #onSuccess(BaseModel, boolean)}
    * 3. 状态更新后的回调方法 {@link #onStatusUpdated()}
    * </pre>
    * @return {@link Consumer}
    */
-  public final Consumer<MODEL> getOnNext(final boolean isRefresh) {
-    return new Consumer<MODEL>() {
-      @Override public void accept(MODEL data) throws Exception {
+  public final Consumer<BaseModel<List<DATA>>> getOnNext(final boolean isRefresh) {
+    return new Consumer<BaseModel<List<DATA>>>() {
+      @Override public void accept(BaseModel<List<DATA>> data) throws Exception {
         mIsError = false;
         mIsLoading = false;
         boolean hasDataBefore = hasData();

@@ -1,11 +1,23 @@
-package liubin.com.myapplication.bean;
+package com.example.mylibrary.base;
 
-import com.example.mylibrary.base.IModel;
-
-public class BaseModel implements IModel {
+/**
+ * 服务端响应的JSON对应的"结构体"
+ *
+ * @param <T> 数据类型 "结构体"
+ */
+public class BaseModel<T> implements IModel {
   private int code;
   private String error;
   private String message;
+  private T data;
+
+  public T getData() {
+    return data;
+  }
+
+  public void setData(T data) {
+    this.data = data;
+  }
 
   public boolean isSuccess() {
     return this.code == 0;

@@ -1,4 +1,4 @@
-package com.example.mylibrary.base;
+package com.example.mylibrary.base.mvp;
 
 public interface IView {
   void showProgress();

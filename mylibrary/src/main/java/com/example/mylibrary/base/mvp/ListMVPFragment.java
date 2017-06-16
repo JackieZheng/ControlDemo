@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 import com.example.mylibrary.base.BaseActivity;
+import com.example.mylibrary.base.BaseModel;
 import com.example.mylibrary.base.EndlessScrollListener;
-import com.example.mylibrary.base.IModel;
 import com.example.mylibrary.base.ProgressFragment;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import timber.log.Timber;
 
-public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODEL extends IModel, P extends IListMVPPresenter/*<MODEL>*/>
+public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, P extends IListMVPPresenter>
     extends ProgressFragment<CONTAINER>
-    implements IListMVPView<MODEL>, EndlessScrollListener.IMore {
+    implements IListMVPView<BaseModel<List<DATA>>>, EndlessScrollListener.IMore {
 
   protected P mPresenter;
 
@@ -90,14 +90,14 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODE
    * @param isRefresh 是否需要清空原来的数据
    * <pre>
    * 1. 更新状态 {@link #mIsLoading} = false ,{@link #mIsError} = false
-   * 2. 服务调用成功后的回调 {@link #onSuccess(IModel, boolean)}
+   * 2. 服务调用成功后的回调 {@link #onSuccess(BaseModel, boolean)}
    * 3. 状态更新后的回调方法 {@link #onStatusUpdated()}
    * </pre>
    * @return {@link Consumer}
    */
-  @Override public Consumer<MODEL> getOnNext(final boolean isRefresh) {
-    return new Consumer<MODEL>() {
-      @Override public void accept(MODEL data) throws Exception {
+  @Override public Consumer<BaseModel<List<DATA>>> getOnNext(final boolean isRefresh) {
+    return new Consumer<BaseModel<List<DATA>>>() {
+      @Override public void accept(BaseModel<List<DATA>> data) throws Exception {
         mIsError = false;
         mIsLoading = false;
         boolean hasDataBefore = hasData();
@@ -158,15 +158,15 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, MODE
    * @param data 服务端返回的数据
    * @param isRefresh 是否需要清空原来的数据
    */
-  public abstract void onSuccess(MODEL data, boolean isRefresh);
+  public abstract void onSuccess(BaseModel<List<DATA>> data, boolean isRefresh);
 
   /**
    * 根据返回的数据检查是否还有更多数据
    *
-   * @param model {@link MODEL}
+   * @param model {@link BaseModel}
    * @return {@link Boolean} true: 有更多数据
    */
-  public abstract boolean checkHasMore(MODEL model);
+  public abstract boolean checkHasMore(BaseModel<List<DATA>> model);
 
   /**
    * 数据加载 [状态变更后] 回调此方法

@@ -3,7 +3,7 @@ package com.example.mylibrary.base;
 /**
  * 服务端返回的数据结果必须实现的接口
  */
-public interface IModel {
+public interface IModel<T> {
 
   /**
    * 服务端返回的结果代码
@@ -32,4 +32,11 @@ public interface IModel {
    * @return 服务调用错误信息
    */
   String getError();
+
+  /**
+   * 返回的数据
+   *
+   * @return
+   */
+  T getData();
 }

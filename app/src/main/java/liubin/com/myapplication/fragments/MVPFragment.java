@@ -11,15 +11,15 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.example.mylibrary.base.BaseModel;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.TopBarActivity;
 import com.example.mylibrary.base.mvp.ListMVPFragment;
+import java.util.List;
 import liubin.com.myapplication.R;
-import liubin.com.myapplication.bean.StringData;
 
-public class MVPFragment
-    extends ListMVPFragment<TopBarActivity, String, StringData, IMVPPersenter/*<StringData>*/>
-    implements IMVPView<StringData> {
+public class MVPFragment extends ListMVPFragment<TopBarActivity, String, IMVPPersenter>
+    implements IMVPView<BaseModel<List<String>>> {
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
 
@@ -62,7 +62,7 @@ public class MVPFragment
     mUnBinder.unbind();
   }
 
-  @Override public boolean checkHasMore(StringData data) {
+  @Override public boolean checkHasMore(BaseModel<List<String>> data) {
     //判断是否还有更多数据
     if (data == null || !data.isSuccess()) {
       return true;
@@ -96,7 +96,7 @@ public class MVPFragment
     mRecyclerView.getAdapter().notifyDataSetChanged();
   }
 
-  @Override public void onSuccess(StringData data, boolean isRefresh) {
+  @Override public void onSuccess(BaseModel<List<String>> data, boolean isRefresh) {
     if (!data.isSuccess()) {// 服务端返回异常代码
       Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
       return;
