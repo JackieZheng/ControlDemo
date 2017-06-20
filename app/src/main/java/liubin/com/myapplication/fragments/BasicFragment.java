@@ -121,10 +121,13 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, List<Str
 
   @Override public boolean checkHasMore(BaseModel<List<String>> data) {
     //判断是否还有更多数据
-    if (data == null || !data.isSuccess()) {
-      return true;
+    if (data != null
+        && data.isSuccess()
+        && data.getData() != null
+        && data.getData().size() == PAGE_SIZE) {
+      return false;
     }
-    return data.getData() != null && data.getData().size() == PAGE_SIZE;
+    return true;
   }
 
   @Override protected void onStatusUpdated() {

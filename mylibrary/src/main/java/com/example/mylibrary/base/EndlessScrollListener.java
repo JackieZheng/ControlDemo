@@ -51,10 +51,6 @@ public class EndlessScrollListener extends OnScrollListener {
   }
 
   public interface IMore {
-    /**
-     * {@link SwipeRefreshLayout}正在下拉刷新的时候不能加载更多
-     */
-    //boolean isRefreshing();
 
     /**
      * 是否正在加载数据或{@link SwipeRefreshLayout}正在下拉刷新
@@ -62,6 +58,13 @@ public class EndlessScrollListener extends OnScrollListener {
      * @return 请求过程中
      */
     boolean isLoading();
+
+    /**
+     * 是否有异常 {@link Throwable} 或加载出错(服务端异常)
+     *
+     * @return {@link Boolean}
+     */
+    boolean isError();
 
     /**
      * 是否有更多数据

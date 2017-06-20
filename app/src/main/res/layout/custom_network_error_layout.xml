@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/network_error_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,7 +11,15 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:drawablePadding="16dp"
-      android:drawableTop="@drawable/ic_order_empty"
+      android:drawableTop="@drawable/ic_conn_no_network"
       android:text="自定义网络异常"
+      />
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center|bottom"
+      android:layout_marginBottom="36dp"
+      android:padding="16dp"
+      android:text="网络出现了问题,请检查网络配置"
       />
 </FrameLayout>

@@ -30,7 +30,7 @@ public class MVPFragment
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mPresenter = new MVPPresenter(this, this);
-    mPresenter.loadData(PAGE_SIZE, false);
+    obtainData(false);
   }
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class MVPFragment
         android.R.color.holo_red_light);
     mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
       @Override public void onRefresh() {
-        mPresenter.loadData(PAGE_SIZE, true);
+        obtainData(true);
       }
     });
 
@@ -65,10 +65,13 @@ public class MVPFragment
 
   @Override public boolean checkHasMore(BaseModel<List<String>> data) {
     //判断是否还有更多数据
-    if (data == null || !data.isSuccess()) {
-      return true;
+    if (data != null
+        && data.isSuccess()
+        && data.getData() != null
+        && data.getData().size() == PAGE_SIZE) {
+      return false;
     }
-    return data.getData() != null && data.getData().size() == PAGE_SIZE;
+    return true;
   }
 
   /**
@@ -109,7 +112,11 @@ public class MVPFragment
     }
   }
 
-  @Override public void loadMore() {
-    mPresenter.loadData(PAGE_SIZE, false);
+  @Override protected void onError(Throwable throwable) {
+    super.onError(throwable);
+  }
+
+  @Override protected void obtainData(boolean isRefresh) {
+    mPresenter.loadData(PAGE_SIZE, isRefresh);
   }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--自定义空视图,必须有id为data_empty_text的TextView,否则setEmptyMessage无效-->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/data_empty"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,22 +12,24 @@
       android:layout_gravity="center"
       android:orientation="vertical"
       >
-    <TextView
-        android:id="@+id/click"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="16dp"
-        android:text="点我啊"
-        />
+    <!--自定义空视图,必须有id为data_empty_text的TextView,否则setEmptyMessage无效-->
     <TextView
         android:id="@+id/data_empty_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:drawablePadding="16dp"
-        android:drawableTop="@drawable/ic_conn_no_network"
+        android:drawableTop="@drawable/ic_order_empty"
         android:gravity="center"
         android:text="自定义没有数据视图"
         />
   </LinearLayout>
+  <TextView
+      android:id="@+id/click"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|center"
+      android:layout_marginBottom="36dp"
+      android:padding="16dp"
+      android:text="这个页面没有数据"
+      />
 </FrameLayout>

@@ -71,36 +71,48 @@ public class MainActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     ButterKnife.bind(this);
 
+    // 初始化状态栏,标题栏
     setupTopBar();
+    // 初始化左侧导航栏
     setupDrawerContent(mNavigationView);
+
+    // 这一句使得ToolBar可以通过onOptionsItemSelected,方法来处理点击事件.
     setSupportActionBar(mToolbar);
-    setupViewPager(mViewpager);
 
-    //final ActionBar ab = getSupportActionBar();
-    //ab.setHomeAsUpIndicator(R.drawable.ic_menu);
-    //ab.setDisplayHomeAsUpEnabled(true);
+    // 初始化ViewPager
+    setupViewPager(mViewpager, mTabLayout);
 
-    mViewpager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-    mTabLayout.setupWithViewPager(mViewpager);
-    mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-      @Override public void onTabSelected(TabLayout.Tab tab) {
-        Timber.d("onTabSelected");
-      }
-
-      @Override public void onTabUnselected(TabLayout.Tab tab) {
-        Timber.d("onTabUnselected");
-      }
-
-      @Override public void onTabReselected(TabLayout.Tab tab) {
-        Timber.d("onTabReselected");
-      }
-    });
+    // 初始化TabLayout
+    setupTabLayout(mTabLayout, mViewpager);
 
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
         Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
             .setAction("Action", null)
             .show();
+      }
+    });
+  }
+
+  /**
+   * 初始化{@link TabLayout}
+   *
+   * @param tableLayout {@link TabLayout}
+   * @param viewpager {@link ViewPager}
+   */
+  private void setupTabLayout(TabLayout tableLayout, ViewPager viewpager) {
+    tableLayout.setupWithViewPager(viewpager);
+    tableLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+      @Override public void onTabSelected(TabLayout.Tab tab) {
+        Timber.d("TabLayout.OnTabSelectedListener#onTabSelected");
+      }
+
+      @Override public void onTabUnselected(TabLayout.Tab tab) {
+        Timber.d("TabLayout.OnTabSelectedListener#onTabUnselected");
+      }
+
+      @Override public void onTabReselected(TabLayout.Tab tab) {
+        Timber.d("TabLayout.OnTabSelectedListener#onTabReselected");
       }
     });
   }
@@ -113,17 +125,33 @@ public class MainActivity extends BaseActivity {
     // 状态栏透明,内容全屏
     setTransparentForWindow();
     // 注意区分版本进行处理
+    //CoordinatorLayout#fitsSystemWindows:true只针对Api19+有效,Api21+可以不用设置
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      // 使得CoordinatorLayout与顶部空出状态栏高度
       mCoordinatorLayout.setPadding(0, this.getSystemBarConfig().getStatusBarHeight(), 0, 0);
       // 设置(覆盖在 CoordinatorLayout 上)状态栏颜色
       mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));
+      // 设置覆盖在NavigationView抽屉上的状态栏颜色,这个颜色如果透明会和mDrawerLayout.setStatusBarBackgroundColor
+      // 设置的颜色重叠,否则将覆盖mDrawerLayout.setStatusBarBackgroundColor设置的颜色
+      // getWindow().setStatusBarColor(0x66888888);
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mCoordinatorLayout.setPadding(0, 0, 0, 0);
+      //mCoordinatorLayout.setFitsSystemWindows(true);
+      //mCoordinatorLayout.setPadding(0, 0, 0, 0);
       // 状态栏颜色设置
       mCoordinatorLayout.setBackgroundColor(getResources().getColor(R.color.primary_dark));
+      // 如果需要设置覆盖在NavigationView抽屉上的状态栏颜色,
+      // 需要在android.R.id.content对应的ViewGroup中绘制一个和状态栏一样高的矩形
+      /*View statusBarView = new View(this);
+      LinearLayout.LayoutParams params =
+          new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+              getSystemBarConfig().getStatusBarHeight());
+      statusBarView.setLayoutParams(params);
+      statusBarView.setBackgroundColor(0x66888888);
+      ((ViewGroup) findViewById(android.R.id.content)).addView(statusBarView);*/
     }
-    // 这一句是关键,布局文件里面设置这个属性为true,代码里面需要设置这个属性为false
+    // Api21+这一句是关键,布局文件里面设置这个属性为true,代码里面需要设置这个属性为false
     mDrawerLayout.setFitsSystemWindows(false);
+    // TODO: 状态栏会挡住抽屉内容,这个需要设置padding属性才能解决
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -144,13 +172,22 @@ public class MainActivity extends BaseActivity {
    * 初始化ViewPager
    *
    * @param viewPager {@link ViewPager}
+   * @param tabLayout {@link TabLayout}
    */
-  private void setupViewPager(ViewPager viewPager) {
-    Adapter adapter = new Adapter(getSupportFragmentManager());
+  private void setupViewPager(ViewPager viewPager, TabLayout tabLayout) {
+    // 设置Adapter
+    MainActivity.Adapter adapter = new MainActivity.Adapter(getSupportFragmentManager());
     adapter.addFragment(new CheeseListFragment(), "Category 1");
     adapter.addFragment(new CheeseListFragment(), "Category 2");
     adapter.addFragment(new CheeseListFragment(), "Category 3");
     viewPager.setAdapter(adapter);
+    // 设置监听
+    viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout) {
+      @Override public void onPageSelected(int position) {
+        super.onPageSelected(position);
+        Timber.d("ViewPager.TabLayoutOnPageChangeListener#onPageSelected");
+      }
+    });
   }
 
   /**

@@ -47,6 +47,8 @@ public class BaseActivity extends AppCompatActivity {
       //else {
       // 如果是 show() hide()模式,那么需要重新设置,以免重叠
       //Fragment fragment = this.getSupportFragmentManager().findFragmentByTag(stringExtra);
+      //getSupportFragmentManager().beginTransaction().hide(fragment);
+      //getSupportFragmentManager().beginTransaction().show(fragment1);
       //}
     }
   }

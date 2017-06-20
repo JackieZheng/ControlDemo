@@ -46,13 +46,13 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, ITEM, DATA
     // 没有数据视图点击事件
     setEmptyViewClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        loadMore();
+        obtainData(false);
       }
     });
     // 网络异常视图点击事件
     setNetWorkErrorViewClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        loadMore();
+        obtainData(false);
       }
     });
   }
@@ -105,7 +105,7 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, ITEM, DATA
   @Override public Consumer<BaseModel<DATA>> getOnNext(final boolean isRefresh) {
     return new Consumer<BaseModel<DATA>>() {
       @Override public void accept(BaseModel<DATA> data) throws Exception {
-        mIsError = false;
+        mIsError = data.isSuccess();
         mIsLoading = false;
         boolean hasDataBefore = hasData();
         // 检查是否还有更多数据
@@ -137,10 +137,10 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, ITEM, DATA
   @Override public Consumer<? super Throwable> getOnError() {
     return new Consumer<Throwable>() {
       @Override public void accept(Throwable throwable) throws Exception {
-        Timber.e(throwable);
-        Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
         mIsError = true;//加载出错
         mIsLoading = false;//加载完成
+
+        onError(throwable);// 错误回调
 
         if (hasData()) {
           if (mIsViewCreated) onStatusUpdated();//加载时候发生异常,更新界面显示
@@ -160,12 +160,29 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, ITEM, DATA
   }
 
   /**
+   * 获取数据
+   *
+   * @param isRefresh 是否清空原来的数据
+   */
+  protected abstract void obtainData(boolean isRefresh);
+
+  /**
    * 服务调用成功
    *
    * @param data 服务端返回的数据
    * @param isRefresh 是否需要清空原来的数据
    */
-  public abstract void onSuccess(BaseModel<DATA> data, boolean isRefresh);
+  protected abstract void onSuccess(BaseModel<DATA> data, boolean isRefresh);
+
+  /**
+   * 服务调用失败
+   *
+   * @param throwable {@link Throwable}
+   */
+  protected void onError(Throwable throwable) {
+    Timber.e(throwable);
+    Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
+  }
 
   /**
    * 根据返回的数据检查是否还有更多数据
@@ -183,26 +200,28 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, ITEM, DATA
    * 状态:
    * 1. 开始加载 {@link #mIsLoading} == true
    * 2. 加载完成 {@link #mIsLoading} == false
-   * 3. 加载失败 {@link #mIsLoading} == false && {@link #isError()}  == false
+   * 3. 加载失败 {@link #mIsLoading} == false && {@link #isError()}  == true
    * </pre>
    */
   public abstract void onStatusUpdated();
 
-  @Override public abstract void loadMore();
+  public boolean hasData() {
+    return mData.size() > 0;
+  }
 
   @Override public boolean isLoading() {
     return mIsLoading;
+  }
+
+  @Override public boolean isError() {
+    return mIsError;
   }
 
   @Override public boolean hasMore() {
     return mHasMore;
   }
 
-  public boolean hasData() {
-    return mData.size() > 0;
-  }
-
-  public boolean isError() {
-    return mIsError;
+  @Override public void loadMore() {
+    obtainData(false);
   }
 }

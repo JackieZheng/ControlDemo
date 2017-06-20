@@ -40,10 +40,12 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
 
   /**
    * 数据请求 [状态变更后] 回调此方法,仅在列表有数据时候{@link #hasData()} == true时调用
-   *
+   * <pre>
+   * 主要用于更新列表数据状态
    * 1. 开始加载{@link #mIsLoading} == true
    * 2. 加载完成{@link #mIsLoading} == false
-   * 3. 加载失败{@link #mIsLoading} == false && {@link #isError()}  == false
+   * 3. 加载失败{@link #mIsLoading} == false && {@link #isError()}  == true
+   * </pre>
    */
   protected abstract void onStatusUpdated();
 
@@ -55,7 +57,39 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    */
   protected abstract void onSuccess(BaseModel<DATA> data, boolean isRefresh);
 
-  public abstract boolean checkHasMore(BaseModel<DATA> data);
+  /**
+   * 服务调用出错处理
+   * <pre>
+   *   错误提示,日志打印等可以在此方法处理
+   * </pre>
+   *
+   * @param throwable {@link Throwable}
+   */
+  protected void onError(Throwable throwable) {
+    Timber.e(throwable);
+    Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
+  }
+
+  /**
+   * 根据服务返回数据,检查服务端是否还有更多数据
+   * <pre>
+   * // 标准实现
+   * public boolean checkHasMore(BaseModel<List<String>> data) {
+   *    //判断是否还有更多数据
+   *    if (data != null
+   *     && data.isSuccess()
+   *     && data.getData() != null
+   *     && data.getData().size() == PAGE_SIZE) {
+   *       return false;
+   *    }
+   *    return true;
+   * }
+   * </pre>
+   *
+   * @param data {@link BaseModel}
+   * @return {@link Boolean} true还有更多数据
+   */
+  protected abstract boolean checkHasMore(BaseModel<DATA> data);
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
@@ -121,13 +155,14 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
   public final Consumer<BaseModel<DATA>> getOnNext(final boolean isRefresh) {
     return new Consumer<BaseModel<DATA>>() {
       @Override public void accept(BaseModel<DATA> data) throws Exception {
-        mIsError = false;
+        mIsError = data.isSuccess();
         mIsLoading = false;
-        boolean hasDataBefore = hasData();
+        boolean hasDataBefore = hasData();// 请求之前是否有数据
 
-        mHasMore = checkHasMore(data);
-        // 服务调用成功的回调
-        onSuccess(data, isRefresh);
+        mHasMore = checkHasMore(data);// 检查是否还有更多数据
+
+        onSuccess(data, isRefresh);// 服务调用成功的回调
+
         if (hasData()) {// 有数据显示内容
           showContent();
         } else {//没数据显示数据为空视图
@@ -152,10 +187,10 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
   public final Consumer<Throwable> getOnError() {
     return new Consumer<Throwable>() {
       @Override public void accept(Throwable throwable) throws Exception {
-        Timber.e(throwable);
-        Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
         mIsError = true;//加载出错
         mIsLoading = false;//加载完成
+
+        onError(throwable);//错误处理
 
         if (hasData()) {
           if (mIsViewCreated) onStatusUpdated();//加载时候发生异常,更新界面显示
@@ -178,6 +213,10 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
     return mIsLoading;
   }
 
+  @Override public boolean isError() {
+    return mIsError;
+  }
+
   @Override public boolean hasMore() {
     return mHasMore;
   }
@@ -193,14 +232,5 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    */
   protected boolean hasData() {
     return mData.size() > 0;
-  }
-
-  /**
-   * 是否有异常 {@link Throwable}
-   *
-   * @return {@link Boolean}
-   */
-  public boolean isError() {
-    return mIsError;
   }
 }

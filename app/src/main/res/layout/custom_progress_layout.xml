@@ -2,7 +2,6 @@
 <!--自定义进度显示区域,这里的布局可以随意更改-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/progress_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -24,7 +23,14 @@
       android:layout_height="wrap_content"
       android:paddingTop="16dp"
       android:singleLine="true"
-      android:text="这里是我们自定义的进度条页面"
-      android:textAppearance="?android:attr/textAppearanceSmall"
+      android:text="自定义的进度条页面"
+      />
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center|bottom"
+      android:layout_marginBottom="36dp"
+      android:padding="16dp"
+      android:text="数据马上就来,请稍等片刻"
       />
 </LinearLayout>

@@ -1,6 +1,6 @@
 <resources>
 
-  <!--Api19+系统状态栏样式-->
+  <!--Api19+样式-->
   <style name="AppTheme" parent="AppBaseTheme">
     <!--导航栏透明-->
     <!--<item name="android:windowTranslucentNavigation">true</item>-->

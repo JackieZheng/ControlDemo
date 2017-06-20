@@ -2,15 +2,22 @@
 
 <resources>
 
-  <color name="black">#0f0f0f</color>
-  <color name="white">#FFFFFF</color>
-  <color name="gray">#CCC</color>
-  <color name="light_gray">#E5E5E5</color>
+  <color name="red">#FFFF0000</color>
+  <color name="green">#FF00FF00</color>
+  <color name="blue">#FF0000FF</color>
+  <color name="yellow">#FFFFFF00</color>
+  <color name="black">#FF000000</color>
+  <color name="white">#FFFFFFFF</color>
+  <color name="gray">#FF888888</color>
+  <color name="light_gray">#FFCCCCCC</color>
+  <color name="dark_gray">#FF444444</color>
+  <color name="cyan">#FF00FFFF</color>
+  <color name="magenta">#FFFF00FF</color>
 
   <!-- Colors for the Settings interface -->
-  <color name="accent">#ff78dcfa</color>
-  <color name="primary">#ff0087be</color>
-  <color name="primary_dark">#ff006b98</color>
+  <color name="accent">#FF78DCFA</color>
+  <color name="primary">#FF0087BE</color>
+  <color name="primary_dark">#FF006B98</color>
   <color name="transparent">#00000000</color>
 
 </resources>
