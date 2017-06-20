@@ -6,7 +6,7 @@ import io.reactivex.functions.Consumer;
 /**
  * 列表模式的MVP模式View继承此类
  *
- * @param <T> 后台服务对应的响应数据结构
+ * @param <T> 后台服务对应的响应数据结构 ,如<b> BaseModel&lt;List&lt;User&gt;&gt;</b>
  */
 public interface IListMVPView<T> {
 

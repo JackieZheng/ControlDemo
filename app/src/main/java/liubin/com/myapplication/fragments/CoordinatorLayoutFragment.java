@@ -25,6 +25,9 @@ import liubin.com.myapplication.MainActivity;
 import liubin.com.myapplication.R;
 import timber.log.Timber;
 
+/**
+ * {@link CoordinatorLayout} {@link AppBarLayout}嵌套使用沉浸式状态栏实现
+ */
 public class CoordinatorLayoutFragment extends BaseFragment<BaseActivity> {
 
   Unbinder unbinder;

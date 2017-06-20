@@ -2,7 +2,7 @@ package liubin.com.myapplication.fragments;
 
 import com.example.mylibrary.base.mvp.IListMVPPresenter;
 
-public interface IMVPPersenter /*<MODEL extends IModel>*/ extends IListMVPPresenter/*<MODEL> */ {
+public interface IMVPPersenter extends IListMVPPresenter {
 
   /**
    * 请求数据

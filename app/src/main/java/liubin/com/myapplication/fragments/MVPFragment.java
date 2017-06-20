@@ -18,7 +18,8 @@ import com.example.mylibrary.base.mvp.ListMVPFragment;
 import java.util.List;
 import liubin.com.myapplication.R;
 
-public class MVPFragment extends ListMVPFragment<TopBarActivity, String, IMVPPersenter>
+public class MVPFragment
+    extends ListMVPFragment<TopBarActivity, String, List<String>, IMVPPersenter>
     implements IMVPView<BaseModel<List<String>>> {
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;

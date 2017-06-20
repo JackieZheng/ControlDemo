@@ -9,7 +9,7 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.List;
 import liubin.com.myapplication.api.CustomerApi;
 
-public class MVPPresenter implements IMVPPersenter /*IListMVPPresenter<StringData> */ {
+public class MVPPresenter implements IMVPPersenter {
 
   private IListMVPView<BaseModel<List<String>>> mView;
   private LifecycleProvider<FragmentEvent> mProvider;

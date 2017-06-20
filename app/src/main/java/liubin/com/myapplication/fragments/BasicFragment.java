@@ -32,7 +32,7 @@ import liubin.com.myapplication.api.CustomerApi;
  * 如需要修改Fragment布局内容,请重写{@link #getFragmentLayoutResourceID()}方法.
  * </pre>
  */
-public class BasicFragment extends ListFragment<TopBarActivity, String> {
+public class BasicFragment extends ListFragment<TopBarActivity, String, List<String>> {
 
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;

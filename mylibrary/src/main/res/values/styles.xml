@@ -10,11 +10,11 @@
     <item name="colorPrimaryDark">@color/primary_dark</item><!--StatusBar颜色-->
     <item name="android:textColorPrimary">@android:color/primary_text_light</item><!--字体默认颜色-->
 
-    <!--自定义状态栏颜色-->
+    <!--自定义状态栏颜色,属性名称在attrs.xml文件中定义-->
     <item name="statusBarColor">@color/primary_dark</item>
-    <!--自定义标题栏高度-->
+    <!--自定义标题栏高度,属性名称在attrs.xml文件中定义-->
     <!--<item name="toolBarSize">@dimen/abc_action_bar_default_height_material</item>-->
-    <!--Activity背景色-->
+    <!--自定义Activity背景色,属性名称在attrs.xml文件中定义-->
     <item name="activityBackgroundColor">@color/white</item>
 
     <item name="android:windowBackground">@android:color/transparent</item><!--页面背景色-->

@@ -1,19 +1,18 @@
 <resources>
-
+  <!--Api21+样式-->
   <style name="AppTheme" parent="AppBaseTheme">
-    <!-- 设置为true，系统将在你的window里面绘制 状态栏，
-    如果设置为false状态栏将是黑色的,android:statusBarColor属性将无效
-    默认为 TRUE ，之所以要写出来是因为你的theme有可能是继承过来的，确保为true
+    <!-- 是否绘制系统的状态栏,导航栏默认为True ,沉浸式状态栏必须保持这个值为True.
+         如果设置为false,android:statusBarColor属性将无效,且状态栏的效果和Api19之
+         前的状态栏效果一致,状态栏将是黑色的
     -->
     <!--<item name="android:windowDrawsSystemBarBackgrounds">true</item>-->
-    <!--<item name="android:statusBarColor">@color/primary</item>--><!--状态栏颜色-->
-    <!-- 页面可以拉伸到顶部状态栏，并且定义顶部状态栏透明。-->
-    <!--<item name="android:windowTranslucentNavigation">true</item>-->
     <!--状态栏透明-->
     <!--<item name="android:windowTranslucentStatus">true</item>-->
-    <!--Android 5.x开始需要把颜色设置透明，否则导航栏会呈现系统默认的浅灰色-->
+    <!--导航栏透明-->
+    <!--<item name="android:windowTranslucentNavigation">true</item>-->
+    <!--Api21+需要把颜色设置透明，否则导航栏会呈现系统默认的浅灰色-->
     <!--<item name="android:statusBarColor">@color/transparent</item>-->
-    <!--导航列底色：navigationBarColor 仅能设定在API v21也就是Android 5以后的版本，因此要将之设定在res/values-v21/styles.xml里面。-->
+    <!--Api21+导航列底色-->
     <!--<item name="android:navigationBarColor">@color/primary</item>-->
   </style>
 

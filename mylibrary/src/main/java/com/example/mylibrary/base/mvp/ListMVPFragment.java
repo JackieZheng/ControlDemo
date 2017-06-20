@@ -17,9 +17,16 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import timber.log.Timber;
 
-public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, P extends IListMVPPresenter>
+/**
+ * @param <CONTAINER> Activity容器类型
+ * @param <ITEM> 列表对应的数据类型
+ * @param <DATA> {@link BaseModel} 的泛型参数 如<b> BaseModel&lt;List&lt;User&gt;&gt;</b> 则&lt;DATA&gt;
+ * 为List&lt;User&gt;
+ * @param <P> 页面对应的Presenter
+ */
+public abstract class ListMVPFragment<CONTAINER extends BaseActivity, ITEM, DATA, P extends IListMVPPresenter>
     extends ProgressFragment<CONTAINER>
-    implements IListMVPView<BaseModel<List<DATA>>>, EndlessScrollListener.IMore {
+    implements IListMVPView<BaseModel<DATA>>, EndlessScrollListener.IMore {
 
   protected P mPresenter;
 
@@ -27,7 +34,7 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, P ex
   private boolean mIsError;
   private boolean mHasMore;
 
-  protected final List<DATA> mData = new ArrayList<>();
+  protected final List<ITEM> mData = new ArrayList<>();
 
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -95,9 +102,9 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, P ex
    * </pre>
    * @return {@link Consumer}
    */
-  @Override public Consumer<BaseModel<List<DATA>>> getOnNext(final boolean isRefresh) {
-    return new Consumer<BaseModel<List<DATA>>>() {
-      @Override public void accept(BaseModel<List<DATA>> data) throws Exception {
+  @Override public Consumer<BaseModel<DATA>> getOnNext(final boolean isRefresh) {
+    return new Consumer<BaseModel<DATA>>() {
+      @Override public void accept(BaseModel<DATA> data) throws Exception {
         mIsError = false;
         mIsLoading = false;
         boolean hasDataBefore = hasData();
@@ -158,7 +165,7 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, P ex
    * @param data 服务端返回的数据
    * @param isRefresh 是否需要清空原来的数据
    */
-  public abstract void onSuccess(BaseModel<List<DATA>> data, boolean isRefresh);
+  public abstract void onSuccess(BaseModel<DATA> data, boolean isRefresh);
 
   /**
    * 根据返回的数据检查是否还有更多数据
@@ -166,7 +173,7 @@ public abstract class ListMVPFragment<CONTAINER extends BaseActivity, DATA, P ex
    * @param model {@link BaseModel}
    * @return {@link Boolean} true: 有更多数据
    */
-  public abstract boolean checkHasMore(BaseModel<List<DATA>> model);
+  public abstract boolean checkHasMore(BaseModel<DATA> model);
 
   /**
    * 数据加载 [状态变更后] 回调此方法
