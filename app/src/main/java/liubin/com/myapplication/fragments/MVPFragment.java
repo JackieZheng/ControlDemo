@@ -11,7 +11,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.example.mylibrary.base.BaseModel;
+import com.example.mylibrary.base.ApiResponse;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.TopBarActivity;
 import com.example.mylibrary.base.mvp.ListMVPFragment;
@@ -20,7 +20,7 @@ import liubin.com.myapplication.R;
 
 public class MVPFragment
     extends ListMVPFragment<TopBarActivity, String, List<String>, IMVPPersenter>
-    implements IMVPView<BaseModel<List<String>>> {
+    implements IMVPView<ApiResponse<List<String>>> {
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
 
@@ -29,16 +29,16 @@ public class MVPFragment
 
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mPresenter = new MVPPresenter(this, this);
-    obtainData(false);
+    obtainData(false);// 请求数据
   }
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
-    //注意ProgressFragment的子类,只能在onViewCreated里面才能bind
+    // 注意ProgressFragment的子类,只能在onViewCreated里面才能bind
     mUnBinder = ButterKnife.bind(this, view);
 
+    // 初始化下拉刷新
     mSwipeRefreshLayout.setColorSchemeResources(//
         android.R.color.holo_blue_bright,//
         android.R.color.holo_green_light,//
@@ -50,6 +50,7 @@ public class MVPFragment
       }
     });
 
+    // 初始化列表
     mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     mRecyclerView.setAdapter(new BasicAdapter(getActivity(), mData, this));
     mRecyclerView.addOnScrollListener(new EndlessScrollListener(this));
@@ -61,17 +62,6 @@ public class MVPFragment
   @Override public void onDestroyView() {
     super.onDestroyView();
     mUnBinder.unbind();
-  }
-
-  @Override public boolean checkHasMore(BaseModel<List<String>> data) {
-    //判断是否还有更多数据
-    if (data != null
-        && data.isSuccess()
-        && data.getData() != null
-        && data.getData().size() == PAGE_SIZE) {
-      return false;
-    }
-    return true;
   }
 
   /**
@@ -95,12 +85,25 @@ public class MVPFragment
     return R.layout.content_mvp;
   }
 
+  @Override protected IMVPPersenter initPresenter() {
+    return new MVPPresenter(this, this);
+  }
+
+  @Override protected void obtainData(boolean isRefresh) {
+    mPresenter.loadData(PAGE_SIZE, isRefresh);
+  }
+
+  @Override public boolean checkHasMore(ApiResponse<List<String>> data) {
+    // 服务调用失败 || 数据不满一页 表示还有更多数据
+    return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
+  }
+
   @Override public void onStatusUpdated() {
     mSwipeRefreshLayout.setRefreshing(isLoading());
     mRecyclerView.getAdapter().notifyDataSetChanged();
   }
 
-  @Override public void onSuccess(BaseModel<List<String>> data, boolean isRefresh) {
+  @Override public void onSuccess(ApiResponse<List<String>> data, boolean isRefresh) {
     if (!data.isSuccess()) {// 服务端返回异常代码
       Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
       return;
@@ -114,9 +117,5 @@ public class MVPFragment
 
   @Override protected void onError(Throwable throwable) {
     super.onError(throwable);
-  }
-
-  @Override protected void obtainData(boolean isRefresh) {
-    mPresenter.loadData(PAGE_SIZE, isRefresh);
   }
 }

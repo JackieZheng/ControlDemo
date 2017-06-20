@@ -12,7 +12,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.example.mylibrary.base.BaseModel;
+import com.example.mylibrary.base.ApiResponse;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.ListFragment;
 import com.example.mylibrary.base.ProgressFragment;
@@ -107,7 +107,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, List<Str
         .subscribe(getOnNext(isRefresh), getOnError());
   }
 
-  @Override public void onSuccess(BaseModel<List<String>> data, boolean isRefresh) {
+  @Override public void onSuccess(ApiResponse<List<String>> data, boolean isRefresh) {
     if (!data.isSuccess()) {// 服务端返回异常代码
       Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
       return;
@@ -119,15 +119,9 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, List<Str
     }
   }
 
-  @Override public boolean checkHasMore(BaseModel<List<String>> data) {
-    //判断是否还有更多数据
-    if (data != null
-        && data.isSuccess()
-        && data.getData() != null
-        && data.getData().size() == PAGE_SIZE) {
-      return false;
-    }
-    return true;
+  @Override public boolean checkHasMore(ApiResponse<List<String>> data) {
+    // 服务调用失败 || 数据不满一页 表示还有更多数据
+    return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
   }
 
   @Override protected void onStatusUpdated() {

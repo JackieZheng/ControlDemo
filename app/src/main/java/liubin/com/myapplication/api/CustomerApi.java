@@ -2,7 +2,7 @@ package liubin.com.myapplication.api;
 
 import android.accounts.NetworkErrorException;
 import com.example.mylibrary.base.ApiClient;
-import com.example.mylibrary.base.BaseModel;
+import com.example.mylibrary.base.ApiResponse;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -36,16 +36,16 @@ public class CustomerApi {
    * @param count 获取多少条数据
    * @return {@link Observable}
    */
-  public static Observable<BaseModel<List<String>>> queryData(final int count) {
+  public static Observable<ApiResponse<List<String>>> queryData(final int count) {
     return Observable.timer(1500, TimeUnit.MILLISECONDS)
-        .flatMap(new Function<Long, ObservableSource<BaseModel<List<String>>>>() {
-          @Override public ObservableSource<BaseModel<List<String>>> apply(Long aLong)
+        .flatMap(new Function<Long, ObservableSource<ApiResponse<List<String>>>>() {
+          @Override public ObservableSource<ApiResponse<List<String>>> apply(Long aLong)
               throws Exception {
-            return Observable.create(new ObservableOnSubscribe<BaseModel<List<String>>>() {
-              @Override public void subscribe(ObservableEmitter<BaseModel<List<String>>> e)
+            return Observable.create(new ObservableOnSubscribe<ApiResponse<List<String>>>() {
+              @Override public void subscribe(ObservableEmitter<ApiResponse<List<String>>> e)
                   throws Exception {
                 int index = id % 8;
-                BaseModel<List<String>> data = new BaseModel<List<String>>();
+                ApiResponse<List<String>> data = new ApiResponse<List<String>>();
                 Timber.e("" + index);
                 switch (index) {
                   case 0:
@@ -106,9 +106,8 @@ public class CustomerApi {
   private void test() {
     ApiClient.create(Api.class)//
         .getUser(1, 20)//
-        .doOnNext(new Consumer<BaseModel<List<User>>>() {
-          @Override public void accept(@NonNull BaseModel<List<User>> listBaseModel)
-              throws Exception {
+        .doOnNext(new Consumer<ApiResponse<List<User>>>() {
+          @Override public void accept(@NonNull ApiResponse<List<User>> response) throws Exception {
 
           }
         })//
@@ -120,9 +119,8 @@ public class CustomerApi {
         })//开始执行之前的准备工作
         .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
         .observeOn(AndroidSchedulers.mainThread())//指定这行代码之后的subscribe在io线程执行
-        .subscribe(new Consumer<BaseModel<List<User>>>() {
-          @Override public void accept(@NonNull BaseModel<List<User>> listBaseModel)
-              throws Exception {
+        .subscribe(new Consumer<ApiResponse<List<User>>>() {
+          @Override public void accept(@NonNull ApiResponse<List<User>> response) throws Exception {
 
           }
         }, new Consumer<Throwable>() {

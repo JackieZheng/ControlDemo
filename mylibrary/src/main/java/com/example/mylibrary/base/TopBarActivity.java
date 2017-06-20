@@ -6,9 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.view.WindowManager;
 import com.example.mylibrary.R;
-import com.r0adkll.slidr.Slidr;
 
 /**
  * 包含 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity, 一般页面使用的Activity
@@ -25,7 +23,7 @@ public class TopBarActivity extends BaseActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Slidr.attach(this);
+    // Slidr.attach(this);
     mContentContainer = (ViewGroup) findViewById(R.id.content);
     setTransparentForWindow();
     setTopBarOverlay(false);

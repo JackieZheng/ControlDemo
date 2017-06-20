@@ -17,7 +17,7 @@ import timber.log.Timber;
  *
  * @param <CONTAINER> 指定此Fragment在哪个Activity中打开,对直接嵌套在Activity中的Fragment有效
  * @param <ITEM> 列表数据类型
- * @param <DATA> {@link BaseModel} 的泛型参数
+ * @param <DATA> {@link ApiResponse} 的泛型参数
  */
 public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
     extends ProgressFragment<CONTAINER> implements EndlessScrollListener.IMore {
@@ -55,7 +55,7 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    * @param data 服务端返回的数据
    * @param isRefresh 是否需要清空原来的数据
    */
-  protected abstract void onSuccess(BaseModel<DATA> data, boolean isRefresh);
+  protected abstract void onSuccess(ApiResponse<DATA> data, boolean isRefresh);
 
   /**
    * 服务调用出错处理
@@ -74,22 +74,16 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    * 根据服务返回数据,检查服务端是否还有更多数据
    * <pre>
    * // 标准实现
-   * public boolean checkHasMore(BaseModel<List<String>> data) {
-   *    //判断是否还有更多数据
-   *    if (data != null
-   *     && data.isSuccess()
-   *     && data.getData() != null
-   *     && data.getData().size() == PAGE_SIZE) {
-   *       return false;
-   *    }
-   *    return true;
+   * public boolean checkHasMore(ApiResponse<List<String>> data) {
+   *    // 服务调用失败 || 数据不满一页 表示还有更多数据
+   *    return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
    * }
    * </pre>
    *
-   * @param data {@link BaseModel}
+   * @param data {@link ApiResponse}
    * @return {@link Boolean} true还有更多数据
    */
-  protected abstract boolean checkHasMore(BaseModel<DATA> data);
+  protected abstract boolean checkHasMore(ApiResponse<DATA> data);
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
@@ -122,7 +116,7 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    *
    * @return {@link Consumer}
    */
-  public final Consumer<Disposable> getDoOnSubscribe() {
+  public final Consumer<? super Disposable> getDoOnSubscribe() {
     return new Consumer<Disposable>() {//主线程
       @Override public void accept(Disposable disposable) throws Exception {
         if (isLoading()) {// 如果正在加载,取消本次请求
@@ -147,15 +141,15 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    * @param isRefresh 是否需要清空原来的数据
    * <pre>
    * 1. 更新状态 {@link #mIsLoading} = false ,{@link #mIsError} = false
-   * 2. 服务调用成功后的回调 {@link #onSuccess(BaseModel, boolean)}
+   * 2. 服务调用成功后的回调 {@link #onSuccess(ApiResponse, boolean)}
    * 3. 状态更新后的回调方法 {@link #onStatusUpdated()}
    * </pre>
    * @return {@link Consumer}
    */
-  public final Consumer<BaseModel<DATA>> getOnNext(final boolean isRefresh) {
-    return new Consumer<BaseModel<DATA>>() {
-      @Override public void accept(BaseModel<DATA> data) throws Exception {
-        mIsError = data.isSuccess();
+  public final Consumer<ApiResponse<DATA>> getOnNext(final boolean isRefresh) {
+    return new Consumer<ApiResponse<DATA>>() {
+      @Override public void accept(ApiResponse<DATA> data) throws Exception {
+        mIsError = !data.isSuccess();
         mIsLoading = false;
         boolean hasDataBefore = hasData();// 请求之前是否有数据
 
@@ -184,7 +178,7 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    *
    * @return {@link Consumer}
    */
-  public final Consumer<Throwable> getOnError() {
+  public final Consumer<? super Throwable> getOnError() {
     return new Consumer<Throwable>() {
       @Override public void accept(Throwable throwable) throws Exception {
         mIsError = true;//加载出错

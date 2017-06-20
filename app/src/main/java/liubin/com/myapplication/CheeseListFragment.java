@@ -35,8 +35,8 @@ import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.example.mylibrary.base.ApiResponse;
 import com.example.mylibrary.base.BaseFragment;
-import com.example.mylibrary.base.BaseModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -122,8 +122,8 @@ public class CheeseListFragment extends BaseFragment
         })//开始执行之前的准备工作
         .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
         .observeOn(AndroidSchedulers.mainThread())//指定 后面的subscribe在io线程执行
-        .subscribe(new Consumer<BaseModel<List<String>>>() {
-          @Override public void accept(BaseModel<List<String>> data) throws Exception {
+        .subscribe(new Consumer<ApiResponse<List<String>>>() {
+          @Override public void accept(ApiResponse<List<String>> data) throws Exception {
             List<String> datas = data.getData();
             if (!mIsViewCreated) {
               if (datas != null && datas.size() > 0) mData.addAll(datas);

@@ -33,6 +33,7 @@ public class EndlessScrollListener extends OnScrollListener {
         && this.canLoad// 如果可以加载
         && this.mMore.hasMore()// 服务端还有更多数据
         && !this.mMore.isLoading() // 当前没有在请求服务
+        && !this.mMore.isError()// 当前服务调用没有错误或者异常
         //&& !this.mMore.isRefreshing() // 能够加载更多(没有下拉刷新)
         && ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition()
         >= recyclerView.getAdapter().getItemCount()
@@ -61,6 +62,9 @@ public class EndlessScrollListener extends OnScrollListener {
 
     /**
      * 是否有异常 {@link Throwable} 或加载出错(服务端异常)
+     * <pre>
+     *   如果有这样的需求,(服务端还有数据)每次滑动到只剩下三项未显示的时候,需要触发加载更多那么重载这个方法,返回true
+     * </pre>
      *
      * @return {@link Boolean}
      */

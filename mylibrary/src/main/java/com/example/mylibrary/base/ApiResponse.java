@@ -5,7 +5,7 @@ package com.example.mylibrary.base;
  *
  * @param <T> 数据类型 "结构体"
  */
-public class BaseModel<T> {
+public class ApiResponse<T> {
   private int code;
   private String error;
   private String message;
