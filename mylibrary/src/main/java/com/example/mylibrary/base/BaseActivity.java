@@ -18,7 +18,7 @@ import com.example.mylibrary.R;
  */
 public class BaseActivity extends AppCompatActivity {
   /** Fragment名字 */
-  public static String FRAGMENT_CLASS_NAME = "fragment_class_name";
+  public static final String FRAGMENT_CLASS_NAME = "fragment_class_name";
   /** 系统UI的相关属性 */
   protected SystemBarConfig mSystemBarConfig;
 

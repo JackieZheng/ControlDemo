@@ -1,12 +1,26 @@
 package com.example.mylibrary.base;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
+ * 对{@link Fragment}进行基本的封装
+ *
+ * <pre>
+ * 1. 提供RxJava请求与{@link Fragment}生命周期绑定
+ * 2. 提供视图是否已经创建标识{@link #mIsViewCreated}
+ * 3. 提供容器{@link Activity}引用
+ * 4. 提供初始化自定义顶部栏空方法{@link #initTopBar(TopBarActivity)},当容器为{@link TopBarActivity}时调用
+ * 使用场景:
+ *    界面控件,数据基本保持不变,或者不需要等数据返回就有固定的显示界面.
+ *    如:登录,注册,设置,关于页面等
+ * </pre>
+ *
  * @param <CONTAINER> 泛型参数类型为<b>{@link BaseActivity}</b>或其子类
  * Fragment 对应的容器(对Activity的根布局Fragment有效,嵌套的Fragment无效)
  *

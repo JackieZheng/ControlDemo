@@ -38,9 +38,12 @@ import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.example.mylibrary.base.ActivityUtils;
+import com.example.mylibrary.base.ApiClient;
 import com.example.mylibrary.base.BaseActivity;
+import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
+import liubin.com.myapplication.bean.User;
 import liubin.com.myapplication.fragments.BasicFragment;
 import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
 import liubin.com.myapplication.fragments.CustomFragment;
@@ -90,6 +93,13 @@ public class MainActivity extends BaseActivity {
         Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
             .setAction("Action", null)
             .show();
+        //CustomerApi.test();
+        User user = new User();
+        user.setName("nnnn");
+        user.setAge(333);
+        String s = ApiClient.getGson().toJson(user);
+        user = ApiClient.getGson().fromJson(s, TypeToken.get(User.class).getType());
+        Timber.e(user.getName());
       }
     });
   }

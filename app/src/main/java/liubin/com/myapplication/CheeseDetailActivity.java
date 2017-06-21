@@ -36,6 +36,8 @@ import com.r0adkll.slidr.Slidr;
 public class CheeseDetailActivity extends BaseActivity {
 
   public static final String EXTRA_NAME = "cheese_name";
+  public static final String EXTRA_ICON = "cheese_icon";
+
   @BindView(R.id.backdrop) ImageView mImageView;
   @BindView(R.id.toolbar) Toolbar mToolbar;
   @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
@@ -85,7 +87,7 @@ public class CheeseDetailActivity extends BaseActivity {
     //扩张时候的title颜色
     mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.primary));
 
-    Glide.with(this).load(Cheeses.getRandomCheeseDrawable(0)).centerCrop().into(mImageView);
+    Glide.with(this).load(getIntent().getIntExtra(EXTRA_ICON, 0)).centerCrop().into(mImageView);
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {

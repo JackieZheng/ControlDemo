@@ -1,14 +1,18 @@
 package com.example.mylibrary.base;
 
+import java.io.Serializable;
+
 /**
- * 服务端响应的JSON对应的"结构体"
+ * 后台服务返回的数据对应的数据结构,需要根据后台服务的特点调整类的内容
  *
  * @param <T> 数据类型 "结构体"
  */
-public class ApiResponse<T> {
+public class ApiResponse<T> implements Serializable {
+  /** 和后台服务约定的响应码 */
   private int code;
-  private String error;
+  /** 服务调用结果 描述|错误信息 */
   private String message;
+  /** 数据 */
   private T data;
 
   public T getData() {
@@ -29,14 +33,6 @@ public class ApiResponse<T> {
 
   public String getMessage() {
     return message;
-  }
-
-  public String getError() {
-    return error;
-  }
-
-  public void setError(String error) {
-    this.error = error;
   }
 
   public void setCode(int code) {

@@ -2,6 +2,7 @@ package com.example.mylibrary.base;
 
 import android.accounts.NetworkErrorException;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Toast;
 import io.reactivex.disposables.Disposable;
@@ -13,7 +14,14 @@ import java.util.concurrent.TimeoutException;
 import timber.log.Timber;
 
 /**
- * 列表类型的Fragment继承此类
+ * 列表类型的{@link Fragment}封装
+ * <pre>
+ *   1. 提供数据请求前,请求中,请求成功,失败,对视图的基本切换,和页面状态的基本处理.
+ *   2. 配合{@link EndlessScrollListener.IMore} 和 {@link EndlessScrollListener} 加载更多的处理逻辑
+ *   使用场景
+ *      需要有 加载中,数据为空,等状态显示的列表.
+ *      如: 用户帖子列表 进入列表时 显示加载中,加载成功后显示列表数据,网络异常显示网络异常界面
+ * </pre>
  *
  * @param <CONTAINER> 指定此Fragment在哪个Activity中打开,对直接嵌套在Activity中的Fragment有效
  * @param <ITEM> 列表数据类型

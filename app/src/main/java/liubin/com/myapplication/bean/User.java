@@ -1,9 +1,10 @@
 package liubin.com.myapplication.bean;
 
+import com.example.mylibrary.base.adapter.DoubleAdapter;
 import com.google.gson.annotations.JsonAdapter;
-import java.util.List;
+import java.io.Serializable;
 
-public class User {
+public class User implements Serializable {
 
   @JsonAdapter(DoubleAdapter.class) private double age;
   private String name;

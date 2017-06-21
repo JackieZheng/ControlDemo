@@ -17,10 +17,11 @@ import com.example.mylibrary.base.TopBarActivity;
 import com.example.mylibrary.base.mvp.ListMVPFragment;
 import java.util.List;
 import liubin.com.myapplication.R;
+import liubin.com.myapplication.bean.Result;
 
 public class MVPFragment
-    extends ListMVPFragment<TopBarActivity, String, List<String>, IMVPPersenter>
-    implements IMVPView<ApiResponse<List<String>>> {
+    extends ListMVPFragment<TopBarActivity, Result, List<Result>, IMVPPersenter>
+    implements IMVPView<ApiResponse<List<Result>>> {
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
 
@@ -81,7 +82,7 @@ public class MVPFragment
     });
   }
 
-  @Override public int getFragmentContentLayoutResourceID() {
+  @Override public int getContentLayoutResourceId() {
     return R.layout.content_mvp;
   }
 
@@ -93,7 +94,7 @@ public class MVPFragment
     mPresenter.loadData(PAGE_SIZE, isRefresh);
   }
 
-  @Override public boolean checkHasMore(ApiResponse<List<String>> data) {
+  @Override public boolean checkHasMore(ApiResponse<List<Result>> data) {
     // 服务调用失败 || 数据不满一页 表示还有更多数据
     return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
   }
@@ -103,7 +104,7 @@ public class MVPFragment
     mRecyclerView.getAdapter().notifyDataSetChanged();
   }
 
-  @Override public void onSuccess(ApiResponse<List<String>> data, boolean isRefresh) {
+  @Override public void onSuccess(ApiResponse<List<Result>> data, boolean isRefresh) {
     if (!data.isSuccess()) {// 服务端返回异常代码
       Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
       return;

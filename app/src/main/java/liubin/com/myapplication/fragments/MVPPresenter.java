@@ -8,13 +8,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import java.util.List;
 import liubin.com.myapplication.api.CustomerApi;
+import liubin.com.myapplication.bean.Result;
 
 public class MVPPresenter implements IMVPPersenter {
 
-  private IListMVPView<ApiResponse<List<String>>> mView;
+  private IListMVPView<ApiResponse<List<Result>>> mView;
   private LifecycleProvider<FragmentEvent> mProvider;
 
-  public MVPPresenter(IListMVPView<ApiResponse<List<String>>> mvpView,
+  public MVPPresenter(IListMVPView<ApiResponse<List<Result>>> mvpView,
       LifecycleProvider<FragmentEvent> provider) {
     this.mView = mvpView;
     this.mProvider = provider;
@@ -22,7 +23,7 @@ public class MVPPresenter implements IMVPPersenter {
 
   @Override public void loadData(final int pageSize, final boolean isRefresh) {
     CustomerApi.queryData(pageSize)//
-        .compose(mProvider.<ApiResponse<List<String>>>bindUntilEvent(FragmentEvent.DESTROY))//生命周期绑定
+        .compose(mProvider.<ApiResponse<List<Result>>>bindUntilEvent(FragmentEvent.DESTROY))//生命周期绑定
         //.doOnNext(mView.getDoOnNext(pageSize))//
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
         .doOnSubscribe(mView.getDoOnSubscribe())//开始执行之前的准备工作

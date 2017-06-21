@@ -22,17 +22,18 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.List;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.api.CustomerApi;
+import liubin.com.myapplication.bean.Result;
 
 /**
  * <pre>有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity基本使用方式
- * 1. 继承{@link ProgressFragment}并指定泛型参数为{@link TopBarActivity}
- * 2. 重写 {@link #getFragmentContentLayoutResourceID} 方法,返回内容区域的布局文件,
+ * 1. 继承{@link ListFragment}并指定泛型参数为{@link TopBarActivity}
+ * 2. 重写 {@link #getContentLayoutResourceId} 方法,返回内容区域的布局文件,
  * 这个布局文件将嵌入到{@link ProgressFragment} 的内容区域
  * 3. 注意请不要重写{@link #onCreateView(LayoutInflater, ViewGroup, Bundle)},
- * 如需要修改Fragment布局内容,请重写{@link #getFragmentLayoutResourceID()}方法.
+ * 如需要修改Fragment布局内容,请重写{@link #getFragmentLayoutResourceId()}方法.
  * </pre>
  */
-public class BasicFragment extends ListFragment<TopBarActivity, String, List<String>> {
+public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Result>> {
 
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
@@ -44,7 +45,11 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, List<Str
     obtainData(false);//请求数据,不清空原来数据
   }
 
-  @Override public int getFragmentContentLayoutResourceID() {
+  @Override public int getFragmentLayoutResourceId() {
+    return R.layout.fragment_custom;
+  }
+
+  @Override public int getContentLayoutResourceId() {
     return R.layout.content_basic;
   }
 
@@ -107,7 +112,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, List<Str
         .subscribe(getOnNext(isRefresh), getOnError());
   }
 
-  @Override public void onSuccess(ApiResponse<List<String>> data, boolean isRefresh) {
+  @Override public void onSuccess(ApiResponse<List<Result>> data, boolean isRefresh) {
     if (!data.isSuccess()) {// 服务端返回异常代码
       Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
       return;
@@ -119,7 +124,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, String, List<Str
     }
   }
 
-  @Override public boolean checkHasMore(ApiResponse<List<String>> data) {
+  @Override public boolean checkHasMore(ApiResponse<List<Result>> data) {
     // 服务调用失败 || 数据不满一页 表示还有更多数据
     return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
   }

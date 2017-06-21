@@ -35,6 +35,14 @@ import static com.example.mylibrary.base.ProgressFragment.ViewType.NETWORK_ERROR
 import static com.example.mylibrary.base.ProgressFragment.ViewType.PROGRESS;
 
 /**
+ * 有状态切换的{@link Fragment}封装,继承自{@link BaseFragment}
+ * <pre>
+ *   1. 提供 加载中,数据为空,网络错误,内容,等状态切换显示.
+ *   2. 提供内容区域自定义,加载中,数据为空,网络错误自定义接口.
+ *   使用场景:
+ *   需要通过网络请求返回数据后才能决定界面显示的情况.
+ *   如:帖子数据列表,评论列表等.
+ * </pre>
  * The implementation of the fragment to display content. Based on {@link
  * android.support.v4.app.ListFragment}.
  * If you are waiting for the initial data, you'll can displaying during this time an indeterminate
@@ -93,8 +101,8 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
    */
   @Override public final View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    mTempView = inflater.inflate(getFragmentContentLayoutResourceID(), null, false);
-    return inflater.inflate(getFragmentLayoutResourceID(), container, false);
+    mTempView = inflater.inflate(getContentLayoutResourceId(), null, false);
+    return inflater.inflate(getFragmentLayoutResourceId(), container, false);
   }
 
   /**
@@ -103,7 +111,7 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
    *
    * @return @LayoutRes(eg R.layout.fragment_progress)
    */
-  public @LayoutRes int getFragmentLayoutResourceID() {
+  public @LayoutRes int getFragmentLayoutResourceId() {
     return R.layout.fragment_progress;
   }
 
@@ -112,7 +120,7 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
    *
    * @return @return @LayoutRes(eg R.layout.content_user_info)
    */
-  abstract public @LayoutRes int getFragmentContentLayoutResourceID();
+  abstract public @LayoutRes int getContentLayoutResourceId();
 
   /**
    * Attach to mTempView once the mTempView hierarchy has been created.

@@ -1,6 +1,5 @@
 package liubin.com.myapplication.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -16,8 +15,8 @@ import java.util.Random;
 import liubin.com.myapplication.R;
 
 /**
- * <pre> 自定义Fragment内容
- * 1.重写{@link #getFragmentLayoutResourceID()}返回对应的布局文件
+ * <pre> 自定义Fragment,加载中,空数据,网络异常 视图
+ * 1.重写{@link #getFragmentLayoutResourceId()}返回对应的Fragment布局文件
  * </pre>
  */
 public class CustomFragment extends ProgressFragment<TopBarActivity> {
@@ -33,11 +32,11 @@ public class CustomFragment extends ProgressFragment<TopBarActivity> {
     obtainData();
   }
 
-  @Override public int getFragmentLayoutResourceID() {
+  @Override public int getFragmentLayoutResourceId() {
     return R.layout.fragment_custom;
   }
 
-  @Override public int getFragmentContentLayoutResourceID() {
+  @Override public int getContentLayoutResourceId() {
     return R.layout.content_custom;
   }
 

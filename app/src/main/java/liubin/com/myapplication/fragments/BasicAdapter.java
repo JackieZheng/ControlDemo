@@ -8,24 +8,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.mylibrary.base.BaseRecycleViewAdapter;
+import com.example.mylibrary.base.BaseViewHolder;
 import com.example.mylibrary.base.EndlessScrollListener;
 import java.util.List;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import liubin.com.myapplication.CheeseDetailActivity;
-import liubin.com.myapplication.Cheeses;
 import liubin.com.myapplication.R;
+import liubin.com.myapplication.bean.Result;
 
-public class BasicAdapter extends BaseRecycleViewAdapter<String, RecyclerView.ViewHolder> {
+public class BasicAdapter extends BaseRecycleViewAdapter<Result, RecyclerView.ViewHolder> {
   private static final int ITEM_TYPE_DATA = 1;
   private final EndlessScrollListener.IMore mMore;
+  private final LayoutInflater mInflater;
   private int mBackground;
 
-  public BasicAdapter(Context context, List<String> items, EndlessScrollListener.IMore more) {
+  public BasicAdapter(Context context, List<Result> items, EndlessScrollListener.IMore more) {
     super(items);
     this.mMore = more;
+    mInflater = LayoutInflater.from(context);
     TypedValue typedValue = new TypedValue();
     context.getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
     mBackground = typedValue.resourceId;
@@ -34,14 +36,12 @@ public class BasicAdapter extends BaseRecycleViewAdapter<String, RecyclerView.Vi
   @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     switch (viewType) {
       case ITEM_TYPE_DATA: {
-        View view =
-            LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        View view = mInflater.inflate(R.layout.list_item, parent, false);
         view.setBackgroundResource(mBackground);
         return new DataViewHolder(view);
       }
       case ITEM_TYPE_FOOTER: {
-        View view = LayoutInflater.from(parent.getContext())
-            .inflate(R.layout.recyclerview_item_footer, parent, false);
+        View view = mInflater.inflate(R.layout.recyclerview_item_footer, parent, false);
         view.setBackgroundResource(mBackground);
         return new FootViewHolder(view);
       }
@@ -51,29 +51,48 @@ public class BasicAdapter extends BaseRecycleViewAdapter<String, RecyclerView.Vi
 
   @Override public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
     if (viewHolder instanceof DataViewHolder) {
-
       final DataViewHolder holder = (DataViewHolder) viewHolder;
-      holder.mBoundString = getItem(position);
-      holder.mTextView.setText(getItem(position));
-
-      holder.mView.setOnClickListener(new View.OnClickListener() {
+      final Result item = getItem(position);
+      holder.setText(android.R.id.text1, item.getName());
+      ImageView imageView = holder.getView(R.id.avatar);
+      Glide.with(imageView.getContext())
+          .load(getItem(position).getIcon())
+          .bitmapTransform(new CropCircleTransformation(imageView.getContext()))
+          .into(imageView);
+      holder.itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
           Context context = v.getContext();
           Intent intent = new Intent(context, CheeseDetailActivity.class);
-          intent.putExtra(CheeseDetailActivity.EXTRA_NAME, holder.mBoundString);
+          intent.putExtra(CheeseDetailActivity.EXTRA_NAME, item.getName());
+          intent.putExtra(CheeseDetailActivity.EXTRA_ICON, item.getIcon());
           context.startActivity(intent);
         }
       });
 
-      Glide.with(holder.mImageView.getContext()).load(Cheeses.getRandomCheeseDrawable(position))
+      /*if (true) return;
+
+      holder.mTextView.setText(item.getName());
+
+      holder.itemView.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View v) {
+          Context context = v.getContext();
+          Intent intent = new Intent(context, CheeseDetailActivity.class);
+          intent.putExtra(CheeseDetailActivity.EXTRA_NAME, item.getName());
+          intent.putExtra(CheeseDetailActivity.EXTRA_ICON, item.getIcon());
+          context.startActivity(intent);
+        }
+      });
+
+      Glide.with(holder.mImageView.getContext())
+          .load(getItem(position).getIcon())
           .bitmapTransform(new CropCircleTransformation(holder.mImageView.getContext()))
-          .into(holder.mImageView);
+          .into(holder.mImageView);*/
     } else if (viewHolder instanceof FootViewHolder) {
       ((FootViewHolder) viewHolder).setupFootView(mMore);
     }
   }
 
-  @Override public String getItem(int position) {
+  @Override public Result getItem(int position) {
     if (position == mData.size()) {
       return null;
     }
@@ -89,17 +108,17 @@ public class BasicAdapter extends BaseRecycleViewAdapter<String, RecyclerView.Vi
     return ITEM_TYPE_DATA;
   }
 
-  private static class DataViewHolder extends RecyclerView.ViewHolder {
-    String mBoundString;
-    final View mView;
-    final ImageView mImageView;
-    final TextView mTextView;
+  /**
+   * 继承{@link BaseViewHolder}可以是代码更简洁
+   */
+  private static class DataViewHolder extends BaseViewHolder {
+    //private ImageView mImageView;
+    //private TextView mTextView;
 
     DataViewHolder(View view) {
       super(view);
-      mView = view;
-      mImageView = (ImageView) view.findViewById(R.id.avatar);
-      mTextView = (TextView) view.findViewById(android.R.id.text1);
+      //mImageView = (ImageView) view.findViewById(R.id.avatar);
+      //mTextView = (TextView) view.findViewById(android.R.id.text1);
     }
   }
 }
