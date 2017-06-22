@@ -43,6 +43,7 @@ import com.example.mylibrary.base.BaseActivity;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
+import liubin.com.myapplication.api.BlankFragment;
 import liubin.com.myapplication.bean.User;
 import liubin.com.myapplication.fragments.BasicFragment;
 import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
@@ -237,6 +238,14 @@ public class MainActivity extends BaseActivity {
               case R.id.nav_discussion: {//MPV模式使用
                 ActivityUtils.startActivity(MainActivity.this, MVPFragment.class, null, -1);
                 break;
+              }
+              case R.id.test: {
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), TestActivity.class);
+                startActivity(intent);
+              }
+              case R.id.test1: {
+                ActivityUtils.startActivity(MainActivity.this, BlankFragment.class, null, -1);
               }
             }
             menuItem.setChecked(true);

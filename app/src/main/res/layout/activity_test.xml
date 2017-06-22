@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?activityBackgroundColor"
+    android:orientation="vertical"
+    tools:context="liubin.com.myapplication.TestActivity"
+    >
+
+  <FrameLayout
+      android:id="@+id/content"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      >
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:gravity="center"
+        android:text="@string/title_home"
+        android:textColor="@color/navigation_text_color"
+        />
+
+  </FrameLayout>
+  <com.ashokvarma.bottomnavigation.BottomNavigationBar
+      android:id="@+id/bottom_navigation_bar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom"
+      />
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="1px"
+      android:background="@color/light_gray"
+      />
+  <android.support.design.widget.BottomNavigationView
+      android:id="@+id/navigation"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom"
+      android:background="@color/white"
+      app:elevation="0dp"
+      app:itemIconTint="@color/navigation_text_color"
+      app:itemTextColor="@color/navigation_text_color"
+      app:menu="@menu/navigation"
+      />
+
+</LinearLayout>

@@ -19,17 +19,18 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-
     <activity android:name="com.example.mylibrary.base.TopBarActivity"/>
     <activity android:name="com.example.mylibrary.base.BaseActivity"/>
-
     <activity android:name=".CheeseDetailActivity"/>
     <activity
         android:name=".FullscreenActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"
         android:label="@string/title_activity_fullscreen"
         android:theme="@style/FullscreenTheme">
-
+    </activity>
+    <activity
+        android:name=".TestActivity"
+        android:label="@string/title_activity_test">
     </activity>
   </application>
 

@@ -2,11 +2,16 @@ package com.example.mylibrary.todo;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Build;
+import android.support.annotation.AnyRes;
+import android.support.annotation.AttrRes;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,6 +102,19 @@ public class UiUtils {
     lp.gravity = Gravity.CENTER;
     toolbar.addView(titleView, lp);
     return titleView;
+  }
+
+  /**
+   * 根据属性ID获取对应的style文件的资源
+   *
+   * @param context {@link Context}
+   * @param attr {@link AttrRes} 属性值eg:{@link R.attr#selectableItemBackground}
+   * @return {@link AnyRes} 资源ID eg:{@link R.drawable#abc_list_focused_holo}
+   */
+  @AnyRes public static int getAttribute(@NonNull Context context, @AttrRes int attr) {
+    final TypedValue mTypedValue = new TypedValue();
+    context.getTheme().resolveAttribute(attr, mTypedValue, true);
+    return mTypedValue.resourceId;
   }
 
   /**

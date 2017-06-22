@@ -7,6 +7,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -17,6 +18,13 @@ import com.example.mylibrary.R;
  * 基础Activity,此Activity不包含  [自定义的顶部栏(状态栏+标题栏+标题栏阴影)]
  */
 public class BaseActivity extends AppCompatActivity {
+  static {
+    //支持使用矢量图
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
+  }
+
   /** Fragment名字 */
   public static final String FRAGMENT_CLASS_NAME = "fragment_class_name";
   /** 系统UI的相关属性 */

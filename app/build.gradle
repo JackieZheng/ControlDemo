@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+/*
+更新Android Studio 3.0 之后删除下面这
 apply plugin: 'android-apt'
 apply plugin: 'com.neenbedankt.android-apt' //增加这一句
+*/
 
 android {
   compileSdkVersion 25
@@ -12,9 +16,14 @@ android {
     targetSdkVersion 25
     versionCode 1
     versionName "1.0"
+    /*
+    更新Android Studio 3.0 之后删除下面这
     jackOptions {
       enabled false
-    }
+    }*/
+
+
+    vectorDrawables.useSupportLibrary = true
   }
   buildTypes {
     release {
@@ -23,17 +32,31 @@ android {
     }
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
 }
 
 dependencies {
-  testCompile 'junit:junit:4.12'
 
   compile fileTree(include: ['*.jar'], dir: 'libs')
   compile project(':mylibrary')
 
+  compile 'com.android.support:design:25.3.1'
+  compile 'com.android.support:support-vector-drawable:25.3.1'
+  testCompile 'junit:junit:4.12'
+
+  // butterknife
   compile 'com.jakewharton:butterknife:8.5.1'
-  apt 'com.jakewharton:butterknife-compiler:8.5.1'// butterknife
+  /*
+    更新Android Studio 3.0 之后删除下面这
+    apt 'com.jakewharton:butterknife-compiler:8.5.1'
+   */
+  //增加
+  annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+  implementation 'com.android.support:support-v4:25.3.1'
+  compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+}
+repositories {
+  mavenCentral()
 }

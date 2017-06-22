@@ -17,13 +17,11 @@
 package liubin.com.myapplication;
 
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +41,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import liubin.com.myapplication.api.CustomerApi;
 import liubin.com.myapplication.bean.Result;
@@ -56,7 +53,6 @@ public class CheeseListFragment extends BaseFragment
   @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
   Unbinder mUnBinder;
 
-  public boolean isRefresh;
   private StringAdapter mAdapter;
   private final List<Result> mData = new ArrayList<>();
 
@@ -79,11 +75,15 @@ public class CheeseListFragment extends BaseFragment
     mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
       @Override public void onRefresh() {
-        isRefresh = true;
+        if (mAdapter.isLoading()) {
+          mSwipeRefreshLayout.setRefreshing(false);
+          return;
+        }
         mAdapter.setEnableLoadMore(false);
         onLoadMoreRequested();
       }
     });
+
     setupRecyclerView(mRecyclerView);
     return view;
   }
@@ -96,21 +96,11 @@ public class CheeseListFragment extends BaseFragment
   }
 
   private void setupRecyclerView(RecyclerView recyclerView) {
-
-    recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-    mAdapter = new StringAdapter(R.layout.list_item, mData, this);
+    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    mAdapter = new StringAdapter(mData, this);
     recyclerView.setAdapter(mAdapter);
     mAdapter.setOnLoadMoreListener(this, mRecyclerView);
     mAdapter.setEmptyView(R.layout.default_progress_layout);
-  }
-
-  private List<String> getRandomSublist(String[] array, int amount) {
-    ArrayList<String> list = new ArrayList<>(amount);
-    Random random = new Random();
-    while (list.size() < amount) {
-      list.add(array[random.nextInt(array.length)]);
-    }
-    return list;
   }
 
   @Override public void onLoadMoreRequested() {
@@ -125,49 +115,45 @@ public class CheeseListFragment extends BaseFragment
         .observeOn(AndroidSchedulers.mainThread())//指定 后面的subscribe在io线程执行
         .subscribe(new Consumer<ApiResponse<List<Result>>>() {
           @Override public void accept(ApiResponse<List<Result>> data) throws Exception {
-            if (!data.isSuccess()) {// 服务调用失败
-              if (mAdapter.getData().size() == 0) {
+            boolean isRefresh = !mAdapter.isLoading();
+            if (!mIsViewCreated) {
+              List<Result> results = data.getData();
+              if (results == null) results = new ArrayList<>();
+              if (isRefresh) mData.clear();
+              mData.addAll(results);
+              return;
+            }
+            if (!data.isSuccess()) {//如果服务调用失败
+              if (isRefresh) {//刷新失败
+                mAdapter.setEnableLoadMore(true);
+              } else {//加载更多失败
+                mAdapter.loadMoreFail();
+              }
+              mSwipeRefreshLayout.setRefreshing(false);
+              if (mData.size() == 0 || mAdapter.getData().size() == 0) {
                 mAdapter.setEmptyView(R.layout.default_empty_layout);
               }
-              if (isRefresh) {
-                isRefresh = false;
-                mAdapter.setEnableLoadMore(true);
-                mSwipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
-              }
-              return;
-            }
-
-            List<Result> datas = data.getData();
-            if (!mIsViewCreated) {
-              if (datas != null && datas.size() > 0) mData.addAll(datas);
-              return;
-            }
-            if (mAdapter.getData().size() == 0) {
-              mAdapter.setEmptyView(R.layout.default_empty_layout);
-            }
-            if (!data.isSuccess()) {
-              isRefresh = false;
-              mAdapter.loadMoreFail();
-              mSwipeRefreshLayout.setRefreshing(false);
               Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
               return;
             }
 
+            // 更新列表数据
+            List<Result> results = data.getData();
+            if (results == null) results = new ArrayList<>();
             if (isRefresh) {
-              isRefresh = false;
               mData.clear();
-              if (datas != null && datas.size() > 0) mData.addAll(datas);
-              mAdapter.setNewData(mData);
-              mAdapter.setEnableLoadMore(true);
-              mSwipeRefreshLayout.setRefreshing(false);
-              return;
+              mData.addAll(results);
+              mAdapter.notifyDataSetChanged();
+            } else {
+              mAdapter.addData(results);
             }
 
-            if (datas != null && datas.size() > 0) mData.addAll(datas);
-            if (datas != null && datas.size() == 20) {
-              mAdapter.addData(datas);
-              mAdapter.setEnableLoadMore(true);
+            mSwipeRefreshLayout.setRefreshing(false);
+            if (mAdapter.getData().size() == 0) {
+              mAdapter.setEmptyView(R.layout.default_empty_layout);
+            }
+
+            if (results.size() == 20) {
               mAdapter.loadMoreComplete();
             } else {
               mAdapter.loadMoreEnd();
@@ -175,12 +161,16 @@ public class CheeseListFragment extends BaseFragment
           }
         }, new Consumer<Throwable>() {
           @Override public void accept(Throwable throwable) throws Exception {
-            mAdapter.loadMoreFail();
+            boolean isRefresh = !mAdapter.isLoading();
+            if (isRefresh) {
+              mAdapter.setEnableLoadMore(true);
+            } else {
+              mAdapter.loadMoreFail();
+            }
             if (mAdapter.getData().size() == 0) {
               mAdapter.setEmptyView(R.layout.default_network_error_layout);
             }
             if (isRefresh) {
-              isRefresh = false;
               mSwipeRefreshLayout.setRefreshing(false);
             }
             Timber.e(throwable);
@@ -190,32 +180,23 @@ public class CheeseListFragment extends BaseFragment
   }
 
   public static class StringAdapter extends BaseQuickAdapter<Result, BaseViewHolder> {
-    private final int mBackground;
     private final Fragment mFragment;
 
-    public StringAdapter(@LayoutRes int layoutResId, @Nullable List<Result> data,
-        Fragment context) {
-      super(layoutResId, data);
-      this.mFragment = context;
-      final TypedValue mTypedValue = new TypedValue();
-      context.getContext()
-          .getTheme()
-          .resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
-      mBackground = mTypedValue.resourceId;
+    public StringAdapter(@Nullable List<Result> data, Fragment fragment) {
+      super(R.layout.list_item, data);
+      this.mFragment = fragment;
     }
 
     @Override protected void convert(BaseViewHolder helper, Result item) {
-      helper.itemView.setBackgroundResource(mBackground);
+      helper.setText(android.R.id.text1, item.getName());
       helper.itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-
         }
       });
-      helper.setText(android.R.id.text1, item.getName());
-      ImageView imageView = helper.getView(R.id.avatar);
-      Glide.with(mFragment).load(item.getIcon())
+      Glide.with(mFragment)
+          .load(item.getIcon())
           .bitmapTransform(new CropCircleTransformation(mContext))
-          .into(imageView);
+          .into((ImageView) helper.getView(R.id.avatar));
     }
   }
 }
