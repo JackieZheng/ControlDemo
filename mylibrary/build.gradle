@@ -48,10 +48,14 @@ dependencies {
   //日志拦截器
   compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
   //Glide
-  compile 'com.github.bumptech.glide:glide:3.7.0'
+  //compile 'com.github.bumptech.glide:glide:3.7.0'
+  compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
+  annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
+  // glide-transformations
   compile 'jp.wasabeef:glide-transformations:2.0.2'
   // If you want to use the GPU Filters
   compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+
   // recyclerViewAdapter
   compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.18'
   // 滑动返回

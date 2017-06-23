@@ -31,6 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.mylibrary.base.ApiResponse;
@@ -41,7 +42,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import liubin.com.myapplication.api.CustomerApi;
 import liubin.com.myapplication.bean.Result;
 import timber.log.Timber;
@@ -194,8 +194,8 @@ public class CheeseListFragment extends BaseFragment
         }
       });
       Glide.with(mFragment)
-          .load(item.getIcon())
-          .bitmapTransform(new CropCircleTransformation(mContext))
+          .load(item.getIcon()).apply(RequestOptions.circleCropTransform())
+          //.bitmapTransform(new CropCircleTransformation(mContext))
           .into((ImageView) helper.getView(R.id.avatar));
     }
   }

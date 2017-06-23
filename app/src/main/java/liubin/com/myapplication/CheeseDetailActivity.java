@@ -30,6 +30,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.mylibrary.base.BaseActivity;
 import com.r0adkll.slidr.Slidr;
 
@@ -87,7 +88,10 @@ public class CheeseDetailActivity extends BaseActivity {
     //扩张时候的title颜色
     mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.primary));
 
-    Glide.with(this).load(getIntent().getIntExtra(EXTRA_ICON, 0)).centerCrop().into(mImageView);
+    Glide.with(this)
+        .load(getIntent().getIntExtra(EXTRA_ICON, 0))
+        .apply(RequestOptions.centerCropTransform())
+        .into(mImageView);
   }
 
   @Override public boolean onCreateOptionsMenu(Menu menu) {

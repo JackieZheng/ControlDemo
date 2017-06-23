@@ -9,11 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.mylibrary.base.BaseRecycleViewAdapter;
 import com.example.mylibrary.base.BaseViewHolder;
 import com.example.mylibrary.base.EndlessScrollListener;
 import java.util.List;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import liubin.com.myapplication.CheeseDetailActivity;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.bean.Result;
@@ -51,14 +51,17 @@ public class BasicAdapter extends BaseRecycleViewAdapter<Result, RecyclerView.Vi
 
   @Override public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
     if (viewHolder instanceof DataViewHolder) {
+
       final DataViewHolder holder = (DataViewHolder) viewHolder;
       final Result item = getItem(position);
       holder.setText(android.R.id.text1, item.getName());
       ImageView imageView = holder.getView(R.id.avatar);
       Glide.with(imageView.getContext())
-          .load(getItem(position).getIcon())
-          .bitmapTransform(new CropCircleTransformation(imageView.getContext()))
+          .load(getItem(position).getIcon()).apply(RequestOptions.circleCropTransform())
+          //RequestOptions.bitmapTransform(new CropCircleTransformation(imageView.getContext()))
+          //.bitmapTransform(new CropCircleTransformation(imageView.getContext()))
           .into(imageView);
+
       holder.itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
           Context context = v.getContext();
