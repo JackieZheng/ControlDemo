@@ -55,7 +55,8 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
 
   @Override public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    mUnBinder = ButterKnife.bind(this, view);//注意ProgressFragment的子类,只能在onViewCreated里面才能bind
+    //注意ProgressFragment的子类,只能在onViewCreated里面才能bind
+    mUnBinder = ButterKnife.bind(this, view);
 
     mSwipeRefreshLayout.setColorSchemeResources(//
         android.R.color.holo_blue_bright,//

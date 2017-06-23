@@ -1,9 +1,9 @@
 package liubin.com.myapplication;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.TextView;
 import com.ashokvarma.bottomnavigation.BadgeItem;
@@ -51,15 +51,16 @@ public class TestActivity extends BaseActivity {
     BottomNavigationBar bottomNavigationBar =
         (BottomNavigationBar) findViewById(R.id.bottom_navigation_bar);
 
+    BadgeItem badgeItem = new BadgeItem().setText("5").setGravity(Gravity.RIGHT).show();
+
     bottomNavigationBar//
         .setMode(BottomNavigationBar.MODE_FIXED)
-        .addItem(new BottomNavigationItem(R.drawable.ic_home_black_24dp, "Home"))
+        .addItem(new BottomNavigationItem(R.drawable.ic_home_black_24dp, "Home").setTextBadgeItem(
+            badgeItem))
         .addItem(new BottomNavigationItem(R.drawable.ic_dashboard_black_24dp, "Books"))
-        .addItem(new BottomNavigationItem(R.drawable.ic_notifications_black_24dp,
-            "Movies & TV").setTextBadgeItem(
-            new BadgeItem().setBackgroundColor(Color.RED).setText("5")))
-        .setActiveColor(R.color.dark_gray)
-        .setInActiveColor(R.color.light_gray)
+        .addItem(new BottomNavigationItem(R.drawable.ic_notifications_black_24dp, "Movies & TV"))
+        .setActiveColor(R.color.light_gray)
+        .setInActiveColor(R.color.dark_gray)
         .setBarBackgroundColor(R.color.white)
         .initialise();
 

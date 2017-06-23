@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
   compileSdkVersion 25
@@ -20,8 +21,8 @@ android {
     }
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
 }
 
@@ -38,11 +39,11 @@ dependencies {
   // Gson
   compile 'com.google.code.gson:gson:2.8.1'
   //Retrofit通过GSON将结果转换为Bean对象
-  compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+  compile 'com.squareup.retrofit2:converter-gson:2.1.0'
   //Retrofit支持RxJava
   compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
   //RxJava
-  compile 'io.reactivex.rxjava2:rxjava:2.0.1'
+  compile 'io.reactivex.rxjava2:rxjava:2.1.0'
   compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
   //日志拦截器
   compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
@@ -60,6 +61,8 @@ dependencies {
   // 底部导航栏,support:design:25+已经包含相似控件
   compile 'com.ashokvarma.android:bottom-navigation-bar:1.4.3'
 
+  // kotlin
+  compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
   // RxLifeCycle
   compile 'com.trello.rxlifecycle2:rxlifecycle:2.1.0'
@@ -71,4 +74,7 @@ dependencies {
   //compile 'com.trello.rxlifecycle2:rxlifecycle-navi:2.1.0'
   // If you want to use Android Lifecycle for providers
   //compile 'com.trello.rxlifecycle2:rxlifecycle-android-lifecycle:2.1.0'
+}
+repositories {
+  mavenCentral()
 }

@@ -43,7 +43,6 @@ import com.example.mylibrary.base.BaseActivity;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
-import liubin.com.myapplication.api.BlankFragment;
 import liubin.com.myapplication.bean.User;
 import liubin.com.myapplication.fragments.BasicFragment;
 import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
@@ -243,9 +242,11 @@ public class MainActivity extends BaseActivity {
                 Intent intent = new Intent();
                 intent.setClass(getApplicationContext(), TestActivity.class);
                 startActivity(intent);
+                break;
               }
               case R.id.test1: {
                 ActivityUtils.startActivity(MainActivity.this, BlankFragment.class, null, -1);
+                break;
               }
             }
             menuItem.setChecked(true);

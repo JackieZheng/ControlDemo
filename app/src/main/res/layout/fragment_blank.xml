@@ -1,16 +1,14 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="liubin.com.myapplication.api.BlankFragment"
     >
 
-  <!-- TODO: Update blank fragment layout -->
-  <TextView
-      android:id="@+id/text"
+  <android.support.v7.widget.RecyclerView
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/recyclerview"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:text="@string/hello_blank_fragment"
       />
-
-</FrameLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

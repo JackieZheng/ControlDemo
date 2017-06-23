@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-/*
-更新Android Studio 3.0 之后删除下面这
+
+/*更新Android Studio 3.0 之后删除下面这两句
 apply plugin: 'android-apt'
-apply plugin: 'com.neenbedankt.android-apt' //增加这一句
-*/
+apply plugin: 'com.neenbedankt.android-apt'
+增加这一句
+apply plugin: 'kotlin-android' */
 
 android {
   compileSdkVersion 25
@@ -16,21 +17,41 @@ android {
     targetSdkVersion 25
     versionCode 1
     versionName "1.0"
-    /*
-    更新Android Studio 3.0 之后删除下面这
+    /*更新Android Studio 3.0 之后删除下面这
     jackOptions {
       enabled false
     }*/
 
-
+    /*支持使用矢量图 Api21-*/
     vectorDrawables.useSupportLibrary = true
   }
+
+  signingConfigs {
+    toutoumu {
+      keyAlias 'toutoumu'
+      keyPassword '123456'
+      storeFile file('./toutoumu.jks')
+      storePassword '198868'
+    }
+  }
+
   buildTypes {
-    release {
+    debug {
       minifyEnabled false
+      shrinkResources false
+      applicationIdSuffix ".debug"
+      signingConfig signingConfigs.toutoumu
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+
+    release {
+      minifyEnabled true
+      shrinkResources true
+      signingConfig signingConfigs.toutoumu
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
@@ -41,22 +62,19 @@ dependencies {
 
   compile fileTree(include: ['*.jar'], dir: 'libs')
   compile project(':mylibrary')
+  testCompile 'junit:junit:4.12'
 
   compile 'com.android.support:design:25.3.1'
   compile 'com.android.support:support-vector-drawable:25.3.1'
-  testCompile 'junit:junit:4.12'
+  implementation 'com.android.support:support-v4:25.3.1'
+
+  compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
   // butterknife
-  compile 'com.jakewharton:butterknife:8.5.1'
-  /*
-    更新Android Studio 3.0 之后删除下面这
-    apt 'com.jakewharton:butterknife-compiler:8.5.1'
-   */
-  //增加
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-  implementation 'com.android.support:support-v4:25.3.1'
-  compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+  compile 'com.jakewharton:butterknife:8.6.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
 }
+
 repositories {
   mavenCentral()
 }
