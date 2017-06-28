@@ -1,7 +1,6 @@
 package liubin.com.myapplication.fragments;
 
-import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -9,12 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.mylibrary.base.ActivityUtils;
+import com.example.mylibrary.base.BaseFragment;
 import com.example.mylibrary.base.BaseRecycleViewAdapter;
 import com.example.mylibrary.base.BaseViewHolder;
 import com.example.mylibrary.base.EndlessScrollListener;
 import java.util.List;
-import liubin.com.myapplication.CheeseDetailActivity;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.bean.Result;
 
@@ -22,15 +24,23 @@ public class BasicAdapter extends BaseRecycleViewAdapter<Result, RecyclerView.Vi
   private static final int ITEM_TYPE_DATA = 1;
   private final EndlessScrollListener.IMore mMore;
   private final LayoutInflater mInflater;
+  private final BaseFragment mFragment;
+  private final RequestOptions mOptions;
   private int mBackground;
 
-  public BasicAdapter(Context context, List<Result> items, EndlessScrollListener.IMore more) {
+  public BasicAdapter(BaseFragment context, List<Result> items, EndlessScrollListener.IMore more) {
     super(items);
     this.mMore = more;
-    mInflater = LayoutInflater.from(context);
+    this.mFragment = context;
+    mInflater = LayoutInflater.from(context.getContext());
     TypedValue typedValue = new TypedValue();
-    context.getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
+    context.getContext()
+        .getTheme()
+        .resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
     mBackground = typedValue.resourceId;
+    mOptions = RequestOptions.circleCropTransform()
+        .priority(Priority.HIGH)
+        .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
   }
 
   @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -51,45 +61,22 @@ public class BasicAdapter extends BaseRecycleViewAdapter<Result, RecyclerView.Vi
 
   @Override public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
     if (viewHolder instanceof DataViewHolder) {
-
-      final DataViewHolder holder = (DataViewHolder) viewHolder;
+      DataViewHolder holder = (DataViewHolder) viewHolder;
       final Result item = getItem(position);
-      holder.setText(android.R.id.text1, item.getName());
-      ImageView imageView = holder.getView(R.id.avatar);
-      Glide.with(imageView.getContext())
-          .load(getItem(position).getIcon()).apply(RequestOptions.circleCropTransform())
-          //RequestOptions.bitmapTransform(new CropCircleTransformation(imageView.getContext()))
-          //.bitmapTransform(new CropCircleTransformation(imageView.getContext()))
-          .into(imageView);
+      holder.setText(R.id.text1, item.getName());
+      Glide.with(mFragment)
+          .load(item.getIcon())
+          .apply(mOptions)
+          .into((ImageView) holder.getView(R.id.avatar));
 
       holder.itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          Context context = v.getContext();
-          Intent intent = new Intent(context, CheeseDetailActivity.class);
-          intent.putExtra(CheeseDetailActivity.EXTRA_NAME, item.getName());
-          intent.putExtra(CheeseDetailActivity.EXTRA_ICON, item.getIcon());
-          context.startActivity(intent);
+          Bundle bundle = new Bundle();
+          bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME, item.getName());
+          bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, item.getIcon());
+          ActivityUtils.startActivity(mFragment, CollapsingToolbarLayoutFragment.class, bundle, -1);
         }
       });
-
-      /*if (true) return;
-
-      holder.mTextView.setText(item.getName());
-
-      holder.itemView.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-          Context context = v.getContext();
-          Intent intent = new Intent(context, CheeseDetailActivity.class);
-          intent.putExtra(CheeseDetailActivity.EXTRA_NAME, item.getName());
-          intent.putExtra(CheeseDetailActivity.EXTRA_ICON, item.getIcon());
-          context.startActivity(intent);
-        }
-      });
-
-      Glide.with(holder.mImageView.getContext())
-          .load(getItem(position).getIcon())
-          .bitmapTransform(new CropCircleTransformation(holder.mImageView.getContext()))
-          .into(holder.mImageView);*/
     } else if (viewHolder instanceof FootViewHolder) {
       ((FootViewHolder) viewHolder).setupFootView(mMore);
     }
@@ -112,16 +99,11 @@ public class BasicAdapter extends BaseRecycleViewAdapter<Result, RecyclerView.Vi
   }
 
   /**
-   * 继承{@link BaseViewHolder}可以是代码更简洁
+   * 继承{@link BaseViewHolder}可以使代码更简洁
    */
   private static class DataViewHolder extends BaseViewHolder {
-    //private ImageView mImageView;
-    //private TextView mTextView;
-
-    DataViewHolder(View view) {
+    public DataViewHolder(View view) {
       super(view);
-      //mImageView = (ImageView) view.findViewById(R.id.avatar);
-      //mTextView = (TextView) view.findViewById(android.R.id.text1);
     }
   }
 }

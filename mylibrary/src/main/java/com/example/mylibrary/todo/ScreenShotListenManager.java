@@ -3,19 +3,15 @@ package com.example.mylibrary.todo;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images.Media;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
-import android.view.Display;
-import android.view.WindowManager;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import timber.log.Timber;
@@ -48,8 +44,8 @@ public class ScreenShotListenManager {
   };
 
   /** 读取媒体数据库时需要读取的列, 其中 WIDTH 和 HEIGHT 字段在 API 16 以后才有 */
-
-  private static final String[] MEDIA_PROJECTIONS_API_16 = {
+  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN) private static final String[]
+      MEDIA_PROJECTIONS_API_16 = {
       MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.DATE_TAKEN,
       MediaStore.Images.ImageColumns.WIDTH, MediaStore.Images.ImageColumns.HEIGHT,
   };
@@ -78,7 +74,7 @@ public class ScreenShotListenManager {
     mContext = context; // 获取屏幕真实的分辨率
 
     if (sScreenRealSize == null) {
-      sScreenRealSize = getRealScreenSize();
+      sScreenRealSize = Utils.getRealScreenSize(mContext);
       if (sScreenRealSize != null) {
         Timber.d("Screen Real Size: " + sScreenRealSize.x + " * " + sScreenRealSize.y);
       } else {
@@ -98,16 +94,12 @@ public class ScreenShotListenManager {
     sHasCallbackPaths.clear(); // 记录开始监听的时间戳
     mStartListenTime = System.currentTimeMillis(); // 创建运行在 UI 线程的Handler
     mUiHandler = new Handler(Looper.getMainLooper()); // 创建内容观察者
-    mInternalObserver =
-        new MediaContentObserver(MediaStore.Images.Media.INTERNAL_CONTENT_URI, mUiHandler);
-    mExternalObserver = new MediaContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-        mUiHandler); // 注册内容观察者
+    mInternalObserver = new MediaContentObserver(Media.INTERNAL_CONTENT_URI, mUiHandler);
+    mExternalObserver = new MediaContentObserver(Media.EXTERNAL_CONTENT_URI, mUiHandler); // 注册内容观察者
     mContext.getContentResolver()
-        .registerContentObserver(MediaStore.Images.Media.INTERNAL_CONTENT_URI, false,
-            mInternalObserver);
+        .registerContentObserver(Media.INTERNAL_CONTENT_URI, false, mInternalObserver);
     mContext.getContentResolver()
-        .registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false,
-            mExternalObserver);
+        .registerContentObserver(Media.EXTERNAL_CONTENT_URI, false, mExternalObserver);
   }
 
   /** 停止监听 */
@@ -162,7 +154,7 @@ public class ScreenShotListenManager {
         width = cursor.getInt(widthIndex);
         height = cursor.getInt(heightIndex);
       } else { // API 16 之前, 宽高要手动获取
-        Point size = getImageSize(data);
+        Point size = Utils.getImageSize(data);
         width = size.x;
         height = size.y;
       } // 处理获取到的第一行数据
@@ -174,43 +166,6 @@ public class ScreenShotListenManager {
         cursor.close();
       }
     }
-  }
-
-  public static Point getImageSize(String fileName) throws IOException {
-    BitmapFactory.Options options = new BitmapFactory.Options();
-    // 最关键在此，把options.inJustDecodeBounds = true;
-    // 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
-    options.inJustDecodeBounds = true;
-    BitmapFactory.decodeFile(fileName, options); // 此时返回的bitmap为null
-    //options.outHeight为原始图片的高
-    Point point = new Point();
-    point.set(options.outWidth, options.outHeight);
-
-    ExifInterface exifInterface = new ExifInterface(fileName);
-    int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-        ExifInterface.ORIENTATION_NORMAL);
-    int rotation;
-    switch (orientation) {
-      case ExifInterface.ORIENTATION_ROTATE_90:
-      case ExifInterface.ORIENTATION_TRANSPOSE:
-        rotation = 90;
-        break;
-      case ExifInterface.ORIENTATION_ROTATE_180:
-      case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-        rotation = 180;
-        break;
-
-      case ExifInterface.ORIENTATION_ROTATE_270:
-      case ExifInterface.ORIENTATION_TRANSVERSE:
-        rotation = 270;
-        break;
-      default:
-        rotation = 0;
-    }
-    if (rotation == 90 || rotation == 270) {
-      point.set(options.outHeight, options.outWidth);
-    }
-    return point;
   }
 
   /** 处理获取到的一行数据 */
@@ -283,34 +238,11 @@ public class ScreenShotListenManager {
     return false;
   }
 
-  /** 获取屏幕分辨率 */
-  private Point getRealScreenSize() {
-    Point screenSize = null;
-    try {
-      screenSize = new Point();
-      WindowManager windowManager =
-          (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-      Display defaultDisplay = windowManager.getDefaultDisplay();
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        defaultDisplay.getRealSize(screenSize);
-      } else {
-        try {
-          Method mGetRawW = Display.class.getMethod("getRawWidth");
-          Method mGetRawH = Display.class.getMethod("getRawHeight");
-          screenSize.set((Integer) mGetRawW.invoke(defaultDisplay),
-              (Integer) mGetRawH.invoke(defaultDisplay));
-        } catch (Exception e) {
-          screenSize.set(defaultDisplay.getWidth(), defaultDisplay.getHeight());
-          e.printStackTrace();
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return screenSize;
-  }
-
-  /** 设置截屏监听器 */
+  /**
+   * 设置截屏监听器
+   *
+   * @param listener {@link OnScreenShotListener}
+   */
   public void setListener(OnScreenShotListener listener) {
     mListener = listener;
   }

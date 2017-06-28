@@ -69,6 +69,7 @@ public class CustomFragment extends ProgressFragment<TopBarActivity> {
         mActivity.finish();
       }
     });
+    activity.getStatusBar().setBackgroundResource(R.color.primary_dark);
   }
 
   @Override public void onDestroyView() {

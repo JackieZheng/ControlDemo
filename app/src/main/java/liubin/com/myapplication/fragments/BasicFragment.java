@@ -37,8 +37,8 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
 
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
-  @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
-  @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
+  @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+  @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
 
   @Override public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -70,7 +70,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
     });
 
     mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    mRecyclerView.setAdapter(new BasicAdapter(getActivity(), mData, this));
+    mRecyclerView.setAdapter(new BasicAdapter(this, mData, this));
     mRecyclerView.addOnScrollListener(new EndlessScrollListener(this));
 
     // 这一句可以在任何时候调用
@@ -92,6 +92,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
         mActivity.finish();
       }
     });
+    activity.getStatusBar().setBackgroundResource(R.color.primary);
   }
 
   @Override public void onDestroyView() {

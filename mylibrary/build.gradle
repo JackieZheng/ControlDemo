@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 
 android {
   compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  buildToolsVersion "25.0.3"
 
   defaultConfig {
     minSdkVersion 14
@@ -27,6 +27,8 @@ android {
 }
 
 dependencies {
+  testCompile 'junit:junit:4.12'
+
   compile fileTree(include: ['*.jar'], dir: 'libs')
   // support
   compile 'com.android.support:support-v4:25.3.1'
@@ -34,6 +36,9 @@ dependencies {
   compile 'com.android.support:recyclerview-v7:25.3.1'
   compile 'com.android.support:design:25.3.1'
   compile 'com.android.support:cardview-v7:25.3.1'
+  compile 'com.android.support:support-vector-drawable:25.3.1'
+  implementation 'com.android.support:support-v4:25.3.1'
+
   // Retrofit
   compile 'com.squareup.retrofit2:retrofit:2.2.0'
   // Gson
@@ -47,38 +52,37 @@ dependencies {
   compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
   //日志拦截器
   compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
   //Glide
   //compile 'com.github.bumptech.glide:glide:3.7.0'
   compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
-  annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
-  // glide-transformations
   compile 'jp.wasabeef:glide-transformations:2.0.2'
-  // If you want to use the GPU Filters
   compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+  annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
 
-  // recyclerViewAdapter
-  compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.18'
-  // 滑动返回
-  compile 'com.r0adkll:slidableactivity:2.0.5'
   // 日志库
   compile 'com.jakewharton.timber:timber:4.5.1'
   // 底部导航栏,support:design:25+已经包含相似控件
   compile 'com.ashokvarma.android:bottom-navigation-bar:1.4.3'
-
+  // recyclerViewAdapter
+  compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.18'
+  // 滑动返回
+  compile 'com.r0adkll:slidableactivity:2.0.5'
   // kotlin
   compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
   // RxLifeCycle
   compile 'com.trello.rxlifecycle2:rxlifecycle:2.1.0'
-  // If you want to bind to Android-specific lifecycles
+  // 如果你想绑定到Android特定的生命周期 If you want to bind to Android-specific lifecycles
   //compile 'com.trello.rxlifecycle2:rxlifecycle-android:2.1.0'
-  // If you want pre-written Activities and Fragments you can subclass as providers
+  // 如果您想要预先编写的Activities和Fragments，您可以作为提供者的子类。If you want pre-written Activities and Fragments you can subclass as providers
   compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.1.0'
-  // If you want to use Navi for providers
+  // 如果你想使用导航供应商 If you want to use Navi for providers
   //compile 'com.trello.rxlifecycle2:rxlifecycle-navi:2.1.0'
-  // If you want to use Android Lifecycle for providers
+  // 如果您想为供应商使用Android生命周期 If you want to use Android Lifecycle for providers
   //compile 'com.trello.rxlifecycle2:rxlifecycle-android-lifecycle:2.1.0'
 }
+
 repositories {
   mavenCentral()
 }

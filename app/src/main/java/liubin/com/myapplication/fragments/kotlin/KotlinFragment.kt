@@ -1,9 +1,9 @@
-package liubin.com.myapplication
+package liubin.com.myapplication.fragments.kotlin
 
 import android.os.Bundle
-import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.Toast
 import com.example.mylibrary.base.ApiResponse
@@ -12,9 +12,25 @@ import com.example.mylibrary.base.ListFragment
 import com.example.mylibrary.base.TopBarActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.content_basic.*
+import liubin.com.myapplication.R
 import liubin.com.myapplication.api.CustomerApi
 import liubin.com.myapplication.bean.Result
-import liubin.com.myapplication.fragments.BasicAdapter
+
+// 类似Java POJO
+//data class Person(var age: Int = 20, var name: String = "jack") {}
+// 类似单例模式
+//object Status {
+//  val success: Int = 1;
+//  fun test(): Int {
+//    System.out.println(success)
+//    return success
+//  }
+//}
+//常量定义
+//companion object {
+//  private val ITEM_TYPE_DATA = 1
+//}
 
 /**
  * 有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity基本使用方式
@@ -24,10 +40,21 @@ import liubin.com.myapplication.fragments.BasicAdapter
  * 3. 注意请不要重写 [onCreateView],
  * 如需要修改Fragment布局内容,请重写 [getFragmentLayoutResourceId] 方法.
  */
-class BlankFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
-  private val PAGE_SIZE = 20
-  internal var mRecyclerView: RecyclerView? = null
-  internal var mSwipeRefreshLayout: SwipeRefreshLayout? = null
+class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
+
+  /**
+   * 扩展[Fragment],添加toast方法
+   * @param message [CharSequence] toast消息
+   * @param duration [Int]  消息显示时间长短,default : [Toast.LENGTH_SHORT]
+   *
+   */
+  fun Fragment.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(activity, message, duration).show()
+  }
+
+  companion object {
+    private val PAGE_SIZE = 20
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -39,25 +66,23 @@ class BlankFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
   }
 
   override fun getContentLayoutResourceId(): Int {
-    return R.layout.content_basic // 数据加载成功显示的内容区域
+    return R.layout.content_basic // 数据加载成功显示的 [Fragment] 内容区域
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    mSwipeRefreshLayout = view.findViewById(R.id.swip) as SwipeRefreshLayout
-    mRecyclerView = view.findViewById(R.id.recyclerview) as RecyclerView
-
-    mSwipeRefreshLayout!!.setColorSchemeResources(//
+    swipe_refresh_layout!!.setColorSchemeResources(//
         android.R.color.holo_blue_bright, //
         android.R.color.holo_green_light, //
         android.R.color.holo_orange_light, //
         android.R.color.holo_red_light)
-    mSwipeRefreshLayout!!.setOnRefreshListener { obtainData(true) }
 
-    mRecyclerView!!.layoutManager = LinearLayoutManager(context)
-    mRecyclerView!!.adapter = BasicAdapter(activity, mData, this)
-    mRecyclerView!!.addOnScrollListener(EndlessScrollListener(this))
+    swipe_refresh_layout!!.setOnRefreshListener { obtainData(true) }
+
+    recycler_view!!.layoutManager = LinearLayoutManager(context)
+    recycler_view!!.adapter = KotlinAdapter(this, mData, this)
+    recycler_view!!.addOnScrollListener(EndlessScrollListener(this))
 
     // 这一句可以在任何时候调用
     setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network)
@@ -70,16 +95,14 @@ class BlankFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
    */
   override fun initTopBar(activity: TopBarActivity) {
     super.initTopBar(activity)
-    val toolBar = activity.toolBar
-    toolBar.title = "基本使用"
+    val toolBar: Toolbar = activity.toolBar
+    toolBar.title = "Kotlin基本使用"
     toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
     toolBar.setNavigationOnClickListener { mActivity.finish() }
   }
 
   override fun onDestroyView() {
     super.onDestroyView()
-    mSwipeRefreshLayout = null
-    mRecyclerView = null
   }
 
   /**
@@ -98,24 +121,29 @@ class BlankFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
 
   public override fun onSuccess(data: ApiResponse<List<Result>>, isRefresh: Boolean) {
     if (!data.isSuccess) {// 服务端返回异常代码
-      Toast.makeText(context, data.message, Toast.LENGTH_LONG).show()
+      toast(data.message)
       return
     }
 
     if (isRefresh) mData.clear()
-    if (data.data != null && data.data.isNotEmpty()) {
+    if (data.data.isNotEmpty()) {
       mData.addAll(data.data)
     }
   }
 
   public override fun checkHasMore(data: ApiResponse<List<Result>>): Boolean {
     // 服务调用失败 || 数据不满一页 表示还有更多数据
-    return !data.isSuccess || !(data.data == null || data.data.size != PAGE_SIZE)
+    //return !data.isSuccess || !(data.data == null || data.data.size != PAGE_SIZE)
+    return when {
+      !data.isSuccess -> true
+      !(data.data == null || data.data.size != PAGE_SIZE) -> true
+      else -> false
+    }
   }
 
   override fun onStatusUpdated() {
-    mSwipeRefreshLayout!!.isRefreshing = isLoading
-    mRecyclerView!!.adapter.notifyDataSetChanged()
+    swipe_refresh_layout!!.isRefreshing = isLoading
+    recycler_view!!.adapter.notifyDataSetChanged()
   }
 }
 

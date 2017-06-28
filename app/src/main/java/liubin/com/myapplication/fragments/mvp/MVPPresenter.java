@@ -1,7 +1,6 @@
-package liubin.com.myapplication.fragments;
+package liubin.com.myapplication.fragments.mvp;
 
 import com.example.mylibrary.base.ApiResponse;
-import com.example.mylibrary.base.mvp.IListMVPView;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -10,15 +9,12 @@ import java.util.List;
 import liubin.com.myapplication.api.CustomerApi;
 import liubin.com.myapplication.bean.Result;
 
-public class MVPPresenter implements IMVPPersenter {
+public class MVPPresenter
+    extends IMVPContract.IMVPPresenter<IMVPContract.IMVPView<ApiResponse<List<Result>>>> {
 
-  private IListMVPView<ApiResponse<List<Result>>> mView;
-  private LifecycleProvider<FragmentEvent> mProvider;
-
-  public MVPPresenter(IListMVPView<ApiResponse<List<Result>>> mvpView,
+  public MVPPresenter(IMVPContract.IMVPView<ApiResponse<List<Result>>> view,
       LifecycleProvider<FragmentEvent> provider) {
-    this.mView = mvpView;
-    this.mProvider = provider;
+    super(view, provider);
   }
 
   @Override public void loadData(final int pageSize, final boolean isRefresh) {

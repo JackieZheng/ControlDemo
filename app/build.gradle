@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
 
 /*更新Android Studio 3.0 之后删除下面这两句
 apply plugin: 'android-apt'
@@ -9,7 +11,7 @@ apply plugin: 'kotlin-android' */
 
 android {
   compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  buildToolsVersion '25.0.3'
 
   defaultConfig {
     applicationId "liubin.com.myapplication"
@@ -59,20 +61,20 @@ android {
 }
 
 dependencies {
-
   compile fileTree(include: ['*.jar'], dir: 'libs')
   compile project(':mylibrary')
-  testCompile 'junit:junit:4.12'
-
-  compile 'com.android.support:design:25.3.1'
-  compile 'com.android.support:support-vector-drawable:25.3.1'
-  implementation 'com.android.support:support-v4:25.3.1'
-
-  compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
   // butterknife
   compile 'com.jakewharton:butterknife:8.6.0'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+
+  //Glide
+  //compile 'com.github.bumptech.glide:glide:3.7.0'
+  compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
+  compile 'jp.wasabeef:glide-transformations:2.0.2'
+  compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+  annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
+
 }
 
 repositories {

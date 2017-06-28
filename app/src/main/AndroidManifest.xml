@@ -4,6 +4,7 @@
     package="liubin.com.myapplication">
 
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
 
   <application
       android:name=".App"
@@ -21,7 +22,6 @@
     </activity>
     <activity android:name="com.example.mylibrary.base.TopBarActivity"/>
     <activity android:name="com.example.mylibrary.base.BaseActivity"/>
-    <activity android:name=".CheeseDetailActivity"/>
     <activity
         android:name=".FullscreenActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"

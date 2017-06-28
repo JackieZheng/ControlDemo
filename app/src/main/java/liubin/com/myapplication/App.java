@@ -4,8 +4,11 @@ import android.app.Application;
 import timber.log.Timber;
 
 public class App extends Application {
+  public static Application mApplication;
+
   @Override public void onCreate() {
     super.onCreate();
+    mApplication = this;
     //在这里先使用Timber.plant注册一个Tree，然后调用静态的.d .v 去使用
     if (BuildConfig.DEBUG) {
       Timber.plant(new Timber.DebugTree());

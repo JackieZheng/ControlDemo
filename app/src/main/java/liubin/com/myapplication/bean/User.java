@@ -7,6 +7,7 @@ import java.io.Serializable;
 public class User implements Serializable {
 
   @JsonAdapter(DoubleAdapter.class) private double age;
+
   private String name;
 
   public double getAge() {

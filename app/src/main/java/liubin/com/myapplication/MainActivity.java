@@ -45,10 +45,14 @@ import java.util.ArrayList;
 import java.util.List;
 import liubin.com.myapplication.bean.User;
 import liubin.com.myapplication.fragments.BasicFragment;
+import liubin.com.myapplication.fragments.CheeseListFragment;
+import liubin.com.myapplication.fragments.CollapsingToolbarLayoutFragment;
 import liubin.com.myapplication.fragments.CoordinatorLayoutFragment;
 import liubin.com.myapplication.fragments.CustomFragment;
 import liubin.com.myapplication.fragments.DrawerLayoutFragment;
-import liubin.com.myapplication.fragments.MVPFragment;
+import liubin.com.myapplication.fragments.PictureListFragment;
+import liubin.com.myapplication.fragments.kotlin.KotlinFragment;
+import liubin.com.myapplication.fragments.mvp.MVPFragment;
 import timber.log.Timber;
 
 /**
@@ -210,42 +214,57 @@ public class MainActivity extends BaseActivity {
         new NavigationView.OnNavigationItemSelectedListener() {
           @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
-              case R.id.nav_home: {//基本使用
+
+              case R.id.nav_home: {//ListFragment 基本使用
                 ActivityUtils.startActivity(MainActivity.this, BasicFragment.class, null, -1);
                 break;
               }
-              case R.id.nav_custom: {//自定义
+              case R.id.nav_custom: {//ProgressFragment 或 ListFragment 各种视图自定义
                 ActivityUtils.startActivity(MainActivity.this, CustomFragment.class, null, -1);
                 break;
               }
-              case R.id.nav_coordinator_layout: {//CoordinatorLayout使用
+              case R.id.nav_kotlin: {//kotlin 使用
+                ActivityUtils.startActivity(MainActivity.this, KotlinFragment.class, null, -1);
+                break;
+              }
+              case R.id.nav_mvp: {//MVP 模式使用
+                ActivityUtils.startActivity(MainActivity.this, MVPFragment.class, null, -1);
+                break;
+              }
+              case R.id.nav_friends: {
+                break;
+              }
+
+              //---------------------------------- 沉浸式状态栏 ----------------------------------//
+              case R.id.nav_collapsing_toolbar_layout: {//CollapsingToolbarLayout 沉浸式状态栏
+                Bundle bundle = new Bundle();
+                bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME,
+                    "CollapsingToolbarLayout沉浸式");
+                bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, R.drawable.cheese_1);
+                ActivityUtils.startActivity(MainActivity.this,
+                    CollapsingToolbarLayoutFragment.class, bundle, -1);
+                break;
+              }
+              case R.id.nav_coordinator_layout: {//CoordinatorLayout 沉浸式状态栏
                 ActivityUtils.startActivity(MainActivity.this, CoordinatorLayoutFragment.class,
                     null, -1);
                 break;
               }
-              case R.id.nav_messages: {//DrawerLayout使用
+              case R.id.nav_drawer_layout: {//DrawerLayout 沉浸式状态栏
                 ActivityUtils.startActivity(MainActivity.this, DrawerLayoutFragment.class, null,
                     -1);
                 break;
               }
-              case R.id.nav_friends: {//全屏的Activity
+
+              //---------------------------------- 其他使用 ----------------------------------//
+              case R.id.nav_fullscreen: {//全屏的 Activity
                 Intent intent = new Intent();
                 intent.setClass(getApplicationContext(), FullscreenActivity.class);
                 startActivity(intent);
                 break;
               }
-              case R.id.nav_discussion: {//MPV模式使用
-                ActivityUtils.startActivity(MainActivity.this, MVPFragment.class, null, -1);
-                break;
-              }
-              case R.id.test: {
-                Intent intent = new Intent();
-                intent.setClass(getApplicationContext(), TestActivity.class);
-                startActivity(intent);
-                break;
-              }
-              case R.id.test1: {
-                ActivityUtils.startActivity(MainActivity.this, BlankFragment.class, null, -1);
+              case R.id.nav_picture: {//相册图片读取
+                ActivityUtils.startActivity(MainActivity.this, PictureListFragment.class, null, -1);
                 break;
               }
             }

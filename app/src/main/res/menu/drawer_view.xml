@@ -20,43 +20,53 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_dashboard"
-        android:title="Basic"/>
-
+        android:title="ListFragment基本使用"/>
     <item
         android:id="@+id/nav_custom"
         android:icon="@drawable/ic_event"
-        android:title="Custom"/>
-
+        android:title="ProgressFragment自定义"/>
     <item
-        android:id="@+id/nav_coordinator_layout"
-        android:icon="@drawable/ic_dashboard"
-        android:title="CoordinatorLayout"/>
-
+        android:id="@+id/nav_kotlin"
+        android:icon="@drawable/ic_forum"
+        android:title="Kotlin使用"/>
     <item
-        android:id="@+id/nav_messages"
-        android:icon="@drawable/ic_event"
-        android:title="DrawerLayout"/>
+        android:id="@+id/nav_mvp"
+        android:icon="@drawable/ic_forum"
+        android:title="MVP模式"/>
     <item
         android:id="@+id/nav_friends"
         android:icon="@drawable/ic_headset"
-        android:title="Fullscreen"/>
-    <item
-        android:id="@+id/nav_discussion"
-        android:icon="@drawable/ic_forum"
-        android:title="MVP"/>
+        android:title="暂无"/>
   </group>
 
-  <item android:title="Sub items">
-    <menu>
+  <item android:title="沉浸式状态栏">
+    <menu android:checkableBehavior="single">
       <item
-          android:id="@+id/test"
+          android:id="@+id/nav_collapsing_toolbar_layout"
           android:icon="@drawable/ic_dashboard"
-          android:title="测试页面"/>
+          android:title="CollapsingToolbarLayout沉浸式"/>
       <item
-          android:id="@+id/test1"
-          android:icon="@drawable/ic_forum"
-          android:title="Sub item 2"/>
+          android:id="@+id/nav_coordinator_layout"
+          android:icon="@drawable/ic_dashboard"
+          android:title="CoordinatorLayout沉浸式"/>
+
+      <item
+          android:id="@+id/nav_drawer_layout"
+          android:icon="@drawable/ic_event"
+          android:title="DrawerLayout沉浸式"/>
     </menu>
   </item>
 
+  <item android:title="其他使用">
+    <menu android:checkableBehavior="single">
+      <item
+          android:id="@+id/nav_fullscreen"
+          android:icon="@drawable/ic_dashboard"
+          android:title="全屏Activity"/>
+      <item
+          android:id="@+id/nav_picture"
+          android:icon="@drawable/ic_forum"
+          android:title="相册图片读取"/>
+    </menu>
+  </item>
 </menu>

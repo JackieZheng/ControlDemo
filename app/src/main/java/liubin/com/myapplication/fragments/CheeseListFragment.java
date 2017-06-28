@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package liubin.com.myapplication;
+package liubin.com.myapplication.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.example.mylibrary.base.ActivityUtils;
 import com.example.mylibrary.base.ApiResponse;
 import com.example.mylibrary.base.BaseFragment;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -42,18 +43,21 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
+import liubin.com.myapplication.R;
 import liubin.com.myapplication.api.CustomerApi;
 import liubin.com.myapplication.bean.Result;
 import timber.log.Timber;
 
+//import com.bumptech.glide.request.RequestOptions;
+
 public class CheeseListFragment extends BaseFragment
     implements BaseQuickAdapter.RequestLoadMoreListener {
 
-  @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
-  @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
+  @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+  @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
   Unbinder mUnBinder;
 
-  private StringAdapter mAdapter;
+  private CheeseAdapter mAdapter;
   private final List<Result> mData = new ArrayList<>();
 
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,7 +77,6 @@ public class CheeseListFragment extends BaseFragment
         android.R.color.holo_red_light);
 
     mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-
       @Override public void onRefresh() {
         if (mAdapter.isLoading()) {
           mSwipeRefreshLayout.setRefreshing(false);
@@ -97,7 +100,7 @@ public class CheeseListFragment extends BaseFragment
 
   private void setupRecyclerView(RecyclerView recyclerView) {
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    mAdapter = new StringAdapter(mData, this);
+    mAdapter = new CheeseAdapter(mData, this);
     recyclerView.setAdapter(mAdapter);
     mAdapter.setOnLoadMoreListener(this, mRecyclerView);
     mAdapter.setEmptyView(R.layout.default_progress_layout);
@@ -116,62 +119,47 @@ public class CheeseListFragment extends BaseFragment
         .subscribe(new Consumer<ApiResponse<List<Result>>>() {
           @Override public void accept(ApiResponse<List<Result>> data) throws Exception {
             boolean isRefresh = !mAdapter.isLoading();
-            if (!mIsViewCreated) {
-              List<Result> results = data.getData();
-              if (results == null) results = new ArrayList<>();
-              if (isRefresh) mData.clear();
-              mData.addAll(results);
-              return;
-            }
-            if (!data.isSuccess()) {//如果服务调用失败
-              if (isRefresh) {//刷新失败
-                mAdapter.setEnableLoadMore(true);
-              } else {//加载更多失败
-                mAdapter.loadMoreFail();
-              }
-              mSwipeRefreshLayout.setRefreshing(false);
-              if (mData.size() == 0 || mAdapter.getData().size() == 0) {
-                mAdapter.setEmptyView(R.layout.default_empty_layout);
-              }
-              Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
-              return;
-            }
-
             // 更新列表数据
             List<Result> results = data.getData();
             if (results == null) results = new ArrayList<>();
-            if (isRefresh) {
-              mData.clear();
-              mData.addAll(results);
-              mAdapter.notifyDataSetChanged();
-            } else {
-              mAdapter.addData(results);
-            }
+            if (isRefresh) mData.clear();
+            mData.addAll(results);
+            if (!mIsViewCreated) return;
 
             mSwipeRefreshLayout.setRefreshing(false);
             if (mAdapter.getData().size() == 0) {
               mAdapter.setEmptyView(R.layout.default_empty_layout);
             }
+            //如果服务调用失败
+            if (!data.isSuccess()) {
+              if (isRefresh) {//刷新失败
+                mAdapter.setEnableLoadMore(true);
+              } else {//加载更多失败
+                mAdapter.loadMoreFail();
+              }
+              Toast.makeText(getContext(), data.getMessage(), Toast.LENGTH_LONG).show();
+              return;
+            }
 
-            if (results.size() == 20) {
+            mAdapter.notifyDataSetChanged();
+            if (results.size() == 20) {//有更多数据
+              mAdapter.setEnableLoadMore(true);
               mAdapter.loadMoreComplete();
-            } else {
+            } else {//没有更多数据
               mAdapter.loadMoreEnd();
             }
           }
         }, new Consumer<Throwable>() {
           @Override public void accept(Throwable throwable) throws Exception {
             boolean isRefresh = !mAdapter.isLoading();
-            if (isRefresh) {
+            if (isRefresh) {// 刷新异常
               mAdapter.setEnableLoadMore(true);
-            } else {
+              mSwipeRefreshLayout.setRefreshing(false);
+            } else {// 加载更多异常
               mAdapter.loadMoreFail();
             }
             if (mAdapter.getData().size() == 0) {
               mAdapter.setEmptyView(R.layout.default_network_error_layout);
-            }
-            if (isRefresh) {
-              mSwipeRefreshLayout.setRefreshing(false);
             }
             Timber.e(throwable);
             Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
@@ -179,23 +167,27 @@ public class CheeseListFragment extends BaseFragment
         });
   }
 
-  public static class StringAdapter extends BaseQuickAdapter<Result, BaseViewHolder> {
+  private static class CheeseAdapter extends BaseQuickAdapter<Result, BaseViewHolder> {
     private final Fragment mFragment;
+    private final RequestOptions mOptions;
 
-    public StringAdapter(@Nullable List<Result> data, Fragment fragment) {
+    private CheeseAdapter(@Nullable List<Result> data, Fragment fragment) {
       super(R.layout.list_item, data);
       this.mFragment = fragment;
+      mOptions = RequestOptions.circleCropTransform();
     }
 
     @Override protected void convert(BaseViewHolder helper, Result item) {
-      helper.setText(android.R.id.text1, item.getName());
+      helper.setText(R.id.text1, item.getName());
       helper.itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
+          Bundle bundle = new Bundle();
+          bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME, item.getName());
+          bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, item.getIcon());
+          ActivityUtils.startActivity(mFragment, CollapsingToolbarLayoutFragment.class, bundle, -1);
         }
       });
-      Glide.with(mFragment)
-          .load(item.getIcon()).apply(RequestOptions.circleCropTransform())
-          //.bitmapTransform(new CropCircleTransformation(mContext))
+      Glide.with(mFragment).load(item.getIcon()).apply(mOptions)
           .into((ImageView) helper.getView(R.id.avatar));
     }
   }

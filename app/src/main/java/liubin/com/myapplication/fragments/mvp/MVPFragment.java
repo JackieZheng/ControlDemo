@@ -1,4 +1,4 @@
-package liubin.com.myapplication.fragments;
+package liubin.com.myapplication.fragments.mvp;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,19 +14,20 @@ import butterknife.Unbinder;
 import com.example.mylibrary.base.ApiResponse;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.TopBarActivity;
-import com.example.mylibrary.base.mvp.ListMVPFragment;
+import com.example.mylibrary.base.mvp.BaseListMVPFragment;
 import java.util.List;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.bean.Result;
+import liubin.com.myapplication.fragments.BasicAdapter;
 
 public class MVPFragment
-    extends ListMVPFragment<TopBarActivity, Result, List<Result>, IMVPPersenter>
-    implements IMVPView<ApiResponse<List<Result>>> {
+    extends BaseListMVPFragment<TopBarActivity, Result, List<Result>, IMVPContract.IMVPPresenter>
+    implements IMVPContract.IMVPView<ApiResponse<List<Result>>> {
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
 
-  @BindView(R.id.recyclerview) RecyclerView mRecyclerView;
-  @BindView(R.id.swip) SwipeRefreshLayout mSwipeRefreshLayout;
+  @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+  @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
 
   @Override public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -53,7 +54,7 @@ public class MVPFragment
 
     // 初始化列表
     mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    mRecyclerView.setAdapter(new BasicAdapter(getActivity(), mData, this));
+    mRecyclerView.setAdapter(new BasicAdapter(this, mData, this));
     mRecyclerView.addOnScrollListener(new EndlessScrollListener(this));
 
     // 这一句可以在任何时候调用
@@ -86,7 +87,7 @@ public class MVPFragment
     return R.layout.content_mvp;
   }
 
-  @Override protected IMVPPersenter initPresenter() {
+  @Override protected IMVPContract.IMVPPresenter initPresenter() {
     return new MVPPresenter(this, this);
   }
 

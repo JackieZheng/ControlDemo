@@ -41,13 +41,13 @@ public class ActivityUtils {
   /**
    * 启动Fragment
    *
-   * @param fragment 当前所在Fragment
+   * @param activity 当前所在Fragment
    * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
    * 泛型参数必须是{@link BaseActivity}及其子类
    * @param bundle 参数
    * @param requestCode 请求码
    */
-  public static void startActivity(Activity fragment,
+  public static void startActivity(Activity activity,
       Class<? extends BaseFragment<? extends BaseActivity>> clazz, Bundle bundle, int requestCode) {
     if (bundle == null) bundle = new Bundle();
     bundle.putString(BaseActivity.FRAGMENT_CLASS_NAME, clazz.getName());
@@ -55,12 +55,12 @@ public class ActivityUtils {
     Intent intent = new Intent();
     intent.putExtras(bundle);
     // 泛型参数指定打开那个Activity
-    intent.setClass(fragment, (Class) getGenericType(clazz));
+    intent.setClass(activity, (Class) getGenericType(clazz));
 
     if (requestCode != -1) {
-      fragment.startActivityForResult(intent, requestCode);
+      activity.startActivityForResult(intent, requestCode);
     } else {
-      fragment.startActivity(intent);
+      activity.startActivity(intent);
     }
   }
 
