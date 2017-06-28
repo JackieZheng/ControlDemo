@@ -8,10 +8,8 @@ import com.example.mylibrary.base.adapter.IntegerAdapter;
 import com.example.mylibrary.base.adapter.LongAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
 import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -32,7 +30,6 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import timber.log.Timber;
 
 /**
  * 创建Api封装,所有的请求都从这里创建
@@ -160,10 +157,13 @@ public class ApiClient {
         int code = response.code();
         if (code >= 200 && code <= 300) {// 2xx表示http ok
           ResponseBody peekBody = response.peekBody(Integer.MAX_VALUE);
-          JsonReader jsonReader = getGson().newJsonReader(response.body().charStream());
-          TypeAdapter<?> adapter = getGson().getAdapter(TypeToken.get(ApiResponse.class));
-          ApiResponse o = (ApiResponse) adapter.read(jsonReader);
-          Timber.d(response.toString());
+          ApiResponse o =
+              getGson().fromJson(peekBody.string(), TypeToken.get(ApiResponse.class).getType());
+          //由于Reader只能读一次所以不能用下面的方法
+          //JsonReader jsonReader = getGson().newJsonReader(response.body().charStream());
+          //TypeAdapter<?> adapter = getGson().getAdapter(TypeToken.get(ApiResponse.class));
+          //ApiResponse o = (ApiResponse) adapter.read(jsonReader);
+          //Timber.d(response.toString());
           // todo 可以在这里检测token是否过期进行一些处理
           /*Intent intent = new Intent(app, BaseActivity.class);
           intent.putExtra(BaseActivity.FRAGMENT_CLASS_NAME, BaseFragment.class.getName());

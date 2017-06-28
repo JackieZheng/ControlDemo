@@ -21,7 +21,7 @@ import liubin.com.myapplication.bean.Result
 //data class Person(var age: Int = 20, var name: String = "jack") {}
 // 类似单例模式
 //object Status {
-//  val success: Int = 1;
+//  val success: Int = 1
 //  fun test(): Int {
 //    System.out.println(success)
 //    return success
@@ -110,7 +110,7 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
 
    * @param isRefresh 是否清空原来的数据
    */
-  public override fun obtainData(isRefresh: Boolean) {
+  override fun obtainData(isRefresh: Boolean) {
     CustomerApi.queryData(PAGE_SIZE)//
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
         .doOnSubscribe(doOnSubscribe)//开始执行之前的准备工作
@@ -119,19 +119,19 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
         .subscribe(getOnNext(isRefresh), onError)
   }
 
-  public override fun onSuccess(data: ApiResponse<List<Result>>, isRefresh: Boolean) {
+  override fun onSuccess(data: ApiResponse<List<Result>>, isRefresh: Boolean) {
     if (!data.isSuccess) {// 服务端返回异常代码
       toast(data.message)
       return
     }
 
     if (isRefresh) mData.clear()
-    if (data.data.isNotEmpty()) {
+    if (data.data != null) {
       mData.addAll(data.data)
     }
   }
 
-  public override fun checkHasMore(data: ApiResponse<List<Result>>): Boolean {
+  override fun checkHasMore(data: ApiResponse<List<Result>>): Boolean {
     // 服务调用失败 || 数据不满一页 表示还有更多数据
     //return !data.isSuccess || !(data.data == null || data.data.size != PAGE_SIZE)
     return when {

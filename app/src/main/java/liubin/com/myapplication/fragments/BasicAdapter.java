@@ -12,15 +12,15 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.mylibrary.base.ActivityUtils;
+import com.example.mylibrary.base.BaseAdapter;
 import com.example.mylibrary.base.BaseFragment;
-import com.example.mylibrary.base.BaseRecycleViewAdapter;
 import com.example.mylibrary.base.BaseViewHolder;
 import com.example.mylibrary.base.EndlessScrollListener;
 import java.util.List;
 import liubin.com.myapplication.R;
 import liubin.com.myapplication.bean.Result;
 
-public class BasicAdapter extends BaseRecycleViewAdapter<Result, RecyclerView.ViewHolder> {
+public class BasicAdapter extends BaseAdapter<Result, RecyclerView.ViewHolder> {
   private static final int ITEM_TYPE_DATA = 1;
   private final EndlessScrollListener.IMore mMore;
   private final LayoutInflater mInflater;

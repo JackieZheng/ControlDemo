@@ -14,7 +14,7 @@ import java.util.List;
  * @param <T> {@link #mData}列表数据类型
  * @param <VH> {@link RecyclerView.ViewHolder}
  */
-public abstract class BaseRecycleViewAdapter<T, VH extends RecyclerView.ViewHolder>
+public abstract class BaseAdapter<T, VH extends RecyclerView.ViewHolder>
     extends RecyclerView.Adapter<VH> {
 
   /** 底部布局 */
@@ -27,7 +27,7 @@ public abstract class BaseRecycleViewAdapter<T, VH extends RecyclerView.ViewHold
    *
    * @param data 数据
    */
-  public BaseRecycleViewAdapter(@NonNull final List<T> data) {
+  public BaseAdapter(@NonNull final List<T> data) {
     this.mData = data;
   }
 

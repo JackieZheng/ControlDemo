@@ -3,12 +3,11 @@ package liubin.com.myapplication;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.TextView;
-import com.ashokvarma.bottomnavigation.BadgeItem;
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
+import com.ashokvarma.bottomnavigation.TextBadgeItem;
 import com.example.mylibrary.base.BaseActivity;
 
 public class TestActivity extends BaseActivity {
@@ -51,28 +50,29 @@ public class TestActivity extends BaseActivity {
     BottomNavigationBar bottomNavigationBar =
         (BottomNavigationBar) findViewById(R.id.bottom_navigation_bar);
 
-    BadgeItem badgeItem = new BadgeItem().setText("5").setGravity(Gravity.RIGHT).show();
-
+    TextBadgeItem textBadgeItem = new TextBadgeItem().setText("4");
     bottomNavigationBar//
         .setMode(BottomNavigationBar.MODE_FIXED)
-        .addItem(new BottomNavigationItem(R.drawable.ic_home_black_24dp, "Home").setTextBadgeItem(
-            badgeItem))
+        .addItem(new BottomNavigationItem(R.drawable.ic_home_black_24dp, "Home").setBadgeItem(
+            textBadgeItem))
         .addItem(new BottomNavigationItem(R.drawable.ic_dashboard_black_24dp, "Books"))
         .addItem(new BottomNavigationItem(R.drawable.ic_notifications_black_24dp, "Movies & TV"))
-        .setActiveColor(R.color.light_gray)
-        .setInActiveColor(R.color.dark_gray)
+        .setActiveColor(R.color.dark_gray)
+        .setInActiveColor(R.color.light_gray)
         .setBarBackgroundColor(R.color.white)
+        .setBackgroundStyle(BottomNavigationBar.BACKGROUND_STYLE_DEFAULT)
         .initialise();
 
-    bottomNavigationBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
-      @Override public void onTabSelected(int position) {
-      }
+    bottomNavigationBar.setTabSelectedListener(
+        new BottomNavigationBar.SimpleOnTabSelectedListener() {
+          @Override public void onTabSelected(int position) {
+          }
 
-      @Override public void onTabUnselected(int position) {
-      }
+          @Override public void onTabUnselected(int position) {
+          }
 
-      @Override public void onTabReselected(int position) {
-      }
-    });
+          @Override public void onTabReselected(int position) {
+          }
+        });
   }
 }

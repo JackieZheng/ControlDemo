@@ -63,7 +63,7 @@ dependencies {
   // 日志库
   compile 'com.jakewharton.timber:timber:4.5.1'
   // 底部导航栏,support:design:25+已经包含相似控件
-  compile 'com.ashokvarma.android:bottom-navigation-bar:1.4.3'
+  compile 'com.ashokvarma.android:bottom-navigation-bar:2.0.1'
   // recyclerViewAdapter
   compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.18'
   // 滑动返回

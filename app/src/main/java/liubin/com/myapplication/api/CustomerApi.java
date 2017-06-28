@@ -98,24 +98,21 @@ public class CustomerApi {
         .getUser(1, 20)//
         .doOnNext(new Consumer<ApiResponse<List<User>>>() {
           @Override public void accept(@NonNull ApiResponse<List<User>> response) throws Exception {
-
           }
         })//
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
         .doOnSubscribe(new Consumer<Disposable>() {
           @Override public void accept(@NonNull Disposable disposable) throws Exception {
-
           }
         })//开始执行之前的准备工作
         .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
         .observeOn(AndroidSchedulers.mainThread())//指定这行代码之后的subscribe在io线程执行
         .subscribe(new Consumer<ApiResponse<List<User>>>() {
           @Override public void accept(@NonNull ApiResponse<List<User>> response) throws Exception {
-
           }
         }, new Consumer<Throwable>() {
           @Override public void accept(@NonNull Throwable throwable) throws Exception {
-
+            Timber.e(throwable);
           }
         });
   }

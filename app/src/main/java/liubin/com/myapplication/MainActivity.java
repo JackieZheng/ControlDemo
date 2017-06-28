@@ -43,6 +43,7 @@ import com.example.mylibrary.base.BaseActivity;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
+import liubin.com.myapplication.api.CustomerApi;
 import liubin.com.myapplication.bean.User;
 import liubin.com.myapplication.fragments.BasicFragment;
 import liubin.com.myapplication.fragments.CheeseListFragment;
@@ -97,7 +98,7 @@ public class MainActivity extends BaseActivity {
         Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
             .setAction("Action", null)
             .show();
-        //CustomerApi.test();
+        CustomerApi.test();
         User user = new User();
         user.setName("nnnn");
         user.setAge(333);
@@ -232,6 +233,8 @@ public class MainActivity extends BaseActivity {
                 break;
               }
               case R.id.nav_friends: {
+                Intent intent = new Intent(getApplicationContext(), TestActivity.class);
+                startActivity(intent);
                 break;
               }
 

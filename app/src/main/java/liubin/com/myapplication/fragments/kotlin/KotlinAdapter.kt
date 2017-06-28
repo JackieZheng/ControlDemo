@@ -14,7 +14,7 @@ import liubin.com.myapplication.bean.Result
 import liubin.com.myapplication.fragments.CollapsingToolbarLayoutFragment
 
 class KotlinAdapter(private val mFragment: BaseFragment<*>, items: List<Result>,
-    private val mMore: EndlessScrollListener.IMore) : BaseRecycleViewAdapter<Result, RecyclerView.ViewHolder>(
+    private val mMore: EndlessScrollListener.IMore) : BaseAdapter<Result, RecyclerView.ViewHolder>(
     items) {
   //常量定义
   companion object {
