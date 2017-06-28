@@ -15,12 +15,12 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.mylibrary.base.BaseActivity;
 import com.example.mylibrary.base.BaseFragment;
 import com.r0adkll.slidr.Slidr;
 import liubin.com.myapplication.R;
+import liubin.com.myapplication.glide.GlideApp;
 
 /**
  * <pre>
@@ -90,7 +90,7 @@ public class CollapsingToolbarLayoutFragment extends BaseFragment<BaseActivity> 
     //扩张时候的title颜色
     mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.primary));
 
-    Glide.with(this)
+    GlideApp.with(this)
         .load(getArguments().getInt(EXTRA_ICON, 0))
         .apply(RequestOptions.centerCropTransform())
         .into(mImageView);

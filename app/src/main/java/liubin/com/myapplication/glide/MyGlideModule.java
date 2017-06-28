@@ -15,10 +15,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import liubin.com.myapplication.R;
+import liubin.com.myapplication.bean.Picture;
 import timber.log.Timber;
 
 /**
- * Glide 4.x 自定义处理String类型和File类型的文件处理, GlideModel
+ * Glide 4.x 自定义处理Picture类型和File类型的文件处理, GlideModel
  */
 @GlideModule public class MyGlideModule extends AppGlideModule {
 
@@ -30,8 +31,8 @@ import timber.log.Timber;
   }
 
   @Override public void registerComponents(Context context, Registry registry) {
-    // 指定Model类型为String的处理方式
-    registry.replace(String.class, InputStream.class, new MyModelLoader.LoaderFactory());
+    // 指定Model类型为Picture的处理方式,注意只处理本地文件
+    registry.append(Picture.class, InputStream.class, new MyModelLoader.LoaderFactory());
 
     // 指定Model类型为File的处理方式
     registry.append(File.class, InputStream.class,

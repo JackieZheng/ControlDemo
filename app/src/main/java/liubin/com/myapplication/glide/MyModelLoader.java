@@ -16,25 +16,27 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import liubin.com.myapplication.bean.Picture;
 import timber.log.Timber;
 
 import static com.bumptech.glide.load.DataSource.REMOTE;
 
 /**
  * Glide 4.x 自定义GlideModel
- * 这里指定String类型的Model由用户处理
+ * 这里指定Picture类型的Model由用户处理
  */
-public class MyModelLoader implements ModelLoader<String, InputStream> {
+public class MyModelLoader implements ModelLoader<Picture, InputStream> {
 
   public MyModelLoader() {
   }
 
   @Nullable @Override
-  public LoadData<InputStream> buildLoadData(String model, int width, int height, Options options) {
+  public LoadData<InputStream> buildLoadData(Picture model, int width, int height,
+      Options options) {
     return new LoadData<InputStream>(new MyKey(model), new MyDataFetcher(model));
   }
 
-  @Override public boolean handles(String s) {
+  @Override public boolean handles(Picture s) {
     return true;
   }
 
@@ -43,14 +45,14 @@ public class MyModelLoader implements ModelLoader<String, InputStream> {
    * 这个类可以使用 {@link ObjectKey} 代替
    */
   public static class MyKey implements Key {
-    String path;
+    Picture path;
 
-    public MyKey(String path) {
+    public MyKey(Picture path) {
       this.path = path;
     }
 
     @Override public void updateDiskCacheKey(MessageDigest messageDigest) {
-      messageDigest.update(path.getBytes(CHARSET));
+      messageDigest.update(path.getFilePath().getBytes(CHARSET));
     }
 
     @Override public boolean equals(Object o) {
@@ -71,20 +73,20 @@ public class MyModelLoader implements ModelLoader<String, InputStream> {
    */
   public static class MyDataFetcher implements DataFetcher<InputStream> {
 
-    private String file;
+    private Picture file;
     private boolean isCanceled;
     InputStream mInputStream = null;
 
-    public MyDataFetcher(String file) {
+    public MyDataFetcher(Picture file) {
       this.file = file;
     }
 
     @Override public void loadData(Priority priority, DataCallback<? super InputStream> callback) {
       // 可以在这里进行一些文件处理,比如根据文件路径处理,文件解密等
       try {
-        Timber.e(file);
+        Timber.e(file.getFilePath());
         if (!isCanceled) {
-          mInputStream = new FileInputStream(new File(file));
+          mInputStream = new FileInputStream(new File(file.getFilePath()));
         }
       } catch (FileNotFoundException e) {
         callback.onLoadFailed(e);
@@ -123,12 +125,12 @@ public class MyModelLoader implements ModelLoader<String, InputStream> {
   /**
    * 构造工厂类
    */
-  public static class LoaderFactory implements ModelLoaderFactory<String, InputStream> {
+  public static class LoaderFactory implements ModelLoaderFactory<Picture, InputStream> {
 
     public LoaderFactory() {
     }
 
-    @Override public ModelLoader<String, InputStream> build(MultiModelLoaderFactory multiFactory) {
+    @Override public ModelLoader<Picture, InputStream> build(MultiModelLoaderFactory multiFactory) {
       return new MyModelLoader();
     }
 
