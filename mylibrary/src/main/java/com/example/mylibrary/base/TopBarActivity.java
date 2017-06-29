@@ -11,7 +11,7 @@ import com.example.mylibrary.R;
 /**
  * 包含 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity, 一般页面使用的Activity
  */
-public class TopBarActivity extends BaseActivity {
+public final class TopBarActivity extends BaseActivity {
   View mStatusBar;
   Toolbar mToolBar;
   View mToolBarShadow;
@@ -23,7 +23,6 @@ public class TopBarActivity extends BaseActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    // Slidr.attach(this);
     mContentContainer = (ViewGroup) findViewById(R.id.content);
     setTransparentForWindow();
     setTopBarOverlay(false);
