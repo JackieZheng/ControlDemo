@@ -30,8 +30,8 @@ import com.example.mylibrary.R;
 import timber.log.Timber;
 
 import static com.example.mylibrary.base.ProgressFragment.ViewType.CONTENT;
-import static com.example.mylibrary.base.ProgressFragment.ViewType.EMPTY_DATA;
-import static com.example.mylibrary.base.ProgressFragment.ViewType.NETWORK_ERROR;
+import static com.example.mylibrary.base.ProgressFragment.ViewType.EMPTY;
+import static com.example.mylibrary.base.ProgressFragment.ViewType.ERROR;
 import static com.example.mylibrary.base.ProgressFragment.ViewType.PROGRESS;
 
 /**
@@ -59,7 +59,7 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
    * 视图类型,内容,加载中,没有数据,网络异常
    */
   enum ViewType {
-    CONTENT, PROGRESS, EMPTY_DATA, NETWORK_ERROR
+    CONTENT, PROGRESS, EMPTY, ERROR
   }
 
   // 当前视图类型
@@ -227,26 +227,26 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
    * 显示空视图
    */
   public void showEmpty() {
-    if (mCurrentViewType == EMPTY_DATA) return;
+    if (mCurrentViewType == EMPTY) return;
     if (mIsViewCreated) {
       View hideView = getCurrentView();
       View showView = getEmptyView();
       switchView(showView, hideView, false);
     }
-    mCurrentViewType = EMPTY_DATA;
+    mCurrentViewType = EMPTY;
   }
 
   /**
    * 显示网络错误
    */
   public void showNetWorkError() {
-    if (mCurrentViewType == NETWORK_ERROR) return;
+    if (mCurrentViewType == ERROR) return;
     if (mIsViewCreated) {
       View hideView = getCurrentView();
       View showView = getNetWorkErrorView();
       switchView(showView, hideView, false);
     }
-    mCurrentViewType = NETWORK_ERROR;
+    mCurrentViewType = ERROR;
   }
 
   /**
@@ -371,11 +371,11 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
         view = mContentView;
         break;
       }
-      case EMPTY_DATA: {
+      case EMPTY: {
         view = getEmptyView();
         break;
       }
-      case NETWORK_ERROR: {
+      case ERROR: {
         view = getNetWorkErrorView();
         break;
       }

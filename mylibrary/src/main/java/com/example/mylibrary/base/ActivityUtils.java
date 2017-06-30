@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -14,16 +16,18 @@ public class ActivityUtils {
   /**
    * 启动Fragment
    *
-   * @param fragment 当前所在Fragment
-   * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * @param fragment 当前所在 {@link Fragment}
+   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类,且必须声明泛型参数.
    * 泛型参数必须是{@link BaseActivity}及其子类
    * @param bundle 参数
    * @param requestCode 请求码
    */
-  public static void startActivity(Fragment fragment,
-      Class<? extends BaseFragment<? extends BaseActivity>> clazz, Bundle bundle, int requestCode) {
+  public static void startActivity(@NonNull Fragment fragment,
+      @NonNull Class<? extends BaseFragment<? extends BaseActivity>> clazz, @Nullable Bundle bundle,
+      int requestCode) {
     if (bundle == null) bundle = new Bundle();
 
+    // 指定使用哪个 Fragment 显示在 Activity 中
     bundle.putString(BaseActivity.FRAGMENT_CLASS_NAME, clazz.getName());
 
     Intent intent = new Intent();
@@ -36,6 +40,32 @@ public class ActivityUtils {
     } else {
       fragment.startActivity(intent);
     }
+  }
+
+  /**
+   * 启动Fragment
+   *
+   * @param fragment 当前所在 {@link Fragment}
+   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * 泛型参数必须是{@link BaseActivity}及其子类
+   * @param bundle 参数
+   */
+  public static void startActivity(@NonNull Fragment fragment,
+      @NonNull Class<? extends BaseFragment<? extends BaseActivity>> clazz,
+      @Nullable Bundle bundle) {
+    startActivity(fragment, clazz, bundle, -1);
+  }
+
+  /**
+   * 启动Fragment
+   *
+   * @param fragment 当前所在 {@link Fragment}
+   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * 泛型参数必须是{@link BaseActivity}及其子类
+   */
+  public static void startActivity(@NonNull Fragment fragment,
+      @NonNull Class<? extends BaseFragment<? extends BaseActivity>> clazz) {
+    startActivity(fragment, clazz, null, -1);
   }
 
   /**
@@ -62,6 +92,31 @@ public class ActivityUtils {
     } else {
       activity.startActivity(intent);
     }
+  }
+
+  /**
+   * 启动Fragment
+   *
+   * @param activity 当前所在Fragment
+   * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * 泛型参数必须是{@link BaseActivity}及其子类
+   * @param bundle 参数
+   */
+  public static void startActivity(Activity activity,
+      Class<? extends BaseFragment<? extends BaseActivity>> clazz, Bundle bundle) {
+    startActivity(activity, clazz, bundle, -1);
+  }
+
+  /**
+   * 启动Fragment
+   *
+   * @param activity 当前所在Fragment
+   * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * 泛型参数必须是{@link BaseActivity}及其子类
+   */
+  public static void startActivity(Activity activity,
+      Class<? extends BaseFragment<? extends BaseActivity>> clazz) {
+    startActivity(activity, clazz, null, -1);
   }
 
   /**

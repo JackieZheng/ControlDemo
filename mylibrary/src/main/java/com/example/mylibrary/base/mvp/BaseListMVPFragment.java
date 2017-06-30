@@ -15,7 +15,7 @@ import com.example.mylibrary.base.ListFragment;
  * @param <P> 页面对应的Presenter
  */
 public abstract class BaseListMVPFragment<CONTAINER extends BaseActivity, ITEM, DATA, P extends BaseListPresenter>
-    extends ListFragment<CONTAINER, ITEM, DATA> /*implements IListView<ApiResponse<DATA>>*/ {
+    extends ListFragment<CONTAINER, ITEM, DATA> {
 
   protected P mPresenter;
 

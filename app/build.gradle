@@ -14,7 +14,7 @@ android {
   buildToolsVersion '25.0.3'
 
   defaultConfig {
-    applicationId "liubin.com.myapplication"
+    applicationId "com.myapplication"
     minSdkVersion 14
     targetSdkVersion 25
     versionCode 1
@@ -69,7 +69,7 @@ dependencies {
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
 
   //Glide
-  //compile 'com.github.bumptech.glide:glide:3.7.0'
+  //compile 'com.github.bumptech.glide:glide:3.8.0'
   compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
   compile 'jp.wasabeef:glide-transformations:2.0.2'
   compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'

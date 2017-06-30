@@ -19,7 +19,7 @@
 
 
 #JavaBean 实体类
--keep class liubin.com.myapplication.bean.** { *; }
+-keep class com.myapplication.bean.** { *; }
 
 #第三方包
 #compile 'com.squareup.retrofit2:retrofit:2.2.0'

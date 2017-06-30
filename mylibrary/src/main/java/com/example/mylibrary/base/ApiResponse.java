@@ -1,9 +1,18 @@
 package com.example.mylibrary.base;
 
 import java.io.Serializable;
+import retrofit2.Response;
 
 /**
  * 后台服务返回的数据对应的数据结构,需要根据后台服务的特点调整类的内容
+ * <pre>
+ * 如果我们需要使用Http响应头消息那么可以这么做
+ * 返回参数使用{@link Response}代替,其中泛型参数为{@link ApiResponse}
+ * eg:
+ * @GET("/account") Observable<ApiResponse<List<User>>> getAccount();
+ * 改为
+ * @GET("/account") Observable<Response<ApiResponse<List<User>>>> getAccount();
+ * </pre>
  *
  * @param <T> 数据类型 "结构体"
  */
