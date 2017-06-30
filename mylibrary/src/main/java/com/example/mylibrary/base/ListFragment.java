@@ -52,7 +52,7 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    * 主要用于更新列表数据状态
    * 1. 开始加载{@link #mIsLoading} == true
    * 2. 加载完成{@link #mIsLoading} == false
-   * 3. 加载失败{@link #mIsLoading} == false && {@link #isError()}  == true
+   * 3. 加载失败{@link #mIsLoading} == false && {@link #mIsError}  == true
    * </pre>
    */
   protected abstract void onStatusUpdated();
