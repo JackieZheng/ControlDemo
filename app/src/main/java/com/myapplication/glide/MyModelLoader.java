@@ -12,8 +12,6 @@ import com.bumptech.glide.load.model.MultiModelLoaderFactory;
 import com.bumptech.glide.signature.ObjectKey;
 import com.myapplication.bean.Picture;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -83,14 +81,9 @@ public class MyModelLoader implements ModelLoader<Picture, InputStream> {
 
     @Override public void loadData(Priority priority, DataCallback<? super InputStream> callback) {
       // 可以在这里进行一些文件处理,比如根据文件路径处理,文件解密等
-      try {
-        Timber.e(file.getFilePath());
-        if (!isCanceled) {
-          mInputStream = new FileInputStream(new File(file.getFilePath()));
-        }
-      } catch (FileNotFoundException e) {
-        callback.onLoadFailed(e);
-        Timber.e(e);
+      Timber.e(file.getFilePath());
+      if (!isCanceled) {
+        mInputStream = ConcealUtil.getCipherInputStream(new File(file.getFilePath()));
       }
       callback.onDataReady(mInputStream);
     }

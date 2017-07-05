@@ -75,6 +75,8 @@ dependencies {
   compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
   annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
 
+  compile 'com.facebook.conceal:conceal:2.0.1@aar'
+
 }
 
 repositories {

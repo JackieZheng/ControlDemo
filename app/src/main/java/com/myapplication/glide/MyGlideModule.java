@@ -12,7 +12,6 @@ import com.bumptech.glide.request.target.ViewTarget;
 import com.myapplication.R;
 import com.myapplication.bean.Picture;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +30,7 @@ import timber.log.Timber;
   }
 
   @Override public void registerComponents(Context context, Registry registry) {
-    // 指定Model类型为Picture的处理方式,注意只处理本地文件
+    // 指定Model类型为Picture的处理方式
     registry.append(Picture.class, InputStream.class, new MyModelLoader.LoaderFactory());
 
     // 指定Model类型为File的处理方式
@@ -41,7 +40,8 @@ import timber.log.Timber;
           @Override public InputStream open(File file) throws FileNotFoundException {
             // 可以在这里进行文件处理,比如解密等.
             Timber.e(file.getAbsolutePath());
-            return new FileInputStream(file);
+            return ConcealUtil.getCipherInputStream(file);
+            // return new FileInputStream(file);
           }
 
           @Override public void close(InputStream inputStream) throws IOException {
