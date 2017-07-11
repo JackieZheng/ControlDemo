@@ -28,6 +28,11 @@ android {
     vectorDrawables.useSupportLibrary = true
   }
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   signingConfigs {
     toutoumu {
       keyAlias 'toutoumu'
@@ -41,6 +46,7 @@ android {
     debug {
       minifyEnabled false
       shrinkResources false
+      versionNameSuffix "-dev"
       applicationIdSuffix ".debug"
       signingConfig signingConfigs.toutoumu
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -54,9 +60,20 @@ android {
     }
   }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+
+  flavorDimensions "mode"
+
+  productFlavors {
+    abcde {
+      dimension "mode"
+      minSdkVersion 14
+      /*这样配置可以在java代码中这样调用 BuildConfig.serviceEnvironment*/
+      buildConfigField "int", "serviceEnvironment", "1" // 测试环境
+    }
+    wocao {
+      dimension "mode"
+      buildConfigField "int", "serviceEnvironment", "1" // 测试环境
+    }
   }
 }
 
@@ -76,7 +93,6 @@ dependencies {
   annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
 
   compile 'com.facebook.conceal:conceal:2.0.1@aar'
-
 }
 
 repositories {

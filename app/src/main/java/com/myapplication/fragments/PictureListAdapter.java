@@ -30,9 +30,7 @@ public class PictureListAdapter extends BaseAdapter {
     this.mSelect = select;
     this.mInflater = activity.getLayoutInflater();
 
-    options = RequestOptions.centerCropTransform()
-        .placeholder(R.drawable.ic_dashboard_black_24dp)
-        .diskCacheStrategy(DiskCacheStrategy.NONE);
+    options = RequestOptions.centerCropTransform().placeholder(R.drawable.ic_dashboard_black_24dp);
   }
 
   public void setSelect(boolean select) {

@@ -8,6 +8,7 @@ import com.facebook.crypto.Entity;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.util.SystemNativeCryptoLibrary;
+import com.myapplication.BuildConfig;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +33,6 @@ public class ConcealUtil {
     entity = Entity.create(e);
     crypto = new Crypto(new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256),
         new SystemNativeCryptoLibrary(), CryptoConfig.KEY_256);
-
     if (!crypto.isAvailable()) {
       destroy();
     }
