@@ -18,7 +18,7 @@ import com.example.mylibrary.base.ListFragment;
 import com.example.mylibrary.base.ProgressFragment;
 import com.example.mylibrary.base.TopBarActivity;
 import com.myapplication.R;
-import com.myapplication.api.CustomerApi;
+import com.myapplication.api.MockApi;
 import com.myapplication.bean.Result;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -106,7 +106,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
    * @param isRefresh 是否清空原来的数据
    */
   public void obtainData(final boolean isRefresh) {
-    CustomerApi.queryData(PAGE_SIZE)//
+    MockApi.queryData(PAGE_SIZE)//
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
         .doOnSubscribe(getDoOnSubscribe())//开始执行之前的准备工作
         .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行

@@ -1,7 +1,7 @@
 package com.myapplication.fragments.mvp;
 
 import com.example.mylibrary.base.ApiResponse;
-import com.myapplication.api.CustomerApi;
+import com.myapplication.api.MockApi;
 import com.myapplication.bean.Result;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.android.FragmentEvent;
@@ -18,7 +18,7 @@ public class MVPPresenter extends
   }
 
   @Override public void loadData(final int pageSize, final boolean isRefresh) {
-    CustomerApi.queryData(pageSize)//
+    MockApi.queryData(pageSize)//
         .compose(mProvider.<ApiResponse<List<Result>>>bindUntilEvent(FragmentEvent.DESTROY))//生命周期绑定
         //.doOnNext(mView.getDoOnNext(pageSize))//
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行

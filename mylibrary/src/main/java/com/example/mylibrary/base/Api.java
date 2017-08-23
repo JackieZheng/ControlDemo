@@ -34,7 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * 创建Api封装,所有的请求都从这里创建
  */
-public class ApiClient {
+public class Api {
   /** 服务对应的基础URL */
   private static final String BASE_URL = "http://test.api.evclub.com";
 
@@ -47,17 +47,17 @@ public class ApiClient {
   /**
    * 私有化构造函数
    */
-  private ApiClient() {
+  private Api() {
   }
 
   /**
    * 创建相应的服务接口
    * <pre>
-   *   eg: ApiClient.create(Api.class)
+   *   eg: Api.create(Api.class)
    * </pre>
    *
-   * @param service 如 {@link Api#class}
-   * @param <T> 参考  {@link Api}
+   * @param service 如 {@link MockApi#class}
+   * @param <T> 参考  {@link MockApi}
    * @return T 的实例对象
    */
   @NonNull public static <T> T create(@NonNull Class<T> service) {
@@ -71,7 +71,7 @@ public class ApiClient {
    */
   private static Retrofit getRetrofit() {
     if (mRetrofit == null) {
-      synchronized (ApiClient.class) {
+      synchronized (Api.class) {
         if (mRetrofit == null) {
           mRetrofit = new Retrofit.Builder()//
               .baseUrl(BASE_URL)// 基础URL
@@ -92,7 +92,7 @@ public class ApiClient {
    */
   @NonNull public static Gson getGson() {
     if (mGson == null) {
-      synchronized (ApiClient.class) {
+      synchronized (Api.class) {
         if (mGson == null) {
           mGson = new GsonBuilder()//
               .registerTypeAdapterFactory(//Boolean 类型转换/*Boolean.TYPE == boolean.class*/

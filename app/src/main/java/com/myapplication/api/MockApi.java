@@ -1,7 +1,7 @@
 package com.myapplication.api;
 
 import android.accounts.NetworkErrorException;
-import com.example.mylibrary.base.ApiClient;
+import com.example.mylibrary.base.Api;
 import com.example.mylibrary.base.ApiResponse;
 import com.myapplication.R;
 import com.myapplication.bean.Result;
@@ -20,15 +20,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 import timber.log.Timber;
 
 /**
  * 模拟API
  */
-public class CustomerApi {
+public abstract class MockApi {
   private static Random mRandom = new Random();
   private static int id = mRandom.nextInt(8);
   private static int m = 0;
+
+  @GET("/account/accountInfo")
+  abstract Observable<ApiResponse<List<User>>> getUser(@Query("page") int page,
+      @Query("pagesize") int pageSize);
 
   /**
    * 模拟获取数据,延时1500毫秒返回数据
@@ -94,7 +100,7 @@ public class CustomerApi {
   }
 
   public static void test() {
-    ApiClient.create(Api.class)//
+    Api.create(MockApi.class)//
         .getUser(1, 20)//
         .doOnNext(new Consumer<ApiResponse<List<User>>>() {
           @Override public void accept(@NonNull ApiResponse<List<User>> response) throws Exception {

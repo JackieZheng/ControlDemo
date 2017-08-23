@@ -38,7 +38,7 @@ import com.example.mylibrary.base.ActivityUtils;
 import com.example.mylibrary.base.ApiResponse;
 import com.example.mylibrary.base.BaseFragment;
 import com.myapplication.R;
-import com.myapplication.api.CustomerApi;
+import com.myapplication.api.MockApi;
 import com.myapplication.bean.Result;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -107,7 +107,7 @@ public class CheeseListFragment extends BaseFragment
   }
 
   @Override public void onLoadMoreRequested() {
-    CustomerApi.queryData(20)//
+    MockApi.queryData(20)//
         .subscribeOn(Schedulers.io())// 指定之前的subscribe在io线程执行
         .doOnSubscribe(new Consumer<Disposable>() {
           @Override public void accept(Disposable disposable) throws Exception {

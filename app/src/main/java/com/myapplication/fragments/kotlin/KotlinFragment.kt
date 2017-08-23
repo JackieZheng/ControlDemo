@@ -11,7 +11,7 @@ import com.example.mylibrary.base.EndlessScrollListener
 import com.example.mylibrary.base.ListFragment
 import com.example.mylibrary.base.TopBarActivity
 import com.myapplication.R
-import com.myapplication.api.CustomerApi
+import com.myapplication.api.MockApi
 import com.myapplication.bean.Result
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -111,7 +111,7 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
    * @param isRefresh 是否清空原来的数据
    */
   override fun obtainData(isRefresh: Boolean) {
-    CustomerApi.queryData(PAGE_SIZE)//
+    MockApi.queryData(PAGE_SIZE)//
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
         .doOnSubscribe(doOnSubscribe)//开始执行之前的准备工作
         .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
