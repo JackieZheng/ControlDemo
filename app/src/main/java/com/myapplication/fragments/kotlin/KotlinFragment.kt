@@ -72,17 +72,17 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    swipe_refresh_layout!!.setColorSchemeResources(//
+    swipe_refresh_layout.setColorSchemeResources(//
         android.R.color.holo_blue_bright, //
         android.R.color.holo_green_light, //
         android.R.color.holo_orange_light, //
         android.R.color.holo_red_light)
 
-    swipe_refresh_layout!!.setOnRefreshListener { obtainData(true) }
+    swipe_refresh_layout.setOnRefreshListener { obtainData(true) }
 
-    recycler_view!!.layoutManager = LinearLayoutManager(context)
-    recycler_view!!.adapter = KotlinAdapter(this, mData, this)
-    recycler_view!!.addOnScrollListener(EndlessScrollListener(this))
+    recycler_view.layoutManager = LinearLayoutManager(context)
+    recycler_view.adapter = KotlinAdapter(this, mData, this)
+    recycler_view.addOnScrollListener(EndlessScrollListener(this))
 
     // 这一句可以在任何时候调用
     setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network)
@@ -142,8 +142,8 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
   }
 
   override fun onStatusUpdated() {
-    swipe_refresh_layout!!.isRefreshing = isLoading
-    recycler_view!!.adapter.notifyDataSetChanged()
+    swipe_refresh_layout.isRefreshing = isLoading
+    recycler_view.adapter.notifyDataSetChanged()
   }
 }
 
