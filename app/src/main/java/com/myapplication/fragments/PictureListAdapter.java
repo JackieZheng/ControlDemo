@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.myapplication.R;
@@ -17,6 +18,7 @@ import java.util.List;
 
 public class PictureListAdapter extends BaseAdapter {
 
+  private final RequestManager glide;
   private LayoutInflater mInflater;
   private final Activity mActivity;
   private final List<Picture> mPictures;
@@ -29,8 +31,8 @@ public class PictureListAdapter extends BaseAdapter {
     this.mActivity = activity;
     this.mSelect = select;
     this.mInflater = activity.getLayoutInflater();
-
-    options = RequestOptions.centerCropTransform().placeholder(R.drawable.ic_dashboard_black_24dp);
+    glide = Glide.with(mActivity);
+    options = RequestOptions.centerCropTransform().placeholder(R.drawable.ic_default_image);
   }
 
   public void setSelect(boolean select) {
@@ -63,7 +65,7 @@ public class PictureListAdapter extends BaseAdapter {
       File file = new File(picture.getFilePath());
       if (file.exists() && file.isFile()) {
         //GlideApp.with(mActivity).load(file.getAbsoluteFile()).apply(options).into(holder.image);
-        Glide.with(mActivity).load(picture.getFilePath()).apply(options).into(holder.image);
+        glide.load(picture.getFilePath()).apply(options).into(holder.image);
         holder.name.setVisibility(View.GONE);
       }
     }
