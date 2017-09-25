@@ -1,7 +1,6 @@
 package com.myapplication.api;
 
 import android.accounts.NetworkErrorException;
-import com.example.mylibrary.base.Api;
 import com.example.mylibrary.base.ApiResponse;
 import com.myapplication.R;
 import com.myapplication.bean.Result;

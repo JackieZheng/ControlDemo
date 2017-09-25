@@ -1,7 +1,8 @@
-package com.example.mylibrary.base;
+package com.myapplication.api;
 
 import android.support.annotation.NonNull;
 import com.example.mylibrary.BuildConfig;
+import com.example.mylibrary.base.ApiResponse;
 import com.example.mylibrary.base.adapter.BooleanAdapter;
 import com.example.mylibrary.base.adapter.DoubleAdapter;
 import com.example.mylibrary.base.adapter.IntegerAdapter;
@@ -56,7 +57,7 @@ public class Api {
    *   eg: Api.create(Api.class)
    * </pre>
    *
-   * @param service 如 {@link MockApi#class}
+   * @param service 如 {@link MockApi#getClass()}
    * @param <T> 参考  {@link MockApi}
    * @return T 的实例对象
    */

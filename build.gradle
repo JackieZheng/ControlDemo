@@ -1,21 +1,15 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-buildscript {//1.1.2-5
+buildscript {
   ext.kotlin_version = '1.1.4-3'
   repositories {
     jcenter()
     google()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.0.0-beta5'
+    classpath 'com.android.tools.build:gradle:3.0.0-beta6'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
-
-    /*
-    更新Android Studio 3.0 之后删除下面这
-    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-     */
-
 
     // NOTE: Do not place your application dependencies here; they belong
     // in the individual module build.gradle files

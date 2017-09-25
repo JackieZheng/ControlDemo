@@ -12,13 +12,21 @@ import com.example.mylibrary.R;
  * 包含 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity, 一般页面使用的Activity
  */
 public final class TopBarActivity extends BaseActivity {
-  View mStatusBar;
-  Toolbar mToolBar;
-  View mToolBarShadow;
-  ViewGroup mToolBarContainer;
-  ViewGroup mTopBar;
+  /** 顶部 ViewStub */
   ViewStub mStubTopBar;
+  /** 顶部 标题栏,标题栏阴影,状态栏 */
+  ViewGroup mTopBar;
+  /** 标题栏容器 标题栏,标题栏阴影 */
+  ViewGroup mToolBarContainer;
 
+  /** 状态栏 */
+  View mStatusBar;
+  /** 标题栏 */
+  Toolbar mToolBar;
+  /** 标题栏阴影 */
+  View mToolBarShadow;
+
+  /** 内容区域 */
   private ViewGroup mContentContainer;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +90,7 @@ public final class TopBarActivity extends BaseActivity {
   /**
    * 设置[自定义的顶部栏(状态栏+标题栏+标题栏阴影)]是否覆盖内容区域
    *
-   * @param overlay true:覆盖
+   * @param overlay 是否覆盖内容区域 true:覆盖
    */
   public void setTopBarOverlay(boolean overlay) {
     ensureTopBar();
@@ -113,9 +121,11 @@ public final class TopBarActivity extends BaseActivity {
 
     mTopBar = (ViewGroup) mStubTopBar.inflate();
     mStatusBar = mTopBar.findViewById(R.id.status_bar);
-
+    // 标题栏容器
     mToolBarContainer = (ViewGroup) mTopBar.findViewById(R.id.tool_bar_container);
+    // 标题栏
     mToolBar = (Toolbar) mToolBarContainer.findViewById(R.id.tool_bar);
+    // 标题栏阴影
     mToolBarShadow = mToolBarContainer.findViewById(R.id.tool_bar_shadow);
 
     // 使自定义状态栏,标题栏不覆盖内容区域

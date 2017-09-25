@@ -16,9 +16,12 @@
 
 package com.myapplication;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -35,12 +38,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.util.DialogUtils;
 import com.example.mylibrary.base.ActivityUtils;
-import com.example.mylibrary.base.Api;
 import com.example.mylibrary.base.BaseActivity;
 import com.google.gson.reflect.TypeToken;
+import com.myapplication.api.Api;
 import com.myapplication.api.MockApi;
 import com.myapplication.bean.User;
 import com.myapplication.fragments.BasicFragment;
@@ -54,13 +61,19 @@ import com.myapplication.fragments.kotlin.KotlinFragment;
 import com.myapplication.fragments.mvp.MVPFragment;
 import java.util.ArrayList;
 import java.util.List;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.OnShowRationale;
+import permissions.dispatcher.PermissionRequest;
+import permissions.dispatcher.RuntimePermissions;
 import timber.log.Timber;
 
 /**
  * DrawerLayout NavigationView CoordinatorLayout嵌套使用
  * 状态栏层级从下到上 依次是 CoordinatorLayout,NavigationView,系统状态栏
  */
-public class MainActivity extends BaseActivity {
+@RuntimePermissions public class MainActivity extends BaseActivity {
 
   @BindView(R.id.toolbar) Toolbar mToolbar;
   @BindView(R.id.tabs) TabLayout mTabLayout;
@@ -266,8 +279,8 @@ public class MainActivity extends BaseActivity {
                 startActivity(intent);
                 break;
               }
-              case R.id.nav_picture: {//相册图片读取
-                ActivityUtils.startActivity(MainActivity.this, PictureListFragment.class, null, -1);
+              case R.id.nav_picture: {//相册图片读取 注意是这样调用方法
+                MainActivityPermissionsDispatcher.showPictureFragmentWithCheck(MainActivity.this);
                 break;
               }
             }
@@ -276,6 +289,62 @@ public class MainActivity extends BaseActivity {
             return true;
           }
         });
+  }
+
+  /* *********************权限相关***************** */
+
+  /**
+   * 显示照片列表方法
+   */
+  @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE) void showPictureFragment() {
+    ActivityUtils.startActivity(MainActivity.this, PictureListFragment.class, null, -1);
+  }
+
+  /**
+   * [系统请求存储权限询问对话框] ,选择了禁止(拒绝),下次再调用需要存储权限的方法时候就会调用此方法,
+   * 此方法点击确定之后弹出 [系统请求存储权限询问对话框]
+   * 点击拒绝之后,将调用 {@link #showDeniedForStorage}
+   *
+   * @param request {@link PermissionRequest}
+   */
+  @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE) void showRationaleForStorage(
+      final PermissionRequest request) {
+    new MaterialDialog.Builder(this).title("是否授予权限")
+        .positiveText("确定")
+        .negativeText("取消")
+        .onPositive(new MaterialDialog.SingleButtonCallback() {
+          @Override
+          public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+            request.proceed();
+          }
+        })
+        .onNegative(new MaterialDialog.SingleButtonCallback() {
+          @Override
+          public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+            request.cancel();
+          }
+        })
+        .show();
+  }
+
+  /**
+   * 拒绝之后的提示信息
+   */
+  @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE) void showDeniedForStorage() {
+    Toast.makeText(this, "您已拒绝授予该权限", Toast.LENGTH_SHORT).show();
+  }
+
+  /**
+   * [系统请求存储权限询问对话框] ,勾选不在提示, 点击禁止.后弹出次提示,再次请求权限时候也会弹出
+   */
+  @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE) void showNeverAskForStorage() {
+    Toast.makeText(this, "您选择了不在询问,需要进入设置页面开启该权限", Toast.LENGTH_SHORT).show();
+  }
+
+  @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+      @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
   }
 
   /**

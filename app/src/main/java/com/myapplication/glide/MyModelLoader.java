@@ -1,5 +1,6 @@
 package com.myapplication.glide;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DataSource;
@@ -102,11 +103,11 @@ public class MyModelLoader implements ModelLoader<Picture, InputStream> {
       isCanceled = true;
     }
 
-    @Override public Class<InputStream> getDataClass() {
+    @NonNull @Override public Class<InputStream> getDataClass() {
       return InputStream.class;
     }
 
-    @Override public DataSource getDataSource() {
+    @NonNull @Override public DataSource getDataSource() {
       //return LOCAL;
       return REMOTE;
       //return DATA_DISK_CACHE;

@@ -83,7 +83,7 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA>
    * <pre>
    * // 标准实现
    * public boolean checkHasMore(ApiResponse<List<String>> data) {
-   *    // 服务调用失败 || 数据不满一页 表示还有更多数据
+   *    // 服务调用失败 || 数据满一页 表示还有更多数据
    *    return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
    * }
    * </pre>

@@ -20,6 +20,7 @@ import com.example.mylibrary.base.TopBarActivity;
 import com.myapplication.R;
 import com.myapplication.api.MockApi;
 import com.myapplication.bean.Result;
+import com.trello.rxlifecycle2.android.FragmentEvent;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import java.util.List;
@@ -107,6 +108,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
    */
   public void obtainData(final boolean isRefresh) {
     MockApi.queryData(PAGE_SIZE)//
+        //.compose(bindUntilEvent(FragmentEvent.DESTROY))
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
         .doOnSubscribe(getDoOnSubscribe())//开始执行之前的准备工作
         .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
@@ -127,7 +129,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
   }
 
   @Override public boolean checkHasMore(ApiResponse<List<Result>> data) {
-    // 服务调用失败 || 数据不满一页 表示还有更多数据
+    // 服务调用失败 || 数据满一页 表示还有更多数据
     return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
   }
 

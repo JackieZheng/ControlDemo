@@ -96,7 +96,7 @@ public class MVPFragment
   }
 
   @Override public boolean checkHasMore(ApiResponse<List<Result>> data) {
-    // 服务调用失败 || 数据不满一页 表示还有更多数据
+    // 服务调用失败 || 数据满一页 表示还有更多数据
     return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
   }
 
