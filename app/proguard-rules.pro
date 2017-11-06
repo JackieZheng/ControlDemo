@@ -22,7 +22,7 @@
 -keep class com.myapplication.bean.** { *; }
 
 #第三方包
-#compile 'com.squareup.retrofit2:retrofit:2.2.0'
+#compile 'com.squareup.retrofit2:retrofit:2.3.0'
 -dontwarn okio.**
 -dontwarn javax.annotation.**
 
@@ -31,19 +31,26 @@
 #-dontwarn javax.annotation.Nullable
 #-dontwarn javax.annotation.ParametersAreNonnullByDefault
 
-#compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
+#compile 'com.github.bumptech.glide:glide:4.3.0'
 -keep public class * implements com.bumptech.glide.module.GlideModule
--keep public class * extends com.bumptech.glide.AppGlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
   public *;
 }
+
 # for DexGuard only
 #-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 
+
 #compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.18'
 -keep class com.chad.library.adapter.** {
-   *;
+*;
+}
+-keep public class * extends com.chad.library.adapter.base.BaseQuickAdapter
+-keep public class * extends com.chad.library.adapter.base.BaseViewHolder
+-keepclassmembers  class **$** extends com.chad.library.adapter.base.BaseViewHolder {
+     <init>(...);
 }
 
 -dontwarn **

@@ -69,25 +69,25 @@ dependencies {
   compile fileTree(include: ['*.jar'], dir: 'libs')
   compile project(':mylibrary')
 
-  // butterknife
-  compile 'com.jakewharton:butterknife:8.6.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+  // butterknife https://github.com/JakeWharton/butterknife
+  compile 'com.jakewharton:butterknife:8.8.1'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
   //Glide 3.x
   //compile 'com.github.bumptech.glide:glide:3.8.0'
   //compile 'jp.wasabeef:glide-transformations:2.0.2'
 
-  //Glide 4.x
-  compile 'com.github.bumptech.glide:glide:4.1.1'
+  //Glide 4.x https://github.com/bumptech/glide
+  compile 'com.github.bumptech.glide:glide:4.3.0'
   //compile 'jp.wasabeef:glide-transformations:3.0.1'
   //compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
-  annotationProcessor 'com.github.bumptech.glide:compiler:4.1.1'
+  annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
 
-  // 权限相关
-  compile("com.github.hotchemi:permissionsdispatcher:2.4.0") {
+  // 权限相关 https://github.com/permissions-dispatcher/PermissionsDispatcher
+  compile("com.github.hotchemi:permissionsdispatcher:3.0.1") {
     exclude module: "support-v13"
   }
-  annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.4.0"
+  annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:3.0.1"
 }
 
 repositories {
