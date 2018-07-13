@@ -1,9 +1,23 @@
 package com.example.mylibrary.base;
 
 import android.app.Activity;
+import android.arch.lifecycle.LifecycleObserver;
+import android.content.res.ColorStateList;
+import android.graphics.Movie;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.ArrayRes;
+import android.support.annotation.BoolRes;
+import android.support.annotation.CallSuper;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IdRes;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 import io.reactivex.disposables.CompositeDisposable;
@@ -39,31 +53,39 @@ public abstract class BaseFragment<CONTAINER extends BaseActivity> extends RxFra
   /** 缓存所有请求 */
   protected final CompositeDisposable mDisposables = new CompositeDisposable();
 
-  @Override public void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    mActivity = (BaseActivity) getActivity();
+  @Override
+  @CallSuper
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
+    mActivity = (BaseActivity) activity;
     // 如果泛型参数 CONTAINER 不是BaseActivity的子类,跑出异常
     if (mActivity == null) {
       throw new IllegalArgumentException("泛型参数类型必须为BaseActivity或其子类");
     }
   }
 
-  @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+  @Override
+  @CallSuper
+  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    mIsViewCreated = true;
     // 如果是在带顶部栏的Activity中显示Fragment,那么调用初始化顶部栏方法
     if (mActivity instanceof TopBarActivity) {
       initTopBar((TopBarActivity) mActivity);
     }
-    mIsViewCreated = true;
   }
 
-  @Override public void onDestroyView() {
+  @Override
+  @CallSuper
+  public void onDestroyView() {
     super.onDestroyView();
     mIsViewCreated = false;
     mDisposables.clear();
   }
 
-  @Override public void onDestroy() {
+  @Override
+  @CallSuper
+  public void onDestroy() {
     super.onDestroy();
     mDisposables.dispose();
   }
@@ -73,7 +95,51 @@ public abstract class BaseFragment<CONTAINER extends BaseActivity> extends RxFra
    *
    * @param activity {@link TopBarActivity}
    */
-  public void initTopBar(TopBarActivity activity) {
+  protected void initTopBar(TopBarActivity activity) {
 
+  }
+
+  public int getColor(@ColorRes int id) {
+    return ResourcesCompat.getColor(this.getResources(), id, this.getActivity().getTheme());
+  }
+
+  public ColorStateList getColorStateList(@ColorRes int id) {
+    return ResourcesCompat.getColorStateList(this.getResources(), id, this.getActivity().getTheme());
+  }
+
+  public Drawable getDrawable(@DrawableRes int id) {
+    return ResourcesCompat.getDrawable(this.getResources(), id, this.getActivity().getTheme());
+  }
+
+  public Drawable getDrawableForDensity(@ColorRes int id, int density) {
+    return ResourcesCompat.getDrawableForDensity(this.getResources(), id, density, this.getActivity().getTheme());
+  }
+
+  public int getInteger(@IntegerRes int id) {
+    return this.getResources().getInteger(id);
+  }
+
+  public float getDimension(@DimenRes int id) {
+    return this.getResources().getDimension(id);
+  }
+
+  public int getDimensionPixelOffset(@DimenRes int id) {
+    return this.getResources().getDimensionPixelOffset(id);
+  }
+
+  public int getDimensionPixelSize(@DimenRes int id) {
+    return this.getResources().getDimensionPixelSize(id);
+  }
+
+  public boolean getBoolean(@BoolRes int id) {
+    return this.getResources().getBoolean(id);
+  }
+
+  public int[] getIntArray(@ArrayRes int id) {
+    return this.getResources().getIntArray(id);
+  }
+
+  public Movie getMovie(@RawRes int id) {
+    return this.getResources().getMovie(id);
   }
 }

@@ -13,9 +13,8 @@ import com.myapplication.R
 import com.myapplication.bean.Result
 import com.myapplication.fragments.CollapsingToolbarLayoutFragment
 
-class KotlinAdapter(private val mFragment: BaseFragment<*>, items: List<Result>,
-    private val mMore: EndlessScrollListener.IMore) : BaseAdapter<Result, RecyclerView.ViewHolder>(
-    items) {
+class KotlinAdapter(private val mFragment: BaseFragment<*>, items: List<Result>, private val mMore: EndlessScrollListener.IMore) :
+  BaseAdapter<Result, RecyclerView.ViewHolder>(items) {
   //常量定义
   companion object {
     private val ITEM_TYPE_DATA = 1
@@ -24,7 +23,7 @@ class KotlinAdapter(private val mFragment: BaseFragment<*>, items: List<Result>,
   private val mOptions: RequestOptions = RequestOptions.circleCropTransform()
   private val mInflater: LayoutInflater = LayoutInflater.from(mFragment.context)
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
     when (viewType) {
       Companion.ITEM_TYPE_DATA -> {
         return DataViewHolder(mInflater.inflate(R.layout.list_item, parent, false))
@@ -33,7 +32,7 @@ class KotlinAdapter(private val mFragment: BaseFragment<*>, items: List<Result>,
         return FootViewHolder(mInflater.inflate(R.layout.recyclerview_item_footer, parent, false))
       }
     }
-    return null
+    return DataViewHolder(mInflater.inflate(R.layout.list_item, parent, false))
   }
 
   override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
@@ -49,8 +48,7 @@ class KotlinAdapter(private val mFragment: BaseFragment<*>, items: List<Result>,
         val bundle = Bundle()
         bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME, item.name)
         bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, item.icon)
-        ActivityUtils.startActivity(mFragment, CollapsingToolbarLayoutFragment::class.java, bundle,
-            -1)
+        ActivityUtils.startActivity(mFragment, CollapsingToolbarLayoutFragment::class.java, bundle, -1)
       }
     } else if (viewHolder is FootViewHolder) {
       viewHolder.setupFootView(mMore)
@@ -77,6 +75,4 @@ class KotlinAdapter(private val mFragment: BaseFragment<*>, items: List<Result>,
    * 继承[BaseViewHolder]可以使代码更简洁
    */
   private class DataViewHolder(view: View) : BaseViewHolder(view)
-
-
 }

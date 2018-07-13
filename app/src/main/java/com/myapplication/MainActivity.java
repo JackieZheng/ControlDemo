@@ -280,7 +280,7 @@ import timber.log.Timber;
                 break;
               }
               case R.id.nav_picture: {//相册图片读取 注意是这样调用方法
-                MainActivityPermissionsDispatcher.showPictureFragmentWithCheck(MainActivity.this);
+                MainActivityPermissionsDispatcher.showPictureFragmentWithPermissionCheck(MainActivity.this);
                 break;
               }
             }

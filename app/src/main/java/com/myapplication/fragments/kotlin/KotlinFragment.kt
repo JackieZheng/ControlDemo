@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import com.example.mylibrary.base.ApiResponse
 import com.example.mylibrary.base.EndlessScrollListener
@@ -13,6 +14,7 @@ import com.example.mylibrary.base.TopBarActivity
 import com.myapplication.R
 import com.myapplication.api.MockApi
 import com.myapplication.bean.Result
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.content_basic.*
@@ -38,7 +40,7 @@ import kotlinx.android.synthetic.main.content_basic.*
  * 2. 重写 [getContentLayoutResourceId]方法,返回内容区域的布局文件,
  *    这个布局文件将嵌入到 [ProgressFragment] 的内容区域
  * 3. 注意请不要重写 [onCreateView],
- * 如需要修改Fragment布局内容,请重写 [getFragmentLayoutResourceId] 方法.
+ * 如需要修改Fragment布局内容,请重写 [getEmptyLayoutResourceId] 方法.
  */
 class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
 
@@ -48,21 +50,18 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
    * @param duration [Int]  消息显示时间长短,default : [Toast.LENGTH_SHORT]
    *
    */
-  fun Fragment.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
-    Toast.makeText(activity, message, duration).show()
+  private fun Fragment.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(activity, message, duration)
+        .show()
   }
 
   companion object {
-    private val PAGE_SIZE = 20
+    private const val PAGE_SIZE = 20
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     obtainData(false)//请求数据,不清空原来数据
-  }
-
-  override fun getFragmentLayoutResourceId(): Int {
-    return R.layout.fragment_custom // 自定义 [Fragment] 布局
   }
 
   override fun getContentLayoutResourceId(): Int {
@@ -83,9 +82,14 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
     recycler_view.layoutManager = LinearLayoutManager(context)
     recycler_view.adapter = KotlinAdapter(this, mData, this)
     recycler_view.addOnScrollListener(EndlessScrollListener(this))
+  }
 
-    // 这一句可以在任何时候调用
-    setEmptyMessage("这里没有数据", R.drawable.ic_conn_no_network)
+  override fun onEmptyViewInflated(emptyView: View) {
+    super.onEmptyViewInflated(emptyView)
+    (emptyView.findViewById<View>(com.example.mylibrary.R.id.data_empty_text) as TextView).apply {
+      text = "这里没有数据"
+      setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_order_empty, 0, 0)
+    }
   }
 
   /**
@@ -101,22 +105,14 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
     toolBar.setNavigationOnClickListener { mActivity.finish() }
   }
 
-  override fun onDestroyView() {
-    super.onDestroyView()
-  }
-
-  /**
-   * 请求数据
-
-   * @param isRefresh 是否清空原来的数据
-   */
-  override fun obtainData(isRefresh: Boolean) {
-    MockApi.queryData(PAGE_SIZE)//
+  override fun getRequest(isRefresh: Boolean): Observable<ApiResponse<List<Result>>> {
+    return MockApi.queryData(PAGE_SIZE)//
+        //.retry(timeoutRetry())//
         .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
-        .doOnSubscribe(doOnSubscribe)//开始执行之前的准备工作
-        .subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
+        //.doOnSubscribe(doOnSubscribe)//开始执行之前的准备工作
+        //.subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
         .observeOn(AndroidSchedulers.mainThread())//指定这行代码之后的subscribe在io线程执行
-        .subscribe(getOnNext(isRefresh), onError)
+    //.subscribe(getOnNext(isRefresh), onError)
   }
 
   override fun onSuccess(data: ApiResponse<List<Result>>, isRefresh: Boolean) {

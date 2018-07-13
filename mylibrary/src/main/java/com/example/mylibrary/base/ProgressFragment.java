@@ -16,23 +16,25 @@
 
 package com.example.mylibrary.base;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
+import android.support.annotation.CallSuper;
+import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.animation.AnimationUtils;
-import android.widget.TextView;
 import com.example.mylibrary.R;
-import timber.log.Timber;
 
 import static com.example.mylibrary.base.ProgressFragment.ViewType.CONTENT;
 import static com.example.mylibrary.base.ProgressFragment.ViewType.EMPTY;
 import static com.example.mylibrary.base.ProgressFragment.ViewType.ERROR;
-import static com.example.mylibrary.base.ProgressFragment.ViewType.PROGRESS;
+import static com.example.mylibrary.base.ProgressFragment.ViewType.LOADING;
 
 /**
  * 有状态切换的{@link Fragment}封装,继承自{@link BaseFragment}
@@ -43,39 +45,34 @@ import static com.example.mylibrary.base.ProgressFragment.ViewType.PROGRESS;
  *   需要通过网络请求返回数据后才能决定界面显示的情况.
  *   如:帖子数据列表,评论列表等.
  * </pre>
- * The implementation of the fragment to display content. Based on {@link
- * android.support.v4.app.ListFragment}.
- * If you are waiting for the initial data, you'll can displaying during this time an indeterminate
- * progress indicator.
  *
  * @param <CONTAINER> Fragment 对应的容器(对Activity的根布局Fragment有效,嵌套的Fragment无效)
- * @author Evgeny Shishkin
+ * @author toutoumu
  */
 
-public abstract class ProgressFragment<CONTAINER extends BaseActivity>
-    extends BaseFragment<CONTAINER> {
-
+public abstract class ProgressFragment<CONTAINER extends BaseActivity> extends BaseFragment<CONTAINER> {
   /**
-   * 视图类型,内容,加载中,没有数据,网络异常
+   * 视图类型: 内容,加载中,没有数据,网络异常
    */
   enum ViewType {
-    CONTENT, PROGRESS, EMPTY, ERROR
+    CONTENT, LOADING, EMPTY, ERROR
   }
 
-  // 当前视图类型
-  private ViewType mCurrentViewType = ViewType.CONTENT;
-  private String mEmptyMessage = "没有数据";
-  private int mEmptyMessageIcon = R.drawable.ic_order_empty;
+  // 视图切换之前的视图类型
+  private ViewType mPreViewType = ViewType.CONTENT;
+  // 当前视图类型(使用LiveData,避免 onViewCreated之前,onDestroy之后操作View)
+  private final MutableLiveData<ViewType> mCurrentViewType = new MutableLiveData<>();
 
-  private View mProgressContainer;//进度区域
-  private View mContentContainer;//内容区域
+  private View mContentContainer;//内容区域容器
+
   private View mContentView;//内容视图
+  private View mLoadingView;//加载中区域
   private View mEmptyView;//空区域
   private View mNetWorkErrorView;//网络异常视图
 
-  private View mTempView;//临时保存创建的内容,在onViewCreated之后设置进去
+  private View mTempView;//临时保存创建的内容视图,在onViewCreated之后设置进去
 
-  private ViewStub mProgressStub;
+  private ViewStub mLoadingStub;
   private ViewStub mEmptyStub;
   private ViewStub mNetWorkErrorStub;
 
@@ -83,75 +80,135 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
   private View.OnClickListener mNetWorkErrorViewClickListener;
 
   /**
-   * Provide default implementation to return a simple mTempView.  Subclasses
-   * can override to replace with their own layout.  If doing so, the
-   * returned mTempView hierarchy <em>must</em> have a progress container  whose id
-   * is {@link  R.id#progress_container R.id.progress_container},
-   * content container whose id
-   * is {@link  R.id#content_container R.id.content_container} and can
-   * optionally
-   * have a sibling mTempView id {@link R.id#data_empty android.R.id.empty}
-   * that is to be shown when the content is empty.
-   * <p/>
-   * <p>If you are overriding this method with your own custom content,
-   * consider including the standard layout {@link  R.layout#fragment_progress}
-   * in your layout file, so that you continue to retain all of the standard
-   * behavior of ProgressFragment. In particular, this is currently the only
-   * way to have the built-in indeterminant progress state be shown.
+   * {@link Fragment} content layout
+   *
+   * @return @LayoutRes(eg R.layout.content_user_info)
    */
-  @Override public final View onCreateView(LayoutInflater inflater, ViewGroup container,
-      Bundle savedInstanceState) {
+  @LayoutRes
+  abstract public int getContentLayoutResourceId();
+
+  /**
+   * {@link Fragment} emptyView layout
+   *
+   * @return @LayoutRes(eg R.layout.default_empty_layout)
+   */
+  @LayoutRes
+  protected int getEmptyLayoutResourceId() {
+    return R.layout.default_empty_layout;
+  }
+
+  /**
+   * {@link Fragment} loading layout
+   *
+   * @return @LayoutRes(eg R.layout.default_progress_layout)
+   */
+  @LayoutRes
+  protected int getLoadingLayoutResourceId() {
+    return R.layout.default_progress_layout;
+  }
+
+  /**
+   * {@link Fragment} network error layout
+   *
+   * @return @LayoutRes(eg R.layout.default_network_error_layout)
+   */
+  @LayoutRes
+  protected int getNetWorkErrorResourceId() {
+    return R.layout.default_network_error_layout;
+  }
+
+  /**
+   * 当空视图被加载
+   *
+   * @param emptyView 默认的 emptyView 包含ID 为 data_empty_text 的TextView
+   */
+  protected void onEmptyViewInflated(@NonNull View emptyView) {
+  }
+
+  /**
+   * 当加载中被加载
+   *
+   * @param loadingView loadingView
+   */
+  protected void onLoadingViewInflated(@NonNull View loadingView) {
+  }
+
+  /**
+   * 当网络错误视图被加载
+   *
+   * @param errorView errorView
+   */
+  protected void onNewWorkErrorViewInflated(@NonNull View errorView) {
+  }
+
+  @CallSuper
+  @Override
+  public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mCurrentViewType.setValue(ViewType.CONTENT);
+    mCurrentViewType.observe(this, viewType -> {
+      if (viewType == mPreViewType || viewType == null) {
+        return;
+      }
+      View hideView = null; // 将要隐藏的View
+      View showView = null; // 将要显示的View
+      switch (mPreViewType) {
+        case LOADING:
+          hideView = getLoadingView();
+          break;
+        case CONTENT:
+          hideView = mContentView;
+          break;
+        case EMPTY:
+          hideView = getEmptyView();
+          break;
+        case ERROR:
+          hideView = getNetWorkErrorView();
+          break;
+      }
+      switch (viewType) {
+        case CONTENT:
+          showView = mContentView;
+          break;
+        case ERROR:
+          showView = getNetWorkErrorView();
+          break;
+        case LOADING:
+          showView = getLoadingView();
+          break;
+        case EMPTY:
+          showView = getEmptyView();
+          break;
+      }
+      switchView(showView, hideView, false);
+    });
+  }
+
+  @CallSuper
+  @Override
+  public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mTempView = inflater.inflate(getContentLayoutResourceId(), null, false);
-    return inflater.inflate(getFragmentLayoutResourceId(), container, false);
+    return inflater.inflate(R.layout.fragment_progress, container, false);
   }
 
-  /**
-   * {@link Fragment} 布局ID
-   * 如果需要更改Fragment布局文件需要重写此方法,布局文件结构必须和R.layout.fragment_progress一致
-   *
-   * @return @LayoutRes(eg R.layout.fragment_progress)
-   */
-  public @LayoutRes int getFragmentLayoutResourceId() {
-    return R.layout.fragment_progress;
-  }
-
-  /**
-   * {@link Fragment} 内容区域布局ID
-   *
-   * @return @return @LayoutRes(eg R.layout.content_user_info)
-   */
-  abstract public @LayoutRes int getContentLayoutResourceId();
-
-  /**
-   * Attach to mTempView once the mTempView hierarchy has been created.
-   */
-  @Override public void onViewCreated(View view, Bundle savedInstanceState) {
+  @CallSuper
+  @Override
+  public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     ensureContent();
     setContentView(mTempView);
-    if (mCurrentViewType != CONTENT) {
-      switchView(getCurrentView(), mContentView, false);
-    }
   }
 
-  /**
-   * Detach from mTempView.
-   */
-  @Override public void onDestroyView() {
-    mProgressContainer = mContentContainer = mContentView = mEmptyView = mNetWorkErrorView = null;
-    mProgressStub = mEmptyStub = mNetWorkErrorStub = null;
+  @CallSuper
+  @Override
+  public void onDestroyView() {
+    mContentContainer = mLoadingView = mContentView = mEmptyView = mNetWorkErrorView = mTempView = null;
+    mLoadingStub = mEmptyStub = mNetWorkErrorStub = null;
     super.onDestroyView();
   }
 
-  /**
-   * Return content mTempView or null if the content mTempView has not been initialized.
-   *
-   * @return content mTempView or null
-   * @see #setContentView(View)
-   * @see #setContentView(int)
-   */
-  public View getContentView() {
-    return mContentView;
+  public <T extends View> T findViewById(@IdRes int id) {
+    return this.mContentView.findViewById(id);
   }
 
   /**
@@ -197,126 +254,103 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
     }
   }
 
-  /**
-   * 显示进度
-   */
-  public void showProgress() {
-    if (mCurrentViewType == PROGRESS) return;
-    if (mIsViewCreated) {
-      View hideView = getCurrentView();
-      View showView = getProgressContainer();
-      switchView(showView, hideView, false);
-    }
-    mCurrentViewType = PROGRESS;
-  }
-
-  /**
-   * 显示内容
-   */
+  /** 显示内容 */
   public void showContent() {
-    if (mCurrentViewType == CONTENT) return;
-    if (mIsViewCreated) {
-      View hideView = getCurrentView();
-      View showView = mContentView;
-      switchView(showView, hideView, false);
+    if (mCurrentViewType.getValue() != CONTENT) {
+      mPreViewType = mCurrentViewType.getValue();
+      mCurrentViewType.postValue(CONTENT);
     }
-    mCurrentViewType = CONTENT;
   }
 
-  /**
-   * 显示空视图
-   */
+  /** 显示进度 */
+  public void showLoading() {
+    if (mCurrentViewType.getValue() != LOADING) {
+      mPreViewType = mCurrentViewType.getValue();
+      mCurrentViewType.postValue(LOADING);
+    }
+  }
+
+  /** 显示空视图 */
   public void showEmpty() {
-    if (mCurrentViewType == EMPTY) return;
-    if (mIsViewCreated) {
-      View hideView = getCurrentView();
-      View showView = getEmptyView();
-      switchView(showView, hideView, false);
+    if (mCurrentViewType.getValue() != EMPTY) {
+      mPreViewType = mCurrentViewType.getValue();
+      mCurrentViewType.postValue(EMPTY);
     }
-    mCurrentViewType = EMPTY;
   }
 
-  /**
-   * 显示网络错误
-   */
+  /** 显示网络错误 */
   public void showNetWorkError() {
-    if (mCurrentViewType == ERROR) return;
-    if (mIsViewCreated) {
-      View hideView = getCurrentView();
-      View showView = getNetWorkErrorView();
-      switchView(showView, hideView, false);
+    if (mCurrentViewType.getValue() != ERROR) {
+      mPreViewType = mCurrentViewType.getValue();
+      mCurrentViewType.postValue(ERROR);
     }
-    mCurrentViewType = ERROR;
   }
 
   /**
    * 设置空视图点击事件
    *
-   * @param emptyViewClickListener
+   * @param listener {@link View.OnClickListener}
    */
-  public void setEmptyViewClickListener(View.OnClickListener emptyViewClickListener) {
+  public void setEmptyViewClickListener(View.OnClickListener listener) {
     if (mEmptyView != null) {
-      mEmptyView.setOnClickListener(emptyViewClickListener);
+      mEmptyView.setOnClickListener(listener);
     }
-    mEmptyViewClickListener = emptyViewClickListener;
+    mEmptyViewClickListener = listener;
   }
 
   /**
    * 设置网络异常点击事件
    *
-   * @param netWorkErrorViewClickListener
+   * @param listener {@link View.OnClickListener}
    */
-  public void setNetWorkErrorViewClickListener(View.OnClickListener netWorkErrorViewClickListener) {
+  public void setNetWorkErrorViewClickListener(View.OnClickListener listener) {
     if (mNetWorkErrorView != null) {
-      mNetWorkErrorView.setOnClickListener(netWorkErrorViewClickListener);
+      mNetWorkErrorView.setOnClickListener(listener);
     }
-    mNetWorkErrorViewClickListener = netWorkErrorViewClickListener;
+    mNetWorkErrorViewClickListener = listener;
   }
 
-  public View getEmptyView() {
+  /**
+   * Return content mTempView or null if the content mTempView has not been initialized.
+   *
+   * @return content mTempView or null
+   * @see #setContentView(View)
+   * @see #setContentView(int)
+   */
+  private View getContentView() {
+    return mContentView;
+  }
+
+  private View getEmptyView() {
     if (mEmptyView == null) {
+      mEmptyStub.setLayoutResource(getEmptyLayoutResourceId());
       mEmptyView = mEmptyStub.inflate();
       mEmptyView.setOnClickListener(mEmptyViewClickListener);
-      this.setEmptyMessage(mEmptyMessage, mEmptyMessageIcon);
+      onEmptyViewInflated(mEmptyView);
     }
     return mEmptyView;
   }
 
-  /**
-   * 设置空数据视图
-   *
-   * @param message 消息名称
-   * @param icon 图标
-   */
-  public void setEmptyMessage(String message, @DrawableRes int icon) {
-    this.mEmptyMessage = message;
-    this.mEmptyMessageIcon = icon;
-    if (!mIsViewCreated || mEmptyView == null) return;
-    TextView textView = (TextView) mEmptyView.findViewById(R.id.data_empty_text);
-    if (textView == null) {
-      Timber.e(new RuntimeException("空数据视图必须包含id为R.id.data_empty_text的TextView"));
-      return;
+  private View getLoadingView() {
+    if (mLoadingView == null) {
+      mLoadingStub.setLayoutResource(getLoadingLayoutResourceId());
+      mLoadingView = mLoadingStub.inflate();
+      onLoadingViewInflated(mLoadingView);
     }
-    textView.setText(message);
-    textView.setCompoundDrawablesWithIntrinsicBounds(0, icon, 0, 0);
-  }
-
-  private View getProgressContainer() {
-    if (mProgressContainer == null) mProgressContainer = mProgressStub.inflate();
-    return mProgressContainer;
+    return mLoadingView;
   }
 
   private View getNetWorkErrorView() {
     if (mNetWorkErrorView == null) {
+      mNetWorkErrorStub.setLayoutResource(getNetWorkErrorResourceId());
       mNetWorkErrorView = mNetWorkErrorStub.inflate();
       mNetWorkErrorView.setOnClickListener(mNetWorkErrorViewClickListener);
+      onNewWorkErrorViewInflated(mNetWorkErrorView);
     }
     return mNetWorkErrorView;
   }
 
-  /**
-   * Initialization views.
-   */
+  /** 初始化view. */
   private void ensureContent() {
     if (mContentContainer != null) {// 已经初始化
       return;
@@ -329,58 +363,26 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
     // 内容
     mContentContainer = root.findViewById(R.id.content_container);
     if (mContentContainer == null) {
-      throw new RuntimeException(
-          "Your content must have a ViewGroup whose id attribute is 'R.id.content_container'");
+      throw new RuntimeException("Your content must have a ViewGroup whose id attribute is 'R.id.content_container'");
     }
 
-    // 加载进度
-    mProgressStub = (ViewStub) root.findViewById(R.id.progress_stub);
-    if (mProgressStub == null) {
-      throw new RuntimeException(
-          "Your content must have a ViewStub whose id attribute is 'R.id.progress_stub'");
+    // 加载中
+    mLoadingStub = root.findViewById(R.id.progress_stub);
+    if (mLoadingStub == null) {
+      throw new RuntimeException("Your content must have a ViewStub whose id attribute is 'R.id.progress_stub'");
     }
 
     // 空视图
-    mEmptyStub = (ViewStub) root.findViewById(R.id.empty_stub);
+    mEmptyStub = root.findViewById(R.id.empty_stub);
     if (mEmptyStub == null) {
-      throw new RuntimeException(
-          "Your content must have a ViewStub whose id attribute is 'R.id.empty_stub'");
+      throw new RuntimeException("Your content must have a ViewStub whose id attribute is 'R.id.empty_stub'");
     }
 
     // 网络异常
-    mNetWorkErrorStub = (ViewStub) root.findViewById(R.id.network_error_stub);
+    mNetWorkErrorStub = root.findViewById(R.id.network_error_stub);
     if (mNetWorkErrorStub == null) {
-      throw new RuntimeException(
-          "Your content must have a ViewStub whose id attribute is 'R.id.network_error_stub'");
+      throw new RuntimeException("Your content must have a ViewStub whose id attribute is 'R.id.network_error_stub'");
     }
-  }
-
-  /**
-   * 获取当前显示的View
-   *
-   * @return 当前显示的View
-   */
-  private View getCurrentView() {
-    View view = null;
-    switch (mCurrentViewType) {
-      case PROGRESS: {
-        view = getProgressContainer();
-        break;
-      }
-      case CONTENT: {
-        view = mContentView;
-        break;
-      }
-      case EMPTY: {
-        view = getEmptyView();
-        break;
-      }
-      case ERROR: {
-        view = getNetWorkErrorView();
-        break;
-      }
-    }
-    return view;
   }
 
   /**
@@ -392,16 +394,14 @@ public abstract class ProgressFragment<CONTAINER extends BaseActivity>
    */
   private void switchView(View shownView, View hiddenView, boolean animate) {
     if (animate) {
-      shownView.startAnimation(
-          AnimationUtils.loadAnimation(this.getActivity(), android.R.anim.fade_in));
-      hiddenView.startAnimation(
-          AnimationUtils.loadAnimation(this.getActivity(), android.R.anim.fade_out));
+      shownView.startAnimation(AnimationUtils.loadAnimation(this.getActivity(), android.R.anim.fade_in));
+      hiddenView.startAnimation(AnimationUtils.loadAnimation(this.getActivity(), android.R.anim.fade_out));
     } else {
       shownView.clearAnimation();
       hiddenView.clearAnimation();
     }
 
-    shownView.setVisibility(View.VISIBLE);
     hiddenView.setVisibility(View.GONE);
+    shownView.setVisibility(View.VISIBLE);
   }
 }

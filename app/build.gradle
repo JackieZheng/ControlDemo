@@ -3,13 +3,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-  compileSdkVersion 26
-  buildToolsVersion '26.0.2'
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
 
   defaultConfig {
     applicationId "com.myapplication"
-    minSdkVersion 14
-    targetSdkVersion 26
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
     versionName "1.0"
 
@@ -57,7 +57,7 @@ android {
   productFlavors {
     abcde {
       dimension "mode"
-      minSdkVersion 14
+      minSdkVersion 18
     }
     wocao {
       dimension "mode"
@@ -66,28 +66,94 @@ android {
 }
 
 dependencies {
-  compile fileTree(include: ['*.jar'], dir: 'libs')
-  compile project(':mylibrary')
+  implementation fileTree(include: ['*.jar'], dir: 'libs')
+  implementation project(':mylibrary')
+
+  // support
+  implementation "com.android.support:design:$rootProject.ext.supportVersion"
+  implementation "com.android.support:support-v4:$rootProject.ext.supportVersion"
+  implementation "com.android.support:cardview-v7:$rootProject.ext.supportVersion"
+  implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
+  implementation "com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"
+  implementation "com.android.support:support-vector-drawable:$rootProject.ext.supportVersion"
+
+  // 对话框 https://github.com/afollestad/material-dialogs
+  //implementation "com.afollestad.material-dialogs:commons:0.9.5.0"
+  implementation ("com.afollestad.material-dialogs:core:0.9.5.0"){
+    exclude module: "support-v13"
+    exclude module: "appcompat-v7"
+    exclude module: "recyclerview-v7"
+  }
+
+  // 加密 https://github.com/facebook/conceal
+  implementation "com.facebook.conceal:conceal:2.0.1@aar"
+
+  // Gson https://github.com/google/gson
+  implementation "com.google.code.gson:gson:2.8.2"
+
+  //RxJava https://github.com/ReactiveX/RxJava
+  implementation "io.reactivex.rxjava2:rxjava:2.1.13"
+
+  //RxAndroid https://github.com/ReactiveX/RxAndroid
+  implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+
+  // Retrofit https://github.com/square/retrofit
+  implementation "com.squareup.retrofit2:retrofit:2.4.0"
+  //Retrofit通过GSON将结果转换为Bean对象
+  implementation "com.squareup.retrofit2:converter-gson:2.4.0"
+  //Retrofit支持RxJava
+  implementation "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0"
+  //okhttp3日志拦截器
+  implementation "com.squareup.okhttp3:logging-interceptor:3.9.0"
+
+  // 日志库 https://github.com/JakeWharton/timber
+  implementation "com.jakewharton.timber:timber:4.6.0"
+
+  // 底部导航栏,support:design:25+已经包含相似控件
+  // https://github.com/Ashok-Varma/BottomNavigation
+  implementation "com.ashokvarma.android:bottom-navigation-bar:2.0.3"
+  // recyclerViewAdapter
+  // https://github.com/CymChad/BaseRecyclerViewAdapterHelper
+  implementation "com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.18"
+  // 滑动返回 https://github.com/r0adkll/Slidr
+  implementation "com.r0adkll:slidableactivity:2.0.5"
+  // kotlin
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+  // RxLifeCycle https://github.com/trello/RxLifecycle
+  implementation "com.trello.rxlifecycle2:rxlifecycle:2.2.1"
+  // 如果你想绑定到Android特定的生命周期 If you want to bind to Android-specific lifecycles
+  //implementation "com.trello.rxlifecycle2:rxlifecycle-android:2.2.0"
+  // 如果您想要预先编写的Activities和Fragments，您可以作为提供者的子类。If you want pre-written Activities and Fragments you can subclass as providers
+  implementation "com.trello.rxlifecycle2:rxlifecycle-components:2.2.1"
+  // 如果你想使用导航供应商 If you want to use Navi for providers
+  //implementation "com.trello.rxlifecycle2:rxlifecycle-navi:2.2.0"
+  // 如果您想为供应商使用Android生命周期 If you want to use Android Lifecycle for providers
+  //implementation "com.trello.rxlifecycle2:rxlifecycle-android-lifecycle:2.2.0"
+
+  //各种工具类 https://github.com/Blankj/AndroidUtilCode
+  implementation "com.blankj:utilcode:1.8.1"
 
   // butterknife https://github.com/JakeWharton/butterknife
-  compile 'com.jakewharton:butterknife:8.8.1'
+  implementation 'com.jakewharton:butterknife:8.8.1'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
   //Glide 3.x
-  //compile 'com.github.bumptech.glide:glide:3.8.0'
-  //compile 'jp.wasabeef:glide-transformations:2.0.2'
+  //implementation 'com.github.bumptech.glide:glide:3.8.0'
+  //implementation 'jp.wasabeef:glide-transformations:2.0.2'
 
   //Glide 4.x https://github.com/bumptech/glide
-  compile 'com.github.bumptech.glide:glide:4.3.0'
-  //compile 'jp.wasabeef:glide-transformations:3.0.1'
-  //compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
-  annotationProcessor 'com.github.bumptech.glide:compiler:4.3.0'
+  implementation 'com.github.bumptech.glide:glide:4.7.1'
+  //implementation 'jp.wasabeef:glide-transformations:3.0.1'
+  //implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+  annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 
   // 权限相关 https://github.com/permissions-dispatcher/PermissionsDispatcher
-  compile("com.github.hotchemi:permissionsdispatcher:3.0.1") {
+  implementation("com.github.hotchemi:permissionsdispatcher:3.0.1") {
     exclude module: "support-v13"
   }
-  annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:3.0.1"
+  annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:3.2.0"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 repositories {
