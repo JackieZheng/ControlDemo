@@ -32,12 +32,9 @@ import static com.trello.rxlifecycle2.android.FragmentEvent.DESTROY;
  *      如: 用户帖子列表 进入列表时 显示加载中,加载成功后显示列表数据,网络异常显示网络异常界面
  * </pre>
  *
- * @param <CONTAINER> 指定此Fragment在哪个Activity中打开,对直接嵌套在Activity中的Fragment有效
- * @param <ITEM> 列表数据类型
  * @param <DATA> {@link ApiResponse} 的泛型参数
  */
-public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> extends ProgressFragment<CONTAINER>
-  implements EndlessScrollListener.IMore {
+public abstract class ListFragment<DATA> extends ProgressFragment implements EndlessScrollListener.IMore {
 
   public enum LoadingStatus {
     LOADING, ERROR, SUCCESS

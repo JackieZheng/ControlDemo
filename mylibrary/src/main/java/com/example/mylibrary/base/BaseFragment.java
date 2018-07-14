@@ -35,7 +35,6 @@ import io.reactivex.disposables.CompositeDisposable;
  *    如:登录,注册,设置,关于页面等
  * </pre>
  *
- * @param <CONTAINER> 泛型参数类型为<b>{@link BaseActivity}</b>或其子类
  * Fragment 对应的容器(对Activity的根布局Fragment有效,嵌套的Fragment无效)
  *
  * 这个泛型参数将指定使用哪个Activity作为Fragment的容器</br>
@@ -43,7 +42,7 @@ import io.reactivex.disposables.CompositeDisposable;
  * eg: {@link TopBarActivity} 表示使用带有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] Activity </br>
  * 当泛型参数为{@link TopBarActivity}时,需要重写 {@link BaseFragment#initTopBar(TopBarActivity)}方法修改标题栏状态栏
  */
-public abstract class BaseFragment<CONTAINER extends BaseActivity> extends RxFragment {
+public abstract class BaseFragment extends RxFragment {
 
   protected final String TAG = this.getClass().getSimpleName();
   /** Activity **/

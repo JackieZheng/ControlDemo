@@ -30,7 +30,7 @@ import com.r0adkll.slidr.Slidr;
  * 嵌套使用沉浸式状态栏实现
  * </pre>
  */
-public class CollapsingToolbarLayoutFragment extends BaseFragment<BaseActivity> {
+public class CollapsingToolbarLayoutFragment extends BaseFragment {
   public static final String EXTRA_NAME = "cheese_name";
   public static final String EXTRA_ICON = "cheese_icon";
 
@@ -42,15 +42,16 @@ public class CollapsingToolbarLayoutFragment extends BaseFragment<BaseActivity> 
   @BindView(R.id.main_content) CoordinatorLayout mMainContent;
   private Unbinder mUnBinder;
 
-  @Nullable @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+  @Nullable
+  @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_detail, container, false);
     mUnBinder = ButterKnife.bind(this, view);
     return view;
   }
 
-  @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+  @Override
+  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     Slidr.attach(mActivity);
     mActivity.setTransparentForWindow();
@@ -62,18 +63,18 @@ public class CollapsingToolbarLayoutFragment extends BaseFragment<BaseActivity> 
       mCollapsingToolbar.setFitsSystemWindows(false);
       mImageView.setFitsSystemWindows(false);
       mToolbar.setFitsSystemWindows(false);
-      ViewGroup.MarginLayoutParams layoutParams =
-          (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
+      ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) mToolbar.getLayoutParams();
       layoutParams.setMargins(layoutParams.leftMargin,
-          layoutParams.topMargin + mActivity.getSystemBarConfig().getStatusBarHeight(),
-          layoutParams.rightMargin, layoutParams.bottomMargin);
+        layoutParams.topMargin + mActivity.getSystemBarConfig().getStatusBarHeight(), layoutParams.rightMargin,
+        layoutParams.bottomMargin);
     }
 
     mToolbar.setTitle("基本测试");
     mToolbar.inflateMenu(R.menu.sample_actions);
     mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
     mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
+      @Override
+      public void onClick(View v) {
         mActivity.finish();
       }
     });
@@ -90,13 +91,11 @@ public class CollapsingToolbarLayoutFragment extends BaseFragment<BaseActivity> 
     //扩张时候的title颜色
     mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.primary));
 
-    GlideApp.with(this)
-        .load(getArguments().getInt(EXTRA_ICON, 0))
-        .apply(RequestOptions.centerCropTransform())
-        .into(mImageView);
+    GlideApp.with(this).load(getArguments().getInt(EXTRA_ICON, 0)).apply(RequestOptions.centerCropTransform()).into(mImageView);
   }
 
-  @Override public void onDestroyView() {
+  @Override
+  public void onDestroyView() {
     super.onDestroyView();
     mUnBinder.unbind();
   }

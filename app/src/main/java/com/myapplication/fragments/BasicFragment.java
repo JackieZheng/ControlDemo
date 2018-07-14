@@ -38,7 +38,7 @@ import java.util.List;
  * 如需要修改Fragment布局内容,请重写{@link #getEmptyLayoutResourceId()}方法.
  * </pre>
  */
-public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Result>> {
+public class BasicFragment extends ListFragment<List<Result>> {
 
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;

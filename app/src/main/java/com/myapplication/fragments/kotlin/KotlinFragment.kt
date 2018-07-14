@@ -36,13 +36,13 @@ import kotlinx.android.synthetic.main.content_basic.*
 
 /**
  * 有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity基本使用方式
- * 1. 继承[ListFragment]并指定泛型参数为[TopBarActivity]
+ * 1. 继承[ListFragment]
  * 2. 重写 [getContentLayoutResourceId]方法,返回内容区域的布局文件,
  *    这个布局文件将嵌入到 [ProgressFragment] 的内容区域
  * 3. 注意请不要重写 [onCreateView],
  * 如需要修改Fragment布局内容,请重写 [getEmptyLayoutResourceId] 方法.
  */
-class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
+class KotlinFragment : ListFragment<List<Result>>() {
   companion object {
     private const val PAGE_SIZE = 20
   }

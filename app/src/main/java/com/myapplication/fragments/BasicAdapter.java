@@ -17,6 +17,7 @@ import com.example.mylibrary.base.BaseAdapter;
 import com.example.mylibrary.base.BaseFragment;
 import com.example.mylibrary.base.BaseViewHolder;
 import com.example.mylibrary.base.EndlessScrollListener;
+import com.example.mylibrary.base.TopBarActivity;
 import com.myapplication.R;
 import com.myapplication.bean.Result;
 import java.util.List;
@@ -70,7 +71,7 @@ public class BasicAdapter extends BaseAdapter<Result, RecyclerView.ViewHolder> {
         Bundle bundle = new Bundle();
         bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME, item.getName());
         bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, item.getIcon());
-        ActivityUtils.startActivity(mFragment, CollapsingToolbarLayoutFragment.class, bundle, -1);
+        ActivityUtils.startActivity(mFragment, TopBarActivity.class, CollapsingToolbarLayoutFragment.class, bundle, -1);
       });
     } else if (viewHolder instanceof FootViewHolder) {
       ((FootViewHolder) viewHolder).setupFootView(mMore);

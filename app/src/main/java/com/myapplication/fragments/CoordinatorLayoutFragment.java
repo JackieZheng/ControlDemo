@@ -26,7 +26,7 @@ import timber.log.Timber;
 /**
  * {@link CoordinatorLayout} {@link AppBarLayout}嵌套使用沉浸式状态栏实现
  */
-public class CoordinatorLayoutFragment extends BaseFragment<BaseActivity> {
+public class CoordinatorLayoutFragment extends BaseFragment {
 
   Unbinder unbinder;
   @BindView(R.id.toolbar) Toolbar mToolbar;

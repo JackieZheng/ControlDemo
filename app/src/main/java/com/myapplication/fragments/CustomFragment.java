@@ -20,7 +20,7 @@ import java.util.Random;
  * 1.重写{@link #getEmptyLayoutResourceId()}返回对应的Fragment布局文件
  * </pre>
  */
-public class CustomFragment extends ProgressFragment<TopBarActivity> {
+public class CustomFragment extends ProgressFragment {
 
   @BindView(R.id.click_me) TextView mClickMe;
   Unbinder unbinder;

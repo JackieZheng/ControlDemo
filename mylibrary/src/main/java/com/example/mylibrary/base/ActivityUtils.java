@@ -3,9 +3,9 @@ package com.example.mylibrary.base;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -17,14 +17,14 @@ public class ActivityUtils {
    * 启动Fragment
    *
    * @param fragment 当前所在 {@link Fragment}
-   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * @param activityClazz 需要在哪个Activity中打开
+   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类
    * 泛型参数必须是{@link BaseActivity}及其子类
    * @param bundle 参数
    * @param requestCode 请求码
    */
-  public static void startActivity(@NonNull Fragment fragment,
-      @NonNull Class<? extends BaseFragment<? extends BaseActivity>> clazz, @Nullable Bundle bundle,
-      int requestCode) {
+  public static void startActivity(@NonNull Fragment fragment, @NonNull Class<? extends BaseActivity> activityClazz,
+    @NonNull Class<? extends BaseFragment> clazz, @Nullable Bundle bundle, int requestCode) {
     if (bundle == null) bundle = new Bundle();
 
     // 指定使用哪个 Fragment 显示在 Activity 中
@@ -33,7 +33,7 @@ public class ActivityUtils {
     Intent intent = new Intent();
     intent.putExtras(bundle);
     // 泛型参数指定打开那个Activity
-    intent.setClass(fragment.getContext(), (Class) getGenericType(clazz));
+    intent.setClass(fragment.getContext(), activityClazz);
 
     if (requestCode != -1) {
       fragment.startActivityForResult(intent, requestCode);
@@ -46,46 +46,48 @@ public class ActivityUtils {
    * 启动Fragment
    *
    * @param fragment 当前所在 {@link Fragment}
-   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * @param activityClazz 需要在哪个Activity中打开
+   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类
    * 泛型参数必须是{@link BaseActivity}及其子类
    * @param bundle 参数
    */
-  public static void startActivity(@NonNull Fragment fragment,
-      @NonNull Class<? extends BaseFragment<? extends BaseActivity>> clazz,
-      @Nullable Bundle bundle) {
-    startActivity(fragment, clazz, bundle, -1);
+  public static void startActivity(@NonNull Fragment fragment, @NonNull Class<? extends BaseActivity> activityClazz,
+    @NonNull Class<? extends BaseFragment> clazz, @Nullable Bundle bundle) {
+    startActivity(fragment, activityClazz, clazz, bundle, -1);
   }
 
   /**
    * 启动Fragment
    *
    * @param fragment 当前所在 {@link Fragment}
-   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * @param activityClazz 需要在哪个Activity中打开
+   * @param clazz 目标 {@link Fragment},必须为{@link BaseFragment}的子类
    * 泛型参数必须是{@link BaseActivity}及其子类
    */
-  public static void startActivity(@NonNull Fragment fragment,
-      @NonNull Class<? extends BaseFragment<? extends BaseActivity>> clazz) {
-    startActivity(fragment, clazz, null, -1);
+  public static void startActivity(@NonNull Fragment fragment, @NonNull Class<? extends BaseActivity> activityClazz,
+    @NonNull Class<? extends BaseFragment> clazz) {
+    startActivity(fragment, activityClazz, clazz, null, -1);
   }
 
   /**
    * 启动Fragment
    *
    * @param activity 当前所在Fragment
-   * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * @param activityClazz 需要在哪个Activity中打开
+   * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类
    * 泛型参数必须是{@link BaseActivity}及其子类
    * @param bundle 参数
    * @param requestCode 请求码
    */
-  public static void startActivity(Activity activity,
-      Class<? extends BaseFragment<? extends BaseActivity>> clazz, Bundle bundle, int requestCode) {
+  public static void startActivity(@NonNull Activity activity, @NonNull Class<? extends BaseActivity> activityClazz,
+    @NonNull Class<? extends BaseFragment> clazz, @Nullable Bundle bundle, int requestCode) {
     if (bundle == null) bundle = new Bundle();
     bundle.putString(BaseActivity.FRAGMENT_CLASS_NAME, clazz.getName());
 
     Intent intent = new Intent();
     intent.putExtras(bundle);
     // 泛型参数指定打开那个Activity
-    intent.setClass(activity, (Class) getGenericType(clazz));
+    intent.setClass(activity, activityClazz);
 
     if (requestCode != -1) {
       activity.startActivityForResult(intent, requestCode);
@@ -98,25 +100,27 @@ public class ActivityUtils {
    * 启动Fragment
    *
    * @param activity 当前所在Fragment
-   * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
+   * @param activityClazz 需要在哪个Activity中打开
+   * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类
    * 泛型参数必须是{@link BaseActivity}及其子类
    * @param bundle 参数
    */
-  public static void startActivity(Activity activity,
-      Class<? extends BaseFragment<? extends BaseActivity>> clazz, Bundle bundle) {
-    startActivity(activity, clazz, bundle, -1);
+  public static void startActivity(Activity activity, @NonNull Class<? extends BaseActivity> activityClazz,
+    Class<? extends BaseFragment> clazz, Bundle bundle) {
+    startActivity(activity, activityClazz, clazz, bundle, -1);
   }
 
   /**
    * 启动Fragment
    *
    * @param activity 当前所在Fragment
+   * @param activityClazz 需要在哪个Activity中打开
    * @param clazz 目标Fragment,必须为{@link BaseFragment}的子类,且必须声明泛型参数.
    * 泛型参数必须是{@link BaseActivity}及其子类
    */
-  public static void startActivity(Activity activity,
-      Class<? extends BaseFragment<? extends BaseActivity>> clazz) {
-    startActivity(activity, clazz, null, -1);
+  public static void startActivity(Activity activity, @NonNull Class<? extends BaseActivity> activityClazz,
+    Class<? extends BaseFragment> clazz) {
+    startActivity(activity, activityClazz, clazz, null, -1);
   }
 
   /**
@@ -128,17 +132,16 @@ public class ActivityUtils {
   private static Type getGenericType(Class clazz) {
     Type superClass = clazz.getGenericSuperclass();
     if (superClass instanceof Class<?>) { // sanity check, should never happen
-      throw new IllegalArgumentException(
-          "Internal error: TypeReference constructed without actual type information");
+      throw new IllegalArgumentException("Internal error: TypeReference constructed without actual type information");
     }
-        /*
-         * 22-Dec-2008, tatu: Not sure if this case is safe -- I suspect
-		 * it is possible to make it fail?
-		 * But let's deal with specific
-		 * case when we know an actual use case, and thereby suitable
-		 * workarounds for valid case(s) and/or error to throw
-		 * on invalid one(s).
-		 */
+    /*
+     * 22-Dec-2008, tatu: Not sure if this case is safe -- I suspect
+     * it is possible to make it fail?
+     * But let's deal with specific
+     * case when we know an actual use case, and thereby suitable
+     * workarounds for valid case(s) and/or error to throw
+     * on invalid one(s).
+     */
     return ((ParameterizedType) superClass).getActualTypeArguments()[0];
   }
 }

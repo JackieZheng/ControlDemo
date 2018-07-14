@@ -46,6 +46,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.util.DialogUtils;
 import com.example.mylibrary.base.ActivityUtils;
 import com.example.mylibrary.base.BaseActivity;
+import com.example.mylibrary.base.TopBarActivity;
 import com.google.gson.reflect.TypeToken;
 import com.myapplication.api.Api;
 import com.myapplication.api.MockApi;
@@ -73,7 +74,8 @@ import timber.log.Timber;
  * DrawerLayout NavigationView CoordinatorLayout嵌套使用
  * 状态栏层级从下到上 依次是 CoordinatorLayout,NavigationView,系统状态栏
  */
-@RuntimePermissions public class MainActivity extends BaseActivity {
+@RuntimePermissions
+public class MainActivity extends BaseActivity {
 
   @BindView(R.id.toolbar) Toolbar mToolbar;
   @BindView(R.id.tabs) TabLayout mTabLayout;
@@ -84,11 +86,13 @@ import timber.log.Timber;
   @BindView(R.id.nav_view) NavigationView mNavigationView;
   @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 
-  @Override public int getContentResourceId() {
+  @Override
+  public int getContentResourceId() {
     return R.layout.activity_main;
   }
 
-  @Override protected void onCreate(Bundle savedInstanceState) {
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     ButterKnife.bind(this);
 
@@ -107,10 +111,9 @@ import timber.log.Timber;
     setupTabLayout(mTabLayout, mViewpager);
 
     mFab.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-            .setAction("Action", null)
-            .show();
+      @Override
+      public void onClick(View view) {
+        Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG).setAction("Action", null).show();
         MockApi.test();
         User user = new User();
         user.setName("nnnn");
@@ -131,15 +134,18 @@ import timber.log.Timber;
   private void setupTabLayout(TabLayout tableLayout, ViewPager viewpager) {
     tableLayout.setupWithViewPager(viewpager);
     tableLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-      @Override public void onTabSelected(TabLayout.Tab tab) {
+      @Override
+      public void onTabSelected(TabLayout.Tab tab) {
         Timber.d("TabLayout.OnTabSelectedListener#onTabSelected");
       }
 
-      @Override public void onTabUnselected(TabLayout.Tab tab) {
+      @Override
+      public void onTabUnselected(TabLayout.Tab tab) {
         Timber.d("TabLayout.OnTabSelectedListener#onTabUnselected");
       }
 
-      @Override public void onTabReselected(TabLayout.Tab tab) {
+      @Override
+      public void onTabReselected(TabLayout.Tab tab) {
         Timber.d("TabLayout.OnTabSelectedListener#onTabReselected");
       }
     });
@@ -182,12 +188,14 @@ import timber.log.Timber;
     // TODO: 状态栏会挡住抽屉内容,这个需要设置padding属性才能解决
   }
 
-  @Override public boolean onCreateOptionsMenu(Menu menu) {
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.sample_actions, menu);
     return true;
   }
 
-  @Override public boolean onOptionsItemSelected(MenuItem item) {
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case android.R.id.home:
         mDrawerLayout.openDrawer(GravityCompat.START);
@@ -211,7 +219,8 @@ import timber.log.Timber;
     viewPager.setAdapter(adapter);
     // 设置监听
     viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout) {
-      @Override public void onPageSelected(int position) {
+      @Override
+      public void onPageSelected(int position) {
         super.onPageSelected(position);
         Timber.d("ViewPager.TabLayoutOnPageChangeListener#onPageSelected");
       }
@@ -224,71 +233,68 @@ import timber.log.Timber;
    * @param navigationView {@link NavigationView}
    */
   private void setupDrawerContent(NavigationView navigationView) {
-    navigationView.setNavigationItemSelectedListener(
-        new NavigationView.OnNavigationItemSelectedListener() {
-          @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
+    navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+      @Override
+      public boolean onNavigationItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
 
-              case R.id.nav_home: {//ListFragment 基本使用
-                ActivityUtils.startActivity(MainActivity.this, BasicFragment.class, null, -1);
-                break;
-              }
-              case R.id.nav_custom: {//ProgressFragment 或 ListFragment 各种视图自定义
-                ActivityUtils.startActivity(MainActivity.this, CustomFragment.class, null, -1);
-                break;
-              }
-              case R.id.nav_kotlin: {//kotlin 使用
-                ActivityUtils.startActivity(MainActivity.this, KotlinFragment.class, null, -1);
-                break;
-              }
-              case R.id.nav_mvp: {//MVP 模式使用
-                ActivityUtils.startActivity(MainActivity.this, MVPFragment.class, null, -1);
-                break;
-              }
-              case R.id.nav_friends: {
-                Intent intent = new Intent(getApplicationContext(), TestActivity.class);
-                startActivity(intent);
-                break;
-              }
-
-              //---------------------------------- 沉浸式状态栏 ----------------------------------//
-              case R.id.nav_collapsing_toolbar_layout: {//CollapsingToolbarLayout 沉浸式状态栏
-                Bundle bundle = new Bundle();
-                bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME,
-                    "CollapsingToolbarLayout沉浸式");
-                bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, R.drawable.cheese_1);
-                ActivityUtils.startActivity(MainActivity.this,
-                    CollapsingToolbarLayoutFragment.class, bundle, -1);
-                break;
-              }
-              case R.id.nav_coordinator_layout: {//CoordinatorLayout 沉浸式状态栏
-                ActivityUtils.startActivity(MainActivity.this, CoordinatorLayoutFragment.class,
-                    null, -1);
-                break;
-              }
-              case R.id.nav_drawer_layout: {//DrawerLayout 沉浸式状态栏
-                ActivityUtils.startActivity(MainActivity.this, DrawerLayoutFragment.class, null,
-                    -1);
-                break;
-              }
-
-              //---------------------------------- 其他使用 ----------------------------------//
-              case R.id.nav_fullscreen: {//全屏的 Activity
-                Intent intent = new Intent();
-                intent.setClass(getApplicationContext(), FullscreenActivity.class);
-                startActivity(intent);
-                break;
-              }
-              case R.id.nav_picture: {//相册图片读取 注意是这样调用方法
-                MainActivityPermissionsDispatcher.showPictureFragmentWithPermissionCheck(MainActivity.this);
-                break;
-              }
-            }
-            menuItem.setChecked(true);
-            mDrawerLayout.closeDrawers();
-            return true;
+          case R.id.nav_home: {//ListFragment 基本使用
+            ActivityUtils.startActivity(MainActivity.this, TopBarActivity.class, BasicFragment.class, null, -1);
+            break;
           }
-        });
+          case R.id.nav_custom: {//ProgressFragment 或 ListFragment 各种视图自定义
+            ActivityUtils.startActivity(MainActivity.this, TopBarActivity.class, CustomFragment.class, null, -1);
+            break;
+          }
+          case R.id.nav_kotlin: {//kotlin 使用
+            ActivityUtils.startActivity(MainActivity.this, TopBarActivity.class, KotlinFragment.class, null, -1);
+            break;
+          }
+          case R.id.nav_mvp: {//MVP 模式使用
+            ActivityUtils.startActivity(MainActivity.this, TopBarActivity.class, MVPFragment.class, null, -1);
+            break;
+          }
+          case R.id.nav_friends: {
+            Intent intent = new Intent(getApplicationContext(), TestActivity.class);
+            startActivity(intent);
+            break;
+          }
+
+          //---------------------------------- 沉浸式状态栏 ----------------------------------//
+          case R.id.nav_collapsing_toolbar_layout: {//CollapsingToolbarLayout 沉浸式状态栏
+            Bundle bundle = new Bundle();
+            bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME, "CollapsingToolbarLayout沉浸式");
+            bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, R.drawable.cheese_1);
+            ActivityUtils.startActivity(MainActivity.this, BaseActivity.class, CollapsingToolbarLayoutFragment.class, bundle,
+              -1);
+            break;
+          }
+          case R.id.nav_coordinator_layout: {//CoordinatorLayout 沉浸式状态栏
+            ActivityUtils.startActivity(MainActivity.this, BaseActivity.class, CoordinatorLayoutFragment.class, null, -1);
+            break;
+          }
+          case R.id.nav_drawer_layout: {//DrawerLayout 沉浸式状态栏
+            ActivityUtils.startActivity(MainActivity.this, BaseActivity.class, DrawerLayoutFragment.class, null, -1);
+            break;
+          }
+
+          //---------------------------------- 其他使用 ----------------------------------//
+          case R.id.nav_fullscreen: {//全屏的 Activity
+            Intent intent = new Intent();
+            intent.setClass(getApplicationContext(), FullscreenActivity.class);
+            startActivity(intent);
+            break;
+          }
+          case R.id.nav_picture: {//相册图片读取 注意是这样调用方法
+            MainActivityPermissionsDispatcher.showPictureFragmentWithPermissionCheck(MainActivity.this);
+            break;
+          }
+        }
+        menuItem.setChecked(true);
+        mDrawerLayout.closeDrawers();
+        return true;
+      }
+    });
   }
 
   /* *********************权限相关***************** */
@@ -296,8 +302,9 @@ import timber.log.Timber;
   /**
    * 显示照片列表方法
    */
-  @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE) void showPictureFragment() {
-    ActivityUtils.startActivity(MainActivity.this, PictureListFragment.class, null, -1);
+  @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+  void showPictureFragment() {
+    ActivityUtils.startActivity(MainActivity.this, TopBarActivity.class, PictureListFragment.class, null, -1);
   }
 
   /**
@@ -307,42 +314,44 @@ import timber.log.Timber;
    *
    * @param request {@link PermissionRequest}
    */
-  @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE) void showRationaleForStorage(
-      final PermissionRequest request) {
+  @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
+  void showRationaleForStorage(final PermissionRequest request) {
     new MaterialDialog.Builder(this).title("是否授予权限")
-        .positiveText("确定")
-        .negativeText("取消")
-        .onPositive(new MaterialDialog.SingleButtonCallback() {
-          @Override
-          public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-            request.proceed();
-          }
-        })
-        .onNegative(new MaterialDialog.SingleButtonCallback() {
-          @Override
-          public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-            request.cancel();
-          }
-        })
-        .show();
+      .positiveText("确定")
+      .negativeText("取消")
+      .onPositive(new MaterialDialog.SingleButtonCallback() {
+        @Override
+        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+          request.proceed();
+        }
+      })
+      .onNegative(new MaterialDialog.SingleButtonCallback() {
+        @Override
+        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+          request.cancel();
+        }
+      })
+      .show();
   }
 
   /**
    * 拒绝之后的提示信息
    */
-  @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE) void showDeniedForStorage() {
+  @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE)
+  void showDeniedForStorage() {
     Toast.makeText(this, "您已拒绝授予该权限", Toast.LENGTH_SHORT).show();
   }
 
   /**
    * [系统请求存储权限询问对话框] ,勾选不在提示, 点击禁止.后弹出次提示,再次请求权限时候也会弹出
    */
-  @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE) void showNeverAskForStorage() {
+  @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
+  void showNeverAskForStorage() {
     Toast.makeText(this, "您选择了不在询问,需要进入设置页面开启该权限", Toast.LENGTH_SHORT).show();
   }
 
-  @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-      @NonNull int[] grantResults) {
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
   }
@@ -363,15 +372,18 @@ import timber.log.Timber;
       mFragmentTitles.add(title);
     }
 
-    @Override public Fragment getItem(int position) {
+    @Override
+    public Fragment getItem(int position) {
       return mFragments.get(position);
     }
 
-    @Override public int getCount() {
+    @Override
+    public int getCount() {
       return mFragments.size();
     }
 
-    @Override public CharSequence getPageTitle(int position) {
+    @Override
+    public CharSequence getPageTitle(int position) {
       return mFragmentTitles.get(position);
     }
   }

@@ -17,23 +17,22 @@ import com.example.mylibrary.base.BaseActivity;
 import com.example.mylibrary.base.BaseFragment;
 import com.myapplication.R;
 
-public class DrawerLayoutFragment extends BaseFragment<BaseActivity> {
+public class DrawerLayoutFragment extends BaseFragment {
 
   Unbinder unbinder;
   @BindView(R.id.nav_view) NavigationView mNavView;
   @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
   @BindView(R.id.coordinator_layout) FrameLayout mCoordinatorLayout;
 
-  @Override public void onCreate(Bundle savedInstanceState) {
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    getChildFragmentManager().beginTransaction()
-        .replace(R.id.coordinator_layout, new CoordinatorLayoutFragment())
-        .commit();
+    getChildFragmentManager().beginTransaction().replace(R.id.coordinator_layout, new CoordinatorLayoutFragment()).commit();
   }
 
-  @Nullable @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+  @Nullable
+  @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_drawerlayout, container, false);
     unbinder = ButterKnife.bind(this, view);
 
@@ -55,7 +54,8 @@ public class DrawerLayoutFragment extends BaseFragment<BaseActivity> {
     return view;
   }
 
-  @Override public void onResume() {
+  @Override
+  public void onResume() {
     super.onResume();
     // 这句用于覆盖 CoordinatorLayoutFragment 中设置的状态栏颜色,从而显示出
     // mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.primary_dark));设置的颜色
@@ -65,7 +65,8 @@ public class DrawerLayoutFragment extends BaseFragment<BaseActivity> {
     }
   }
 
-  @Override public void onDestroyView() {
+  @Override
+  public void onDestroyView() {
     super.onDestroyView();
     unbinder.unbind();
   }

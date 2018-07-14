@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MVPFragment extends BaseListMVPFragment<TopBarActivity, Result, List<Result>, IMVPContract.IMVPPresenter>
+public class MVPFragment extends BaseListMVPFragment<List<Result>, IMVPContract.IMVPPresenter>
   implements IMVPContract.IMVPView<ApiResponse<List<Result>>> {
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;

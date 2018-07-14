@@ -46,11 +46,10 @@ import static com.example.mylibrary.base.ProgressFragment.ViewType.LOADING;
  *   如:帖子数据列表,评论列表等.
  * </pre>
  *
- * @param <CONTAINER> Fragment 对应的容器(对Activity的根布局Fragment有效,嵌套的Fragment无效)
  * @author toutoumu
  */
 
-public abstract class ProgressFragment<CONTAINER extends BaseActivity> extends BaseFragment<CONTAINER> {
+public abstract class ProgressFragment extends BaseFragment {
   /**
    * 视图类型: 内容,加载中,没有数据,网络异常
    */
