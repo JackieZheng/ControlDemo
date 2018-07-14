@@ -1,6 +1,7 @@
 package com.myapplication.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -34,16 +35,14 @@ public class BasicAdapter extends BaseAdapter<Result, RecyclerView.ViewHolder> {
     this.mFragment = context;
     mInflater = LayoutInflater.from(context.getContext());
     TypedValue typedValue = new TypedValue();
-    context.getContext()
-        .getTheme()
-        .resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
+    context.getContext().getTheme().resolveAttribute(R.attr.selectableItemBackground, typedValue, true);
     mBackground = typedValue.resourceId;
-    mOptions = RequestOptions.circleCropTransform()
-        .priority(Priority.HIGH)
-        .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+    mOptions = RequestOptions.circleCropTransform().priority(Priority.HIGH).diskCacheStrategy(DiskCacheStrategy.RESOURCE);
   }
 
-  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+  @NonNull
+  @Override
+  public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     switch (viewType) {
       case ITEM_TYPE_DATA: {
         View view = mInflater.inflate(R.layout.list_item, parent, false);
@@ -59,41 +58,40 @@ public class BasicAdapter extends BaseAdapter<Result, RecyclerView.ViewHolder> {
     return null;
   }
 
-  @Override public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int position) {
+  @Override
+  public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, int position) {
     if (viewHolder instanceof DataViewHolder) {
       DataViewHolder holder = (DataViewHolder) viewHolder;
       final Result item = getItem(position);
       holder.setText(R.id.text1, item.getName());
-      Glide.with(mFragment)
-          .load(item.getIcon())
-          .apply(mOptions)
-          .into((ImageView) holder.getView(R.id.avatar));
+      Glide.with(mFragment).load(item.getIcon()).apply(mOptions).into((ImageView) holder.getView(R.id.avatar));
 
-      holder.itemView.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-          Bundle bundle = new Bundle();
-          bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME, item.getName());
-          bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, item.getIcon());
-          ActivityUtils.startActivity(mFragment, CollapsingToolbarLayoutFragment.class, bundle, -1);
-        }
+      holder.itemView.setOnClickListener(v -> {
+        Bundle bundle = new Bundle();
+        bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME, item.getName());
+        bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, item.getIcon());
+        ActivityUtils.startActivity(mFragment, CollapsingToolbarLayoutFragment.class, bundle, -1);
       });
     } else if (viewHolder instanceof FootViewHolder) {
       ((FootViewHolder) viewHolder).setupFootView(mMore);
     }
   }
 
-  @Override public Result getItem(int position) {
+  @Override
+  public Result getItem(int position) {
     if (position == mData.size()) {
       return null;
     }
     return mData.get(position);
   }
 
-  @Override public int getItemCount() {
+  @Override
+  public int getItemCount() {
     return mData.size() + 1;
   }
 
-  @Override public int getItemViewType(int position) {
+  @Override
+  public int getItemViewType(int position) {
     if (position == mData.size()) return ITEM_TYPE_FOOTER;
     return ITEM_TYPE_DATA;
   }
@@ -102,7 +100,7 @@ public class BasicAdapter extends BaseAdapter<Result, RecyclerView.ViewHolder> {
    * 继承{@link BaseViewHolder}可以使代码更简洁
    */
   private static class DataViewHolder extends BaseViewHolder {
-    public DataViewHolder(View view) {
+    DataViewHolder(View view) {
       super(view);
     }
   }

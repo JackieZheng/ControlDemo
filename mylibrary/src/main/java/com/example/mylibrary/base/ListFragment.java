@@ -1,6 +1,7 @@
 package com.example.mylibrary.base;
 
 import android.accounts.NetworkErrorException;
+import android.arch.lifecycle.MutableLiveData;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -9,19 +10,14 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Toast;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiPredicate;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
+import org.jetbrains.annotations.Contract;
 import timber.log.Timber;
 
 import static com.trello.rxlifecycle2.android.FragmentEvent.DESTROY;
@@ -43,6 +39,10 @@ import static com.trello.rxlifecycle2.android.FragmentEvent.DESTROY;
 public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> extends ProgressFragment<CONTAINER>
   implements EndlessScrollListener.IMore {
 
+  public enum LoadingStatus {
+    LOADING, ERROR, SUCCESS
+  }
+
   /** 是否正在加载 */
   protected boolean mIsLoading = false;
   /** 服务端是否还有更多数据 */
@@ -51,16 +51,28 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> e
   protected boolean mIsError = false;
   /** 是否需要刷新(清空)列表数据 */
   private boolean mIsRefresh;
-  /** 列表数据 */
-  protected final List<ITEM> mData = new ArrayList<>();
 
-  private PublishSubject<Boolean> mSubject = PublishSubject.create();
+  private final MutableLiveData<LoadingStatus> mLoadingStatus = new MutableLiveData<>();
+  private final PublishSubject<Boolean> mSubject = PublishSubject.create();
 
   @CallSuper
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     subscribe();
+    mLoadingStatus.observe(this, status -> {
+      if (status != null) onStatusUpdated(status);
+    });
+  }
+
+  @CallSuper
+  @Override
+  public void onViewCreated(View view, Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    // 没有数据视图点击事件
+    setEmptyViewClickListener(v -> obtainData(false));
+    // 网络异常视图点击事件
+    setNetWorkErrorViewClickListener(v -> obtainData(false));
   }
 
   /**
@@ -69,32 +81,34 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> e
    * @param isRefresh 是否清空原来的数据
    */
   @CallSuper
-  protected void obtainData(boolean isRefresh) {
-    if (isLoading()) {// 如果正在加载,取消本次请求
-      return;
-    }
-    mIsError = false;//加载正常
-    mIsLoading = true;//加载中
+  public void obtainData(boolean isRefresh) {
+    if (isLoading()) return; // 如果正在加载,取消本次请求
+
+    mIsError = false; // 加载正常
+    mIsLoading = true; // 加载中
     mIsRefresh = isRefresh; // 是否需要刷新(清空)数据
 
-    if (hasData()) {// showContent(); // 如果列表已经有数据,此时内容视图一定是可见的,不需要调用{@link #showConten}
-      if (mIsViewCreated) onStatusUpdated();
-    } else {// 加载的时候还没有数据,显示加载进度视图
-      showLoading();
-    }
+    if (!hasData()) showLoading(); // 加载的时候还没有数据,显示加载进度视图
     mSubject.onNext(isRefresh); // 请求数据,每次都会调用{@link #getRequest}
+    mLoadingStatus.postValue(LoadingStatus.LOADING); // 状态更新
   }
 
   /**
-   * 数据请求 [状态变更后] 回调此方法,仅在列表有数据时候{@link #hasData()} == true时调用
-   * <pre>
-   * 主要用于更新列表数据状态
-   * 1. 开始加载{@link #mIsLoading} == true
-   * 2. 加载完成{@link #mIsLoading} == false
-   * 3. 加载失败{@link #mIsLoading} == false && {@link #mIsError}  == true
-   * </pre>
+   * 数据加载状态监听
+   *
+   * @param status {@link LoadingStatus}
    */
-  protected abstract void onStatusUpdated();
+  protected void onStatusUpdated(LoadingStatus status) {
+  }
+
+  /**
+   * 构造请求
+   *
+   * @param isRefresh 是否需要刷新(清空)数据
+   * @return ..
+   */
+  @NonNull
+  protected abstract Observable<ApiResponse<DATA>> getRequest(boolean isRefresh);
 
   /**
    * 服务调用成功
@@ -127,19 +141,10 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> e
    * }
    * </pre>
    *
-   * @param data {@link ApiResponse}
+   * @param data {@link ApiResponse} 这次请求返回的数据
    * @return {@link Boolean} true还有更多数据
    */
   protected abstract boolean checkHasMore(ApiResponse<DATA> data);
-
-  @Override
-  public void onViewCreated(View view, Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    // 没有数据视图点击事件
-    setEmptyViewClickListener(v -> obtainData(false));
-    // 网络异常视图点击事件
-    setNetWorkErrorViewClickListener(v -> obtainData(false));
-  }
 
   /** 超时重试 */
   public static BiPredicate<Integer, Throwable> timeoutRetry() {
@@ -174,18 +179,13 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> e
    *
    * @return {@link Boolean} 是否有数据
    */
-  protected boolean hasData() {
-    return mData.size() > 0;
-  }
-
-  @NonNull
-  protected abstract Observable<ApiResponse<DATA>> getRequest(boolean isRefresh);
+  protected abstract boolean hasData();
 
   private void subscribe() {
     mSubject.hide().compose(bindUntilEvent(DESTROY))//
       .switchMap(isRefresh -> { // 获取请求,并设置超时,重试策略
         // 这里会将 mSubject.onNext的参数传进getRequest
-        return getRequest(isRefresh).retry(timeoutRetry());
+        return getRequest(isRefresh);//.retry(timeoutRetry());
       })//
       .subscribe(new Observer<ApiResponse<DATA>>() {
         @Override
@@ -195,11 +195,8 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> e
 
         @Override
         public void onNext(ApiResponse<DATA> data) {
-
-          mIsError = !data.isSuccess();
-          mIsLoading = false;
-          boolean hasDataBefore = hasData();// 请求之前是否有数据
-
+          mIsLoading = false; // 是否加载中
+          mIsError = !data.isSuccess(); // 是否错误
           mHasMore = checkHasMore(data);// 检查是否还有更多数据
 
           onSuccess(data, mIsRefresh);// 服务调用成功的回调
@@ -209,29 +206,24 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> e
           } else {//没数据显示数据为空视图
             showEmpty();// 没有数据
           }
-
-          // 如果服务调用之前有数据,或者调用之后有数据(也就是数据有无或者数据数量有变化),都需要更新
-          if (hasDataBefore || hasData()) {
-            if (mIsViewCreated) {
-              onStatusUpdated();
-            }
-          }
+          mLoadingStatus.postValue(LoadingStatus.SUCCESS);
         }
 
         @Override
         public void onError(Throwable throwable) {
           subscribe(); // 报错会结束订阅所以重新订阅
-          mIsError = true;//加载出错
-          mIsLoading = false;//加载完成
-          ListFragment.this.onError(throwable);//错误处理
+          mIsError = true; // 加载出错
+          mIsLoading = false; // 加载完成
+          mHasMore = true; // 加载出错认为还有跟多数据
 
-          if (hasData()) {
-            if (mIsViewCreated) onStatusUpdated();//加载时候发生异常,更新界面显示
-            return;// 有数据只弹出异常信息
-          }
+          ListFragment.this.onError(throwable); // 错误处理
+          mLoadingStatus.postValue(LoadingStatus.ERROR);
+
+          if (hasData()) return; // 有数据只弹出异常信息
 
           // 网络异常显示,网络异常视图
           if (throwable instanceof NetworkErrorException
+            || throwable instanceof SocketTimeoutException
             || throwable instanceof TimeoutException
             || throwable instanceof IOException) {
             showNetWorkError();
@@ -242,7 +234,6 @@ public abstract class ListFragment<CONTAINER extends BaseActivity, ITEM, DATA> e
 
         @Override
         public void onComplete() {
-
         }
       });
   }

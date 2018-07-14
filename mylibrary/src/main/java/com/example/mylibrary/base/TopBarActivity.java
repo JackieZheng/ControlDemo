@@ -29,7 +29,8 @@ public final class TopBarActivity extends BaseActivity {
   /** 内容区域 */
   private ViewGroup mContentContainer;
 
-  @Override protected void onCreate(Bundle savedInstanceState) {
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContentContainer = (ViewGroup) findViewById(R.id.content);
     setTransparentForWindow();
@@ -43,7 +44,8 @@ public final class TopBarActivity extends BaseActivity {
    *
    * @return 布局文件ID
    */
-  public @LayoutRes int getContentResourceId() {
+  public @LayoutRes
+  int getContentResourceId() {
     return R.layout.activity_common;
   }
 
@@ -100,8 +102,7 @@ public final class TopBarActivity extends BaseActivity {
     if (overlay) {
       mContentContainer.setPadding(0, 0, 0, 0);
     } else {
-      mContentContainer.setPadding(0,
-          mSystemBarConfig.getStatusBarHeight() + mSystemBarConfig.getToolBarHeight(), 0, 0);
+      mContentContainer.setPadding(0, mSystemBarConfig.getStatusBarHeight() + mSystemBarConfig.getToolBarHeight(), 0, 0);
     }
 
     ViewGroup.LayoutParams params = mStatusBar.getLayoutParams();
@@ -117,14 +118,16 @@ public final class TopBarActivity extends BaseActivity {
       return;
     }
 
-    mStubTopBar = (ViewStub) findViewById(R.id.top_bar_stub);
+    mStubTopBar = findViewById(R.id.top_bar_stub);
 
+    // 顶部布局
     mTopBar = (ViewGroup) mStubTopBar.inflate();
+    // 状态栏
     mStatusBar = mTopBar.findViewById(R.id.status_bar);
     // 标题栏容器
-    mToolBarContainer = (ViewGroup) mTopBar.findViewById(R.id.tool_bar_container);
+    mToolBarContainer = mTopBar.findViewById(R.id.tool_bar_container);
     // 标题栏
-    mToolBar = (Toolbar) mToolBarContainer.findViewById(R.id.tool_bar);
+    mToolBar = mToolBarContainer.findViewById(R.id.tool_bar);
     // 标题栏阴影
     mToolBarShadow = mToolBarContainer.findViewById(R.id.tool_bar_shadow);
 

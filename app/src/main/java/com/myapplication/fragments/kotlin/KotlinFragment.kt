@@ -43,45 +43,42 @@ import kotlinx.android.synthetic.main.content_basic.*
  * 如需要修改Fragment布局内容,请重写 [getEmptyLayoutResourceId] 方法.
  */
 class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
-
-  /**
-   * 扩展[Fragment],添加toast方法
-   * @param message [CharSequence] toast消息
-   * @param duration [Int]  消息显示时间长短,default : [Toast.LENGTH_SHORT]
-   *
-   */
-  private fun Fragment.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
-    Toast.makeText(activity, message, duration)
-        .show()
-  }
-
   companion object {
     private const val PAGE_SIZE = 20
   }
+
+  private val mData = mutableListOf<Result>()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     obtainData(false)//请求数据,不清空原来数据
   }
 
-  override fun getContentLayoutResourceId(): Int {
-    return R.layout.content_basic // 数据加载成功显示的 [Fragment] 内容区域
-  }
-
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
+    swipe_refresh_layout.setOnRefreshListener { obtainData(true) }
     swipe_refresh_layout.setColorSchemeResources(//
         android.R.color.holo_blue_bright, //
         android.R.color.holo_green_light, //
         android.R.color.holo_orange_light, //
         android.R.color.holo_red_light)
 
-    swipe_refresh_layout.setOnRefreshListener { obtainData(true) }
-
     recycler_view.layoutManager = LinearLayoutManager(context)
     recycler_view.adapter = KotlinAdapter(this, mData, this)
     recycler_view.addOnScrollListener(EndlessScrollListener(this))
+  }
+
+  override fun initTopBar(activity: TopBarActivity) {
+    super.initTopBar(activity)
+    val toolBar: Toolbar = activity.toolBar
+    toolBar.title = "Kotlin基本使用"
+    toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
+    toolBar.setNavigationOnClickListener { mActivity.finish() }
+  }
+
+  override fun getContentLayoutResourceId(): Int {
+    return R.layout.content_basic // 数据加载成功显示的 [Fragment] 内容区域
   }
 
   override fun onEmptyViewInflated(emptyView: View) {
@@ -90,19 +87,6 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
       text = "这里没有数据"
       setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_order_empty, 0, 0)
     }
-  }
-
-  /**
-   * 初始化状态栏,标题栏
-
-   * @param activity [TopBarActivity]
-   */
-  override fun initTopBar(activity: TopBarActivity) {
-    super.initTopBar(activity)
-    val toolBar: Toolbar = activity.toolBar
-    toolBar.title = "Kotlin基本使用"
-    toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-    toolBar.setNavigationOnClickListener { mActivity.finish() }
   }
 
   override fun getRequest(isRefresh: Boolean): Observable<ApiResponse<List<Result>>> {
@@ -137,9 +121,24 @@ class KotlinFragment : ListFragment<TopBarActivity, Result, List<Result>>() {
     }
   }
 
-  override fun onStatusUpdated() {
+  override fun onStatusUpdated(status: LoadingStatus) {
     swipe_refresh_layout.isRefreshing = isLoading
     recycler_view.adapter.notifyDataSetChanged()
+  }
+
+  override fun hasData(): Boolean {
+    return mData.size > 0
+  }
+
+  /**
+   * 扩展[Fragment],添加toast方法
+   * @param message [CharSequence] toast消息
+   * @param duration [Int]  消息显示时间长短,default : [Toast.LENGTH_SHORT]
+   *
+   */
+  private fun Fragment.toast(message: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(activity, message, duration)
+        .show()
   }
 }
 

@@ -25,12 +25,9 @@ import com.myapplication.bean.Result;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiPredicate;
 import io.reactivex.schedulers.Schedulers;
-import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
-import timber.log.Timber;
 
 /**
  * <pre>有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity基本使用方式
@@ -47,6 +44,8 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
   Unbinder mUnBinder;
   @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
   @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
+
+  private final List<Result> mData = new ArrayList<>();
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +129,7 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
     if (data.getData() != null && data.getData().size() > 0) {
       mData.addAll(data.getData());
     }
+    mRecyclerView.getAdapter().notifyDataSetChanged();
   }
 
   @Override
@@ -139,8 +139,15 @@ public class BasicFragment extends ListFragment<TopBarActivity, Result, List<Res
   }
 
   @Override
-  protected void onStatusUpdated() {
-    mSwipeRefreshLayout.setRefreshing(isLoading());
-    mRecyclerView.getAdapter().notifyDataSetChanged();
+  protected boolean hasData() {
+    return mData.size() > 0;
+  }
+
+  @Override
+  protected void onStatusUpdated(ListFragment.LoadingStatus status) {
+    // mSwipeRefreshLayout.setRefreshing(isLoading());
+    mSwipeRefreshLayout.setRefreshing(status == LoadingStatus.LOADING);
+    //更新foot
+    mRecyclerView.getAdapter().notifyItemChanged(mRecyclerView.getAdapter().getItemCount() - 1);
   }
 }

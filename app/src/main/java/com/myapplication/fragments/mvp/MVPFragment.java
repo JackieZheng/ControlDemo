@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.example.mylibrary.base.ApiResponse;
 import com.example.mylibrary.base.EndlessScrollListener;
+import com.example.mylibrary.base.ListFragment;
 import com.example.mylibrary.base.TopBarActivity;
 import com.example.mylibrary.base.mvp.BaseListMVPFragment;
 import com.myapplication.R;
@@ -25,12 +26,15 @@ import com.trello.rxlifecycle2.android.FragmentEvent;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MVPFragment extends BaseListMVPFragment<TopBarActivity, Result, List<Result>, IMVPContract.IMVPPresenter>
   implements IMVPContract.IMVPView<ApiResponse<List<Result>>> {
   private static final int PAGE_SIZE = 20;
   Unbinder mUnBinder;
+
+  private final List<Result> mData = new ArrayList<>();
 
   @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
   @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
@@ -101,14 +105,14 @@ public class MVPFragment extends BaseListMVPFragment<TopBarActivity, Result, Lis
   }
 
   @Override
-  protected void obtainData(boolean isRefresh) {
+  public void obtainData(boolean isRefresh) {
     super.obtainData(isRefresh);
     mPresenter.loadData(PAGE_SIZE, isRefresh);
   }
 
   @NonNull
   @Override
-  protected Observable<ApiResponse<List<Result>>> getRequest(boolean isRefresh) {
+  public Observable<ApiResponse<List<Result>>> getRequest(boolean isRefresh) {
     return MockApi.queryData(PAGE_SIZE)//
       //.retry(timeoutRetry())//
       .compose(bindUntilEvent(FragmentEvent.DESTROY))//生命周期绑定
@@ -127,7 +131,7 @@ public class MVPFragment extends BaseListMVPFragment<TopBarActivity, Result, Lis
   }
 
   @Override
-  public void onStatusUpdated() {
+  public void onStatusUpdated(ListFragment.LoadingStatus status) {
     mSwipeRefreshLayout.setRefreshing(isLoading());
     mRecyclerView.getAdapter().notifyDataSetChanged();
   }
@@ -148,5 +152,10 @@ public class MVPFragment extends BaseListMVPFragment<TopBarActivity, Result, Lis
   @Override
   protected void onError(Throwable throwable) {
     super.onError(throwable);
+  }
+
+  @Override
+  protected boolean hasData() {
+    return mData.size() > 0;
   }
 }

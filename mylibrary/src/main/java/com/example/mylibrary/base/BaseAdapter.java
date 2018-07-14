@@ -12,10 +12,9 @@ import java.util.List;
  * 基础的{@link RecyclerView}数据适配器
  *
  * @param <T> {@link #mData}列表数据类型
- * @param <VH> {@link RecyclerView.ViewHolder}
+ * @param <VH> 一般直接填写 {@link RecyclerView.ViewHolder} 即可
  */
-public abstract class BaseAdapter<T, VH extends RecyclerView.ViewHolder>
-    extends RecyclerView.Adapter<VH> {
+public abstract class BaseAdapter<T, VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
   /** 底部布局 */
   protected final int ITEM_TYPE_FOOTER = 999;
@@ -139,7 +138,7 @@ public abstract class BaseAdapter<T, VH extends RecyclerView.ViewHolder>
 
     public FootViewHolder(View itemView) {
       super(itemView);
-      this.mFootText = (TextView) itemView.findViewById(R.id.footer_text);
+      this.mFootText = itemView.findViewById(R.id.footer_text);
     }
 
     /**
@@ -153,11 +152,7 @@ public abstract class BaseAdapter<T, VH extends RecyclerView.ViewHolder>
         mFootText.setOnClickListener(null);
       } else if (mMore.hasMore()) {//有更多,但是上一次加载更多出错
         mFootText.setText("点击加载更多");
-        mFootText.setOnClickListener(new View.OnClickListener() {
-          @Override public void onClick(View v) {
-            mMore.loadMore();
-          }
-        });
+        mFootText.setOnClickListener(v -> mMore.loadMore());
       } else {//没有更多数据
         mFootText.setText("没有更多了");
         mFootText.setOnClickListener(null);

@@ -28,7 +28,7 @@ import timber.log.Timber;
  */
 public abstract class MockApi {
   private static Random mRandom = new Random();
-  private static int id = mRandom.nextInt(8);
+  private static int id =4; //mRandom.nextInt(8);
   private static int m = 0;
 
   @GET("/account/accountInfo")
