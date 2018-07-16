@@ -17,7 +17,6 @@
 package com.myapplication;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,7 +42,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.util.DialogUtils;
 import com.example.mylibrary.base.ActivityUtils;
 import com.example.mylibrary.base.BaseActivity;
 import com.example.mylibrary.base.TopBarActivity;
@@ -59,6 +57,7 @@ import com.myapplication.fragments.CustomFragment;
 import com.myapplication.fragments.DrawerLayoutFragment;
 import com.myapplication.fragments.PictureListFragment;
 import com.myapplication.fragments.kotlin.KotlinFragment;
+import com.myapplication.fragments.mvp.ListMVPFragment;
 import com.myapplication.fragments.mvp.MVPFragment;
 import java.util.ArrayList;
 import java.util.List;
@@ -251,6 +250,10 @@ public class MainActivity extends BaseActivity {
             break;
           }
           case R.id.nav_mvp: {//MVP 模式使用
+            ActivityUtils.startActivity(MainActivity.this, TopBarActivity.class, ListMVPFragment.class, null, -1);
+            break;
+          }
+          case R.id.nav_mvp_base: {//MVP 模式基本使用
             ActivityUtils.startActivity(MainActivity.this, TopBarActivity.class, MVPFragment.class, null, -1);
             break;
           }
@@ -265,8 +268,7 @@ public class MainActivity extends BaseActivity {
             Bundle bundle = new Bundle();
             bundle.putString(CollapsingToolbarLayoutFragment.EXTRA_NAME, "CollapsingToolbarLayout沉浸式");
             bundle.putInt(CollapsingToolbarLayoutFragment.EXTRA_ICON, R.drawable.cheese_1);
-            ActivityUtils.startActivity(MainActivity.this, BaseActivity.class, CollapsingToolbarLayoutFragment.class, bundle,
-              -1);
+            ActivityUtils.startActivity(MainActivity.this, BaseActivity.class, CollapsingToolbarLayoutFragment.class, bundle, -1);
             break;
           }
           case R.id.nav_coordinator_layout: {//CoordinatorLayout 沉浸式状态栏

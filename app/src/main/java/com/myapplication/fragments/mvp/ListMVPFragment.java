@@ -1,46 +1,37 @@
-package com.myapplication.fragments;
+package com.myapplication.fragments.mvp;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.example.mylibrary.base.ApiResponse;
+import com.example.mylibrary.base.BaseFragment;
 import com.example.mylibrary.base.EndlessScrollListener;
 import com.example.mylibrary.base.ListFragment;
-import com.example.mylibrary.base.ProgressFragment;
 import com.example.mylibrary.base.TopBarActivity;
+import com.example.mylibrary.base.mvp.fragment.BaseMVPListFragment;
 import com.myapplication.R;
-import com.myapplication.api.MockApi;
 import com.myapplication.bean.Result;
-import com.trello.rxlifecycle2.android.FragmentEvent;
+import com.myapplication.fragments.BasicAdapter;
+import com.myapplication.fragments.mvp.IListMVPContract.IListMVPPresenter;
+import com.myapplication.fragments.mvp.IListMVPContract.IListMVPView;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
+import timber.log.Timber;
 
-/**
- * <pre>有 [自定义的顶部栏(状态栏+标题栏+标题栏阴影)] 的Activity基本使用方式
- * 1. 继承{@link ListFragment}并指定泛型参数为{@link TopBarActivity}
- * 2. 重写 {@link #getContentLayoutResourceId} 方法,返回内容区域的布局文件,
- * 这个布局文件将嵌入到{@link ProgressFragment} 的内容区域
- * 3. 注意请不要重写{@link #onCreateView(LayoutInflater, ViewGroup, Bundle)},
- * 如需要修改Fragment布局内容,请重写{@link #getEmptyLayoutResourceId()}方法.
- * </pre>
- */
-public class BasicFragment extends ListFragment<List<Result>> {
+import static com.myapplication.fragments.mvp.ListMVPPresenter.PAGE_SIZE;
 
-  private static final int PAGE_SIZE = 20;
+public class ListMVPFragment extends BaseMVPListFragment<IListMVPPresenter> implements IListMVPView<List<Result>> {
   Unbinder mUnBinder;
   @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
   @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
@@ -48,27 +39,29 @@ public class BasicFragment extends ListFragment<List<Result>> {
   private final List<Result> mData = new ArrayList<>();
 
   @Override
-  public void onCreate(Bundle savedInstanceState) {
+  public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    obtainData(false);//请求数据,不清空原来数据
+    mPresenter.obtainData(false);// 请求数据
   }
 
   @Override
   public void onViewCreated(View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    //注意ProgressFragment的子类,只能在onViewCreated里面才能bind
+    // 注意ProgressFragment的子类,只能在onViewCreated里面才能bind
     mUnBinder = ButterKnife.bind(this, view);
 
-    mSwipeRefreshLayout.setOnRefreshListener(() -> obtainData(true));
+    // 初始化下拉刷新
     mSwipeRefreshLayout.setColorSchemeResources(//
       android.R.color.holo_blue_bright,//
       android.R.color.holo_green_light,//
       android.R.color.holo_orange_light,//
       android.R.color.holo_red_light);
+    mSwipeRefreshLayout.setOnRefreshListener(() -> mPresenter.obtainData(true));
 
+    // 初始化列表
     mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    mRecyclerView.setAdapter(new BasicAdapter(this, mData, this));
-    mRecyclerView.addOnScrollListener(new EndlessScrollListener(this));
+    mRecyclerView.setAdapter(new BasicAdapter(this, mData, mPresenter));
+    mRecyclerView.addOnScrollListener(new EndlessScrollListener(mPresenter));
   }
 
   @Override
@@ -79,7 +72,7 @@ public class BasicFragment extends ListFragment<List<Result>> {
 
   @Override
   public int getContentLayoutResourceId() {
-    return R.layout.content_basic;
+    return R.layout.content_mvp;
   }
 
   @Override
@@ -99,23 +92,22 @@ public class BasicFragment extends ListFragment<List<Result>> {
   public void initTopBar(TopBarActivity activity) {
     super.initTopBar(activity);
     Toolbar toolBar = activity.getToolBar();
-    toolBar.setTitle("基本使用");
+    toolBar.setTitle("MVP基本使用");
     toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
     toolBar.setNavigationOnClickListener(v -> mActivity.finish());
-    activity.getStatusBar().setBackgroundResource(R.color.primary);
   }
 
-  @NonNull
   @Override
-  protected Observable<ApiResponse<List<Result>>> getRequest(boolean isRefresh) {
-    return MockApi.queryData(PAGE_SIZE)//
-      //.retry(timeoutRetry())//
-      .compose(bindUntilEvent(FragmentEvent.DESTROY))//
-      .subscribeOn(Schedulers.io())// 指定在这行代码之前的subscribe在io线程执行
-      //.doOnSubscribe(getDoOnSubscribe())//开始执行之前的准备工作
-      //.subscribeOn(AndroidSchedulers.mainThread())//指定 前面的doOnSubscribe 在主线程执行
-      .observeOn(AndroidSchedulers.mainThread());//指定这行代码之后的subscribe 在主线程执行
-    //.subscribe(getOnNext(isRefresh), getOnError());
+  protected IListMVPPresenter initPresenter() {
+    return new ListMVPPresenter(this, this);
+  }
+
+  @Override
+  public void onStatusUpdated(ListFragment.LoadingStatus status) {
+    // mSwipeRefreshLayout.setRefreshing(isLoading());
+    mSwipeRefreshLayout.setRefreshing(status == ListFragment.LoadingStatus.LOADING);
+    //更新foot
+    mRecyclerView.getAdapter().notifyItemChanged(mRecyclerView.getAdapter().getItemCount() - 1);
   }
 
   @Override
@@ -133,21 +125,18 @@ public class BasicFragment extends ListFragment<List<Result>> {
   }
 
   @Override
-  public boolean checkHasMore(ApiResponse<List<Result>> data) {
-    // 服务调用失败 || 数据满一页 表示还有更多数据
-    return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
+  public void onError(Throwable throwable) {
+    Timber.e(throwable);
+    Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_LONG).show();
   }
 
   @Override
-  protected boolean hasData() {
+  public boolean hasData() {
     return mData.size() > 0;
   }
 
-  @Override
-  protected void onStatusUpdated(ListFragment.LoadingStatus status) {
-    // mSwipeRefreshLayout.setRefreshing(isLoading());
-    mSwipeRefreshLayout.setRefreshing(status == LoadingStatus.LOADING);
-    //更新foot
-    mRecyclerView.getAdapter().notifyItemChanged(mRecyclerView.getAdapter().getItemCount() - 1);
+  public boolean checkHasMore(ApiResponse<List<Result>> data) {
+    // 服务调用失败 || 数据满一页 表示还有更多数据
+    return !data.isSuccess() || !(data.getData() == null || data.getData().size() != PAGE_SIZE);
   }
 }

@@ -33,6 +33,11 @@
         android:id="@+id/nav_mvp"
         android:icon="@drawable/ic_forum"
         android:title="MVP模式"/>
+
+    <item
+        android:id="@+id/nav_mvp_base"
+        android:icon="@drawable/ic_dashboard"
+        android:title="MVP模式基本使用"/>
     <item
         android:id="@+id/nav_friends"
         android:icon="@drawable/ic_headset"

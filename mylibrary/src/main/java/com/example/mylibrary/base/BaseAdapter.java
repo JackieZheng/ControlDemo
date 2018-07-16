@@ -151,7 +151,11 @@ public abstract class BaseAdapter<T, VH extends RecyclerView.ViewHolder> extends
         mFootText.setText("加载中...");
         mFootText.setOnClickListener(null);
       } else if (mMore.hasMore()) {//有更多,但是上一次加载更多出错
-        mFootText.setText("点击加载更多");
+        if (mMore.isError()) {
+          mFootText.setText("点击加载更多");
+        } else {
+          mFootText.setText("加载中...");
+        }
         mFootText.setOnClickListener(v -> mMore.loadMore());
       } else {//没有更多数据
         mFootText.setText("没有更多了");
